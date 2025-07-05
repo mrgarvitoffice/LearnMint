@@ -1,6 +1,8 @@
 
 "use client";
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuests } from '@/contexts/QuestContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
-import { GuestLock } from '@/components/features/auth/GuestLock';
+// GuestLock is no longer needed here, as we are redirecting instead of showing a lock screen.
 
 // A local component to display each quest item cleanly.
 const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: string }) => (
@@ -29,23 +31,31 @@ export default function ProfilePage() {
   const { user, loading, signOutUser } = useAuth();
   const { quests } = useQuests();
   const { t } = useTranslation();
+  const router = useRouter();
 
-  // Show a loading screen while auth is resolving.
-  if (loading) {
+  useEffect(() => {
+    // If auth state is resolved and the user is identified as a guest,
+    // redirect them to the sign-in page immediately.
+    if (!loading && user?.isAnonymous) {
+      router.replace('/sign-in');
+    }
+  }, [user, loading, router]);
+
+
+  // Show a loading screen while auth is resolving or if the user is a guest
+  // (the redirect effect will fire shortly). This prevents the profile content
+  // from briefly flashing for guest users.
+  if (loading || user?.isAnonymous) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Loading Profile...</p>
+        <p className="mt-3 text-lg">Verifying Access...</p>
       </div>
     );
   }
-
-  // Handle guest users specifically for the profile page by showing the GuestLock component.
-  if (user?.isAnonymous) {
-    return <GuestLock featureName="Profile" message="Please sign in or create an account to view your profile." />;
-  }
-
-  // The main app layout handles the case where user is null, so this is an extra guard.
+  
+  // The main app layout already handles the case where user is null (not signed in at all),
+  // but this is an extra guard to prevent rendering if the user state is somehow invalid.
   if (!user) {
     return null; 
   }
