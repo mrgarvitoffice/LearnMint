@@ -12,6 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
+import { useAuth } from '@/contexts/AuthContext';
 
 function GoogleIcon() {
   return (
@@ -24,6 +25,9 @@ function GoogleIcon() {
 export default function SignUpPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const { user: authUser, loading: authLoading } = useAuth();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
   const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
@@ -38,36 +42,51 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       console.log("New user document created in Firestore for:", user.uid);
+      toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
+    } else {
+      toast({ title: "Sign-in Successful!", description: "Welcome back! Redirecting you..." });
     }
-    toast({ title: "Account Created!", description: "Welcome to LearnMint!" });
     router.replace('/');
   }, [router, toast]);
 
   useEffect(() => {
-    const processRedirectResult = async () => {
+    const processAuth = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
           console.log("Redirect result processed on sign-up page. User found:", result.user.uid);
           await handleUserCreation(result.user);
-        } else {
-          setIsProcessingRedirect(false);
+          return;
         }
+
+        if (!authLoading && authUser && !authUser.isAnonymous) {
+          console.log("User is already logged in. Redirecting to dashboard.");
+          router.replace('/');
+          return;
+        }
+        
+        setIsProcessingRedirect(false);
+
       } catch (error: any) {
-        console.error("Error processing redirect result on sign-up page:", error);
-        toast({ title: "Sign-Up Failed", description: error.message, variant: "destructive" });
+        console.error("Error during auth processing on sign-up page:", error);
+        toast({ title: "Sign-Up Failed", description: "This may be due to a misconfiguration. Please ensure your domain is authorized in the Firebase Console.", variant: "destructive" });
         setIsProcessingRedirect(false);
       }
     };
-    processRedirectResult();
-  }, [handleUserCreation, toast]);
+    
+    if (!authLoading) {
+      processAuth();
+    }
+  }, [authLoading, authUser, handleUserCreation, router, toast]);
 
   const handleGoogleSignUp = async () => {
+    setIsSubmitting(true);
     try {
       await signInWithRedirect(auth, googleProvider);
     } catch (error: any) {
       console.error("Error initiating Google sign-up redirect:", error);
       toast({ title: "Sign-Up Error", description: error.message, variant: "destructive" });
+      setIsSubmitting(false);
     }
   };
 
@@ -75,7 +94,7 @@ export default function SignUpPage() {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying sign-up...</p>
+        <p className="mt-3 text-lg">Verifying your session...</p>
       </div>
     );
   }
@@ -88,8 +107,9 @@ export default function SignUpPage() {
         <CardDescription>Join LearnMint to unlock all features.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button onClick={handleGoogleSignUp} variant="outline" className="w-full">
-          <GoogleIcon /> Sign Up with Google
+        <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
+          Sign Up with Google
         </Button>
       </CardContent>
       <CardFooter className="justify-center text-sm">

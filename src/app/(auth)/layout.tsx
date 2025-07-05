@@ -2,36 +2,25 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { loading } = useAuth();
 
-  useEffect(() => {
-    // If auth state is confirmed and a non-guest user exists, redirect them away from auth pages.
-    if (!loading && user && !user.isAnonymous) {
-      router.replace('/');
-    }
-  }, [user, loading, router]);
-
-  // While auth state is loading, or if the user is logged in and we are about to redirect, show a loader.
-  // We do NOT show the children during this time to prevent flashes of content.
-  if (loading || (user && !user.isAnonymous)) {
+  // Show a loader only when the auth context itself is loading.
+  // The sign-in/sign-up pages have their own loaders for the redirect process.
+  if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{loading ? 'Loading Session...' : 'Redirecting...'}</p>
+        <p className="mt-3 text-lg">Loading Session...</p>
       </div>
     );
   }
   
-  // If loading is complete and there is no user (or user is a guest), show the auth page.
-  // The children here will be the sign-in or sign-up page, which now have their own logic
-  // to handle the redirect result from Google.
+  // Render the children (sign-in or sign-up page) once the auth context is ready.
+  // The child pages are now responsible for handling redirects.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
         style={{

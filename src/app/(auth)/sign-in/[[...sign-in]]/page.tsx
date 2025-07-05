@@ -28,7 +28,7 @@ function GoogleIcon() {
 export default function SignInPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const { signInAsGuest } = useAuth();
+  const { user: authUser, loading: authLoading, signInAsGuest } = useAuth();
   const { resetUsage } = useGuestUsage();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,35 +48,48 @@ export default function SignInPage() {
       console.log("New user document created in Firestore for:", user.uid);
     }
     resetUsage();
-    toast({ title: "Sign-in Successful!", description: "Welcome back to LearnMint!" });
+    toast({ title: "Sign-in Successful!", description: "Redirecting you to the dashboard..." });
     router.replace('/');
   }, [router, toast, resetUsage]);
 
   useEffect(() => {
-    const processRedirectResult = async () => {
+    const processAuth = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
           console.log("Redirect result processed. User found:", result.user.uid);
           await handleUserCreation(result.user);
-        } else {
-          setIsProcessingRedirect(false);
+          return;
         }
+
+        if (!authLoading && authUser && !authUser.isAnonymous) {
+          console.log("User is already logged in. Redirecting to dashboard.");
+          router.replace('/');
+          return;
+        }
+        
+        setIsProcessingRedirect(false);
+
       } catch (error: any) {
-        console.error("Error processing redirect result:", error);
-        toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
+        console.error("Error during auth processing:", error);
+        toast({ title: "Sign-in Failed", description: "This may be due to a misconfiguration. Please ensure your domain is authorized in the Firebase Console.", variant: "destructive" });
         setIsProcessingRedirect(false);
       }
     };
-    processRedirectResult();
-  }, [handleUserCreation, toast]);
+    
+    if (!authLoading) {
+      processAuth();
+    }
+  }, [authLoading, authUser, handleUserCreation, router, toast]);
 
   const handleGoogleSignIn = async () => {
+    setIsSubmitting(true);
     try {
       await signInWithRedirect(auth, googleProvider);
     } catch (error: any) {
       console.error("Error initiating Google sign-in redirect:", error);
       toast({ title: "Sign-In Error", description: error.message, variant: "destructive" });
+      setIsSubmitting(false);
     }
   };
 
@@ -98,7 +111,7 @@ export default function SignInPage() {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying sign-in...</p>
+        <p className="mt-3 text-lg">Verifying your session...</p>
       </div>
     );
   }
@@ -111,8 +124,9 @@ export default function SignInPage() {
         <CardDescription>Sign in to access your LearnMint dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
-          <GoogleIcon /> Sign In with Google
+        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
+          Sign In with Google
         </Button>
         <div className="relative">
           <Separator className="my-1" />
@@ -121,7 +135,7 @@ export default function SignInPage() {
           </p>
         </div>
         <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Continue as Guest
+          {isSubmitting && !isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Continue as Guest
         </Button>
       </CardContent>
       <CardFooter className="justify-center text-sm">
