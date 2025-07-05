@@ -5,7 +5,6 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import {
   onAuthStateChanged,
   signOut,
-  signInAnonymously,
   signInWithRedirect,
   getRedirectResult,
   signInWithEmailAndPassword,
@@ -20,7 +19,6 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInAsGuest: () => Promise<void>;
   signOutUser: () => Promise<void>;
   signInWithGoogleRedirect: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
@@ -36,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
+    // This function will not run for anonymous users, but we keep the check for robustness.
     if (user.isAnonymous) return;
     
     const userRef = doc(db, 'users', user.uid);
@@ -60,12 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Please ensure your 'firestore.rules' allow authenticated users to write to their own document (`/users/{userId}`).");
         console.error("Example rule: `allow write: if request.auth.uid == userId;`");
         console.error("****************************************************************");
-        // We will NOT throw an error here, to allow the auth flow to complete.
-        // The user is authenticated, even if their Firestore doc creation failed.
-        // We can show a toast to inform the user of a partial profile setup failure.
         toast({
             title: "Sign-In Successful, Profile Issue",
-            description: "We couldn't save your profile data. You can still use the app, but some features might be limited. Please contact support.",
+            description: "We couldn't save your profile data. You can still use the app, but some features might be limited.",
             variant: "destructive",
             duration: 10000,
         });
@@ -74,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       if (firebaseUser) {
         await handleUserCreationInFirestore(firebaseUser);
         setUser(firebaseUser);
@@ -96,13 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, [handleUserCreationInFirestore, toast]);
 
-  const signInAsGuest = async () => {
-    setLoading(true);
-    await signInAnonymously(auth);
-  };
-  
   const signOutUser = async () => {
     await signOut(auth);
+    // The layout will handle the redirect to the sign-in page.
     router.push('/sign-in');
   };
 
@@ -120,14 +113,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
+    // Navigation is handled by the auth layout
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await createUserWithEmailAndPassword(auth, email, password);
+    // Navigation is handled by the auth layout
   };
 
-  const value = { user, loading, signInAsGuest, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };
+  const value = { user, loading, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };
 
   return (
     <AuthContext.Provider value={value}>

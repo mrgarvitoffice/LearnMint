@@ -15,8 +15,6 @@ import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/contexts/AuthContext';
-import { GuestLock } from '@/components/features/auth/GuestLock';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
 
@@ -29,7 +27,6 @@ export default function ChatbotPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', 0.3);
-  const { user } = useAuth();
 
   const {
     speak,
@@ -173,10 +170,6 @@ export default function ChatbotPage() {
   const getCurrentCharacterAIName = () => selectedCharacter === 'gojo' ? 'Gojo AI' : 'Holo AI';
   const getCurrentCharacterAIDescription = () => selectedCharacter === 'gojo' ? 'The Honored One is here to help.' : 'The Wise Wolf of Yoitsu.';
   const getCurrentCharacterAvatarHint = () => selectedCharacter === 'gojo' ? 'Gojo Satoru' : 'Holo wise wolf';
-
-  if (user?.isAnonymous) {
-    return <GuestLock featureName="AI Chatbot" />;
-  }
 
   return (
     <div className="container mx-auto p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col">

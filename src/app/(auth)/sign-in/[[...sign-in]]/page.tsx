@@ -33,17 +33,15 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInWithGoogleRedirect, signInWithEmail, signInAsGuest, loading } = useAuth();
+  const { signInWithGoogleRedirect, signInWithEmail, loading } = useAuth();
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
-  const [isGuestSubmitting, setIsGuestSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
   const handleGoogleSignIn = async () => {
-    // This just initiates the redirect. The result is handled centrally
-    // by the AuthContext when the app reloads.
+    // This just initiates the redirect. The result is handled centrally.
     await signInWithGoogleRedirect();
   };
 
@@ -59,21 +57,8 @@ export default function SignInPage() {
       setIsEmailSubmitting(false);
     }
   };
-  
-  const handleGuestSignIn = async () => {
-    setIsGuestSubmitting(true);
-    try {
-      await signInAsGuest();
-      // Navigation is handled by AuthLayout
-    } catch (error: any) => {
-      console.error("Error signing in as guest:", error);
-      toast({ title: "Guest Sign-In Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsGuestSubmitting(false);
-    }
-  };
 
-  const isAnyLoading = loading || isEmailSubmitting || isGuestSubmitting;
+  const isAnyLoading = loading || isEmailSubmitting;
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -112,10 +97,6 @@ export default function SignInPage() {
           Sign In with Google
         </Button>
         
-        <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isAnyLoading}>
-          {isGuestSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Continue as Guest
-        </Button>
       </CardContent>
       <CardFooter className="justify-center text-sm">
         <p>

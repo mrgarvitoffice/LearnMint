@@ -21,7 +21,7 @@ function NotAuthenticatedScreen() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-6 text-muted-foreground">
-                        Please sign in or continue as a guest to access LearnMint.
+                        Please sign in to access LearnMint.
                     </p>
                     <Button asChild size="lg">
                         <Link href="/sign-in">

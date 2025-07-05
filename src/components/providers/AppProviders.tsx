@@ -9,7 +9,6 @@ import { SettingsProvider } from '@/contexts/SettingsContext';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { QuestProvider } from '@/contexts/QuestContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { GuestUsageProvider } from '@/contexts/GuestUsageContext';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -23,13 +22,11 @@ export function AppProviders({ children }: AppProvidersProps) {
       <QueryClientProvider client={queryClient}>
         <SettingsProvider>
           <AuthProvider>
-            <GuestUsageProvider>
-              <QuestProvider>
-                <SidebarProvider>
-                  {children}
-                </SidebarProvider>
-              </QuestProvider>
-            </GuestUsageProvider>
+            <QuestProvider>
+              <SidebarProvider>
+                {children}
+              </SidebarProvider>
+            </QuestProvider>
           </AuthProvider>
         </SettingsProvider>
       </QueryClientProvider>
