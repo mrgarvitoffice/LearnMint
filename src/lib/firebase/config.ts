@@ -32,14 +32,33 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // --- Startup Verification Log ---
-// This log helps confirm that the Firebase config is being loaded correctly when the server starts.
-// It's a useful check during setup and debugging.
-if (typeof window === 'undefined') { // Only log on the server
-    console.log("✅ Firebase Config Loaded on Server");
-    if (firebaseConfig.apiKey && firebaseConfig.authDomain) {
-      console.log(`🔑 Auth Domain: ${firebaseConfig.authDomain}`);
-      console.log("-> Please ensure this domain is in your Firebase project's 'Authorized domains' list for authentication.");
+// This log helps confirm that the Firebase config is being loaded correctly.
+// It runs on both the server and the client to help with debugging.
+const logConfigVerification = () => {
+    const context = typeof window === 'undefined' ? 'SERVER' : 'CLIENT';
+    console.log(`\n--- Firebase Config Verification (${context}) ---`);
+    if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
+      console.log(`✅ Project ID: ${firebaseConfig.projectId}`);
+      console.log(`✅ Auth Domain: ${firebaseConfig.authDomain}`);
+      console.log("-> Please ensure BOTH domains below are in your Firebase project's 'Authorized domains' list:");
+      console.log(`   1. The Auth Domain itself: ${firebaseConfig.authDomain}`);
+      if (typeof window !== 'undefined') {
+        console.log(`   2. Your app's current domain: ${window.location.hostname}`);
+      }
     } else {
-      console.error("❌ CRITICAL: NEXT_PUBLIC_FIREBASE_API_KEY or NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN is not configured in your .env file!");
+      console.error("❌ CRITICAL: Firebase config is MISSING from your .env file!");
+      console.error("   Please ensure NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, and NEXT_PUBLIC_FIREBASE_API_KEY are set.");
+    }
+    console.log("----------------------------------------\n");
+};
+
+// We want to log this once on the server and once on the client to aid debugging.
+if (typeof window === 'undefined') {
+    logConfigVerification();
+} else {
+    // A bit of a trick to ensure the client-side log only runs once.
+    if (!(window as any).__firebaseConfigLogged) {
+        logConfigVerification();
+        (window as any).__firebaseConfigLogged = true;
     }
 }

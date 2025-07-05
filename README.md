@@ -103,16 +103,18 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Authorize Your Domain in Firebase
 
-To prevent sign-in loops on your deployed development environment (like Cloud Workstations or Gitpod), you **MUST** add your development domain to Firebase's authorized list.
+To prevent sign-in errors like `auth/unauthorized-domain` (where the login popup closes immediately), you **MUST** add your development and authentication domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
-2.  **Select your project**: `learnflow-go3hi`
-3.  Navigate to **Authentication** (in the Build section).
+2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`). This is a critical step.
+3.  Navigate to **Authentication** (in the Build section on the left sidebar).
 4.  Go to the **Settings** tab.
 5.  Select the **Authorized domains** section.
 6.  Click **Add domain**.
-7.  Enter the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
-8.  Click **Add**. Your sign-in should now work correctly on that domain.
+7.  **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+8.  Click **Add domain** again.
+9.  **Add your auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
+10. Click **Add**. Your sign-in should now work correctly on your deployed environment.
 
 ### 3. CRITICAL: Set up Environment Variables using a `.env` file
 
