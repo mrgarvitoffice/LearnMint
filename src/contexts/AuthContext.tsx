@@ -36,6 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
+    // This function only runs for non-anonymous users
+    if (user.isAnonymous) return;
+    
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
     if (!docSnap.exists()) {
@@ -55,7 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Handle user creation here as well to catch all login methods
+        await handleUserCreationInFirestore(firebaseUser);
+      }
       setUser(firebaseUser);
       setLoading(false);
     });
@@ -63,11 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // This handles the result of a sign-in redirect.
     // It runs when the app loads after being redirected back from Google.
     getRedirectResult(auth)
-      .then(async (result) => {
+      .then((result) => {
         if (result?.user) {
-          toast({ title: "Sign-in Successful!", description: "Welcome! Redirecting you to the dashboard..." });
-          await handleUserCreationInFirestore(result.user);
-          router.replace('/');
+          toast({ title: "Sign-in Successful!", description: "Welcome! You will be redirected shortly." });
+          // User creation is handled by onAuthStateChanged now.
+          // The redirect to dashboard is handled by the (auth)/layout.
         }
       })
       .catch((error) => {
@@ -83,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
     return () => unsubscribe();
-  }, [handleUserCreationInFirestore, toast, router]);
+  }, [handleUserCreationInFirestore, toast]);
 
   const signInAsGuest = async () => {
     await signInAnonymously(auth);
@@ -104,8 +111,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await handleUserCreationInFirestore(userCredential.user);
+    await createUserWithEmailAndPassword(auth, email, password);
+    // User creation in Firestore is handled by the onAuthStateChanged listener
   };
 
   const value = { user, loading, signInAsGuest, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };

@@ -12,12 +12,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
+    // If auth is not loading and we have a NON-GUEST user,
+    // they should be on the dashboard, not the sign-in/up page.
+    if (!loading && user && !user.isAnonymous) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
-  if (loading || (!loading && user)) {
+  // While loading, or if a non-guest user is being redirected, show a loader.
+  if (loading || (!loading && user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -26,6 +29,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
   
+  // If not loading, and there's no user OR the user is a guest, show the auth pages.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
         style={{

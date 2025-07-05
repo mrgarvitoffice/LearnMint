@@ -63,7 +63,7 @@ export default function SignUpPage() {
     setIsGoogleSubmitting(true);
     try {
       await signInWithGoogleRedirect();
-      // Redirect is handled by Firebase
+      // Redirect result is handled by the AuthContext
     } catch (error: any) {
       console.error("Error initiating Google sign-up:", error);
       toast({ title: "Sign-up Error", description: error.message, variant: "destructive" });
