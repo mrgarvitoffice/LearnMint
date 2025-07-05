@@ -59,18 +59,28 @@ export default function SignInPage() {
       let title = "Sign-in Failed";
       let description = "An unexpected error occurred. Please try again.";
 
-      if (error.code === 'auth/popup-closed-by-user') {
-        title = "Sign-in Cancelled";
-        description = "The sign-in window was closed. Please try again.";
-      } else if (error.code === 'auth/unauthorized-domain') {
-        title = "Domain Not Authorized";
-        description = `The domain ${window.location.hostname} is not authorized for sign-in. Please add it to the authorized domains list in your Firebase project settings.`;
-      } else if (error.code === 'auth/popup-blocked') {
-        title = "Popup Blocked";
-        description = "Your browser blocked the sign-in popup. Please allow popups for this site and try again.";
+      switch (error.code) {
+        case 'auth/popup-closed-by-user':
+          title = "Sign-in Cancelled";
+          description = "The sign-in window was closed. This can also happen if the domain is not authorized in your Firebase project settings. Please check the console logs and README.";
+          break;
+        case 'auth/unauthorized-domain':
+          title = "Domain Not Authorized";
+          description = `The domain '${window.location.hostname}' is not authorized for sign-in. Please add it to the authorized domains list in your Firebase project settings under Authentication > Settings.`;
+          break;
+        case 'auth/popup-blocked':
+          title = "Popup Blocked";
+          description = "Your browser blocked the sign-in popup. Please allow popups for this site and try again.";
+          break;
+        case 'auth/cancelled-popup-request':
+          title = "Sign-in Cancelled";
+          description = "Multiple sign-in windows were opened. Please try again.";
+          break;
+        default:
+          description = error.message;
       }
 
-      toast({ title, description, variant: "destructive" });
+      toast({ title, description, variant: "destructive", duration: 10000 });
     } finally {
       setIsSubmitting(false);
     }
