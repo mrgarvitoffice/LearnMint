@@ -461,8 +461,11 @@ export default function CustomTestPage() {
     }
   };
   
-  if (user?.isAnonymous && !isTestAllowed) {
-    return <GuestLock featureName="Custom Test Creator" message="You have used your one free custom test generation for today as a guest." />;
+  if (user?.isAnonymous) {
+    if (!isTestAllowed) {
+      return <GuestLock featureName="Custom Test Creator" message="You have used your one free custom test generation for today as a guest." />;
+    }
+    return <GuestLock featureName="Custom Test Creator" />;
   }
 
   if (!testState) {

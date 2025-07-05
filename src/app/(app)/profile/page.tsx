@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,7 +8,6 @@ import { Mail, KeyRound, LogOut, CheckCircle, Brain, Loader2 } from 'lucide-reac
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuests } from '@/contexts/QuestContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { GuestLock } from '@/components/features/auth/GuestLock';
 
