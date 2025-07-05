@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInAnonymously as firebaseSignInAnonymously,
+  signInAnonymously as firebaseSignInAnonymously, // Renamed to avoid conflict
   updateProfile,
   type User,
   GoogleAuthProvider
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Firestore user creation error:", error);
         toast({
             title: "Profile Error",
-            description: "Could not save your profile data due to a database issue. You can still use the app.",
+            description: "Could not save your profile data. You may have restrictive security rules in Firestore.",
             variant: "destructive",
         });
     }
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutUser = async () => {
     await signOut(auth);
-    // The main app layout will handle the redirect to /sign-in
+    router.push('/sign-in');
   };
 
   const signInWithGoogle = async () => {
@@ -112,9 +112,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       await firebaseSignInAnonymously(auth);
+      // onAuthStateChanged will handle the rest
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
+      setLoading(false); // Explicitly set loading to false on error
     }
   };
 
@@ -122,12 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Fetch user data from Firestore to ensure we have the display name
       const userDocRef = doc(db, 'users', userCredential.user.uid);
       const userDoc = await getDoc(userDocRef);
       const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
       
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
+      // onAuthStateChanged will handle loading state and redirects
     } catch (error: any) {
       let description = "An unknown error occurred.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -145,11 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       if (userCredential.user) {
-        // Update the auth profile first
         await updateProfile(userCredential.user, { displayName });
-        // Then handle the Firestore doc creation
         await handleUserCreationInFirestore({ ...userCredential.user, displayName });
-        // Manually update the local user state to be sure
         setUser({ ...userCredential.user, displayName });
         toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
       }
