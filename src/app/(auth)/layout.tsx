@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // This effect runs on mount to handle the redirect result from Google.
-    // We only need to process this once when the auth page loads.
+    // It is safe to run here as this layout only wraps auth pages.
     getRedirectResult(auth)
       .then(async (result) => {
         if (result) {
