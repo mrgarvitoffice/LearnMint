@@ -29,7 +29,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
     isLoading: isTTSLoading,
     setVoicePreference,
   } = useTTS();
-  const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { toast } = useToast();
 
   const [cleanedNotesForTTS, setCleanedNotesForTTS] = useState<string>("");
@@ -67,7 +67,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
     }
     if (isSpeaking && !isPaused) pauseTTS();
     else if (isPaused) resumeTTS();
-    else speak(cleanedNotesForTTS, { priority: 'essential' });
+    else speak(cleanedNotesForTTS, { priority: 'manual' });
   }, [playClickSound, cleanedNotesForTTS, isSpeaking, isPaused, pauseTTS, resumeTTS, speak, toast]);
 
   const handleStopTTS = useCallback(() => {

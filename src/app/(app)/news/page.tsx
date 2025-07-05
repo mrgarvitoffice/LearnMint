@@ -33,7 +33,8 @@ export default function NewsPage() {
   const [appliedFilters, setAppliedFilters] = useState<NewsPageFilters>(initialFilters);
   const pageTitleSpokenRef = useRef(false);
   
-  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
+  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { toast } = useToast();
   
   const {
@@ -143,14 +144,14 @@ export default function NewsPage() {
   const readAllHeadlines = useCallback(() => {
     const headlines = articles.map(a => a.title).filter(Boolean).join('. ');
     if (headlines) {
-        speak(headlines, { priority: 'essential', lang: appliedFilters.language });
+        speak(headlines, { priority: 'manual', lang: appliedFilters.language });
     } else {
         toast({ title: "No Headlines", description: "No news headlines available to read." });
     }
   }, [articles, speak, toast, appliedFilters.language]);
 
   const handlePlaybackControl = () => {
-    playActionSound();
+    playClickSound();
     if (isSpeaking && !isPaused) {
         pauseTTS();
     } else if (isPaused) {
@@ -165,7 +166,7 @@ export default function NewsPage() {
   };
 
   const handleStopTTS = () => {
-    playActionSound();
+    playClickSound();
     cancelTTS();
   };
 

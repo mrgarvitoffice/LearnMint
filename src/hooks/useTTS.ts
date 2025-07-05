@@ -7,7 +7,7 @@ import { useToast } from './use-toast';
 import { APP_LANGUAGES } from '@/lib/constants';
 
 interface SpeakOptions {
-  priority?: 'essential' | 'optional';
+  priority?: 'manual' | 'essential' | 'optional';
   lang?: string; // e.g., 'en', 'es', 'hi'
 }
 
@@ -79,9 +79,11 @@ export function useTTS(): TTSHook {
     if (!text.trim() || !synth) return;
     
     // Respect sound mode settings
-    if (soundMode === 'muted' || (soundMode === 'essential' && priority === 'optional')) {
-      return;
-    }
+    // manual: plays in all modes
+    // essential: plays in full and essential modes
+    // optional: plays only in full mode
+    if (soundMode === 'muted' && priority !== 'manual') return;
+    if (soundMode === 'essential' && priority === 'optional') return;
     
     cancelTTS(); // Stop any current speech
 

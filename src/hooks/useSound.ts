@@ -10,8 +10,8 @@ interface SoundOptions {
 }
 
 export function useSound(soundPath: string, options: SoundOptions = {}) {
-  // Default priority is now 'incidental'. This will make simple UI clicks only play in 'full' mode.
-  // Sounds for important actions should be explicitly set to { priority: 'essential' }.
+  // 'incidental' sounds (like UI clicks) only play in 'full' mode.
+  // 'essential' sounds (like actions) play in 'full' and 'essential' modes.
   const { volume = 0.5, priority = 'incidental' } = options;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [hasLoadError, setHasLoadError] = useState(false); 
@@ -58,17 +58,15 @@ export function useSound(soundPath: string, options: SoundOptions = {}) {
 
   const playSound = useCallback(() => {
     // 'muted': no sounds play.
-    // 'essential': only sounds with 'essential' priority play.
-    // 'full': all sounds play.
-    
     if (soundMode === 'muted') {
       return;
     }
     
+    // 'essential': only sounds with 'essential' priority play.
     if (soundMode === 'essential' && priority === 'incidental') {
-      // This is for sounds that should ONLY play in 'full' mode.
       return;
     }
+    // 'full': all sounds play (no check needed).
 
     if (hasLoadError || !audioRef.current) {
       return;

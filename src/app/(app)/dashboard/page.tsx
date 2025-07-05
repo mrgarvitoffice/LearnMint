@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useTTS } from '@/hooks/useTTS';
 import { useSound } from '@/hooks/useSound';
 import { useRouter } from 'next/navigation';
-import { useSettings } from '@/contexts/SettingsContext';
 import { motion } from 'framer-motion';
 import { Logo } from '@/components/icons/Logo';
 import { NAV_ITEMS } from '@/lib/constants';
@@ -82,7 +81,7 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 export default function DashboardPage() {
     const { t, isReady } = useTranslation();
     const { speak, setVoicePreference } = useTTS();
-    const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+    const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
     const router = useRouter();
     const { quests } = useQuests();
     const { user } = useAuth();
@@ -149,7 +148,7 @@ export default function DashboardPage() {
         if (isReady && !pageTitleSpokenRef.current) {
             const PAGE_TITLE = t('dashboard.welcome');
             const timer = setTimeout(() => {
-                speak(PAGE_TITLE, { priority: 'optional' });
+                speak(PAGE_TITLE, { priority: 'essential' });
                 pageTitleSpokenRef.current = true;
             }, 500);
             return () => clearTimeout(timer);

@@ -85,18 +85,17 @@ export default function CustomTestPage() {
   const [recentTopicsSelectionDone, setRecentTopicsSelectionDone] = useState(false);
   const [notesImagePreview, setNotesImagePreview] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
-  const notesImageInputRef = useRef<HTMLInputElement>(null);
+  const notesFileRef = useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
   const { playSound: playCorrectSound } = useSound('/sounds/correct-answer.mp3', { priority: 'essential' });
   const { playSound: playIncorrectSound } = useSound('/sounds/incorrect-answer.mp3', { priority: 'essential' });
-  const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
 
   const { speak, setVoicePreference } = useTTS();
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition, error: voiceError } = useVoiceRecognition();
-  const { soundMode } = useSettings();
-
+  
   const pageTitleSpokenRef = useRef(false);
   const resultAnnouncementSpokenRef = useRef(false);
 
@@ -141,7 +140,7 @@ export default function CustomTestPage() {
       const percentage = totalPossibleScore > 0 ? Math.max(0, (currentScore / totalPossibleScore) * 100) : 0;
       const calculatedPerformanceTag = getPerformanceTag(percentage);
 
-      if (!resultAnnouncementSpokenRef.current && soundMode === 'full') {
+      if (!resultAnnouncementSpokenRef.current) {
         const ttsMessage = `Test ${autoSubmitted ? "auto-submitted" : "submitted"}! Your score is ${currentScore} out of ${totalPossibleScore}. Your performance is ${calculatedPerformanceTag}!`;
         speak(ttsMessage, { priority: 'essential' });
         resultAnnouncementSpokenRef.current = true;
@@ -156,7 +155,7 @@ export default function CustomTestPage() {
         performanceTag: calculatedPerformanceTag, currentQuestionTimeLeft: undefined,
       };
     });
-  }, [playClickSound, getPerformanceTag, playCorrectSound, playIncorrectSound, speak, toast, soundMode]);
+  }, [playClickSound, getPerformanceTag, playCorrectSound, playIncorrectSound, speak, toast]);
 
   useEffect(() => { setVoicePreference('holo'); }, [setVoicePreference]);
 
@@ -178,15 +177,15 @@ export default function CustomTestPage() {
   
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current && !testState && !isLoading && soundMode === 'full') {
+      if (!pageTitleSpokenRef.current && !testState && !isLoading) {
         speak(PAGE_TITLE, { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [speak, testState, isLoading, soundMode]);
+  }, [speak, testState, isLoading]);
 
-  useEffect(() => { if (isLoading && soundMode === 'full') speak("Creating custom test. Please wait.", { priority: 'essential' }); }, [isLoading, speak, soundMode]);
+  useEffect(() => { if (isLoading) speak("Creating custom test. Please wait.", { priority: 'essential' }); }, [isLoading, speak]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -260,8 +259,8 @@ export default function CustomTestPage() {
     playActionSound();
     setIsLoading(true); setTestState(null);
     resultAnnouncementSpokenRef.current = false;
-    pageTitleSpokenRef.current = true; // Prevent page title from re-announcing
-    if (soundMode === 'full') speak("Creating custom test. Please wait.", { priority: 'essential' });
+    pageTitleSpokenRef.current = true; 
+    speak("Creating custom test. Please wait.", { priority: 'essential' });
 
     let topicForAI = ""; let topicsForSettings: string[] = []; let notesForAI = "";
     if (data.sourceType === 'topic' && data.topics) {
@@ -305,16 +304,16 @@ export default function CustomTestPage() {
           currentQuestionTimeLeft: settings.perQuestionTimer && settings.perQuestionTimer > 0 ? settings.perQuestionTimer : undefined,
         });
         toast({ title: 'Test Generated!', description: 'Your custom test is ready to start.' });
-        if (soundMode === 'full') speak("Test Generated!", { priority: 'essential' });
+        speak("Test Generated!", { priority: 'essential' });
       } else {
         toast({ title: 'No Questions', description: 'The AI returned no questions for this configuration.', variant: 'destructive' });
-        if (soundMode === 'full') speak("Sorry, no questions were returned.", { priority: 'essential' });
+        speak("Sorry, no questions were returned.", { priority: 'essential' });
       }
     } catch (error) {
       console.error('Error generating custom test:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate test. Please try again.';
       toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
-      if (soundMode === 'full') speak("Sorry, there was an error generating the test.", { priority: 'essential' });
+      speak("Sorry, there was an error generating the test.", { priority: 'essential' });
     } finally { setIsLoading(false); }
   };
 
@@ -351,7 +350,7 @@ export default function CustomTestPage() {
     resultAnnouncementSpokenRef.current = false;
     pageTitleSpokenRef.current = true;
 
-    if (soundMode === 'full') speak("Recreating test. Please wait.", { priority: 'essential' });
+    speak("Recreating test. Please wait.", { priority: 'essential' });
     let topicForAI = "";
     if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) topicForAI = originalSettings.topics.join(', ');
     else if (originalSettings.sourceType === 'notes' && originalSettings.notes) topicForAI = `questions based on the following notes: ${originalSettings.notes}`;
@@ -366,10 +365,10 @@ export default function CustomTestPage() {
             timeLeft: originalSettings.timer && originalSettings.timer > 0 ? originalSettings.timer * 60 : undefined,
             currentQuestionTimeLeft: originalSettings.perQuestionTimer && originalSettings.perQuestionTimer > 0 ? originalSettings.perQuestionTimer : undefined,
           });
-          if (soundMode === 'full') speak("Test ready for retake!", { priority: 'essential' });
+          speak("Test ready for retake!", { priority: 'essential' });
         } else {
           toast({ title: 'Retake Error', description: 'Could not regenerate questions for retake.', variant: 'destructive' });
-          if (soundMode === 'full') speak("Sorry, could not regenerate the test.", { priority: 'essential' });
+          speak("Sorry, could not regenerate the test.", { priority: 'essential' });
         }
       })
       .catch(error => { console.error('Error retaking test:', error); const errorMessage = error instanceof Error ? error.message : 'Failed to retake test.'; toast({ title: 'Error', description: errorMessage, variant: 'destructive' }); })
@@ -396,6 +395,11 @@ export default function CustomTestPage() {
 
   const handleMicClick = () => { playClickSound(); if (isListening) stopListening(); else startListening(); };
 
+  useEffect(() => {
+    if (transcript && sourceType === 'topic') setValue('topics', transcript);
+    if (transcript && sourceType === 'notes') setValue('notes', transcript);
+  }, [transcript, sourceType, setValue]);
+
   const handleRecentTopicChange = (topic: string) => {
     playClickSound(); const currentSelected = selectedRecentTopicsWatch || []; let newSelected: string[];
     if (currentSelected.includes(topic)) newSelected = currentSelected.filter(t => t !== topic);
@@ -406,13 +410,41 @@ export default function CustomTestPage() {
     setValue('selectedRecentTopics', newSelected, { shouldValidate: true });
   };
   
-  const handleRemoveFile = () => {
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     playClickSound();
+    handleRemoveFile(false); // Clear previous file state without sound
+
+    if (file.type.startsWith('image/')) {
+        if (file.size > 2 * 1024 * 1024) { toast({ title: "Image Too Large", description: "Max 2MB.", variant: "destructive" }); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => { setNotesImagePreview(reader.result as string); setValue('notesImage', reader.result as string); };
+        reader.readAsDataURL(file);
+    } else if (file.type === 'application/pdf') {
+        if (file.size > 5 * 1024 * 1024) { toast({ title: "PDF Too Large", description: "Max 5MB.", variant: "destructive" }); return; }
+        setPdfFileName(file.name);
+        try {
+            const text = await extractTextFromPdf(file);
+            setValue('notes', text);
+            toast({ title: "PDF Processed", description: "Text from PDF has been added to the notes field." });
+        } catch(err) {
+            toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
+            setPdfFileName(null);
+        }
+    } else {
+        toast({ title: "Unsupported File", description: "Please upload an image or PDF.", variant: "default" });
+    }
+  };
+
+  const handleRemoveFile = (withSound = true) => {
+    if (withSound) playClickSound();
     setNotesImagePreview(null);
     setValue('notesImage', undefined);
     setPdfFileName(null);
-    if (notesImageInputRef.current) {
-      notesImageInputRef.current.value = "";
+    if (notesFileRef.current) {
+      notesFileRef.current.value = "";
     }
   };
 
@@ -466,7 +498,7 @@ export default function CustomTestPage() {
                    <div className="flex gap-2">
                     <Textarea id="notes" placeholder="Paste your study notes here (min 50 characters)..." {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
                     <div className="flex flex-col gap-2">
-                      <Button type="button" variant="outline" size="icon" onClick={() => notesImageInputRef.current?.click()} title="Attach Image or PDF">
+                      <Button type="button" variant="outline" size="icon" onClick={() => notesFileRef.current?.click()} title="Attach Image or PDF">
                         <ImageIcon className="w-5 h-5" />
                       </Button>
                       {browserSupportsSpeechRecognition && (
@@ -481,7 +513,7 @@ export default function CustomTestPage() {
                   {notesImagePreview && (
                     <div className="relative w-20 h-20 mt-2">
                       <Image src={notesImagePreview} alt="Notes preview" layout="fill" objectFit="cover" className="rounded-md" />
-                      <Button type="button" variant="ghost" size="icon" onClick={handleRemoveFile} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
+                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
                         <XCircle className="w-4 h-4" />
                       </Button>
                     </div>
@@ -490,12 +522,12 @@ export default function CustomTestPage() {
                     <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
                         <FileText className="w-5 h-5 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground truncate flex-1">{pdfFileName}</span>
-                        <Button type="button" variant="ghost" size="icon" onClick={handleRemoveFile} className="h-6 w-6 rounded-full">
+                        <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
                             <XCircle className="w-4 h-4 text-destructive/70" />
                         </Button>
                     </div>
                   )}
-                  <input type="file" ref={notesImageInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
+                  <input type="file" ref={notesFileRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
                   {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
                 </div>
               )}

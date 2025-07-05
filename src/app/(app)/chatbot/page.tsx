@@ -9,7 +9,7 @@ import { ChatInput } from '@/components/features/chatbot/ChatInput';
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { gojoChatbot, type GojoChatbotInput } from '@/ai/flows/ai-chatbot';
 import { holoChatbot, type HoloChatbotInput } from '@/ai/flows/holo-chatbot';
-import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2 } from 'lucide-react';
+import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
@@ -19,6 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
+const PDF_TRUNCATION_LIMIT = 5000; // Character limit for PDF content sent to AI
 
 type ChatbotCharacter = 'gojo' | 'holo';
 
@@ -29,7 +30,7 @@ export default function ChatbotPage() {
   const [selectedCharacter, setSelectedCharacter] = useState<ChatbotCharacter>('gojo');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', 0.3);
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
 
   const {
     speak,
@@ -44,14 +45,13 @@ export default function ChatbotPage() {
   const currentSpokenMessageRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // If the user is a guest, don't initialize the character chat or play sounds.
+    // This effect runs when the selected character or user status changes.
     if (user?.isAnonymous) {
       setMessages([]);
       cancelTTS();
-      return;
+      return; // Do not proceed for guests
     }
 
-    // This effect runs when the selected character changes for a logged-in user.
     cancelTTS();
     setVoicePreference(selectedCharacter);
 
@@ -66,7 +66,7 @@ export default function ChatbotPage() {
     
     setMessages([initialGreetingMessage]);
     
-    // Speak the greeting automatically
+    // Speak the greeting automatically with 'essential' priority
     currentSpokenMessageRef.current = greetingText;
     speak(greetingText, { priority: 'essential' });
 
@@ -89,8 +89,8 @@ export default function ChatbotPage() {
     }
   }, [messages]);
 
-  const handleSendMessage = async (messageText: string, image?: string, pdfFileName?: string) => {
-    if (!messageText.trim() && !image) return;
+  const handleSendMessage = async (messageText: string, image?: string, pdfContent?: { name: string, text: string }) => {
+    if (!messageText.trim() && !image && !pdfContent) return;
     
     cancelTTS(); // Stop any currently playing speech before sending a new message.
 
@@ -99,7 +99,7 @@ export default function ChatbotPage() {
       role: 'user', 
       content: messageText, 
       image: image,
-      pdfFileName: pdfFileName,
+      pdfFileName: pdfContent?.name,
       timestamp: new Date() 
     };
     const typingIndicatorMessage = selectedCharacter === 'gojo'
@@ -111,7 +111,17 @@ export default function ChatbotPage() {
     setIsAiResponding(true);
 
     try {
-      const input: GojoChatbotInput | HoloChatbotInput = { message: messageText };
+      let messageForAI = messageText;
+      if (pdfContent) {
+        let truncatedPdfText = pdfContent.text;
+        if (pdfContent.text.length > PDF_TRUNCATION_LIMIT) {
+          truncatedPdfText = `${pdfContent.text.substring(0, PDF_TRUNCATION_LIMIT)}... (content truncated)`;
+          toast({ title: "PDF Content Truncated", description: "The provided PDF was long and has been truncated to ensure a timely response.", variant: 'default' });
+        }
+        messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;
+      }
+
+      const input: GojoChatbotInput | HoloChatbotInput = { message: messageForAI };
       if (image) input.image = image;
 
       const response = selectedCharacter === 'gojo'
@@ -158,7 +168,7 @@ export default function ChatbotPage() {
     }
     
     if (textToPlay) {
-        speak(textToPlay, { priority: 'essential' });
+        speak(textToPlay, { priority: 'manual' });
     }
   };
 

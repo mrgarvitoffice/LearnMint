@@ -34,8 +34,8 @@ function AudioFlashcardsGenerator() {
   const [discussionAudio, setDiscussionAudio] = useState<string | null>(null);
   
   const { toast } = useToast();
-  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3');
-  const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition } = useVoiceRecognition();
   const { speak, cancelTTS, isSpeaking, isPaused, pauseTTS, resumeTTS, isLoading: isTTSLoading } = useTTS();
 
@@ -89,10 +89,9 @@ function AudioFlashcardsGenerator() {
   useEffect(() => { if (transcript) setTopic(transcript); }, [transcript]);
 
   const handleReadAllFlashcards = () => {
-    playClickSound();
     if (!generatedContent || generatedContent.flashcards.length === 0) return;
     const textToRead = generatedContent.flashcards.map(fc => `Term: ${fc.term}. Definition: ${fc.definition}`).join('\n\n');
-    speak(textToRead, { priority: 'essential' });
+    speak(textToRead, { priority: 'manual' });
   }
   
   const handleGenerateDiscussion = () => {
@@ -103,6 +102,7 @@ function AudioFlashcardsGenerator() {
   }
 
   const handlePlaybackControl = () => {
+    playClickSound();
     if (isSpeaking && !isPaused) pauseTTS();
     else if (isPaused) resumeTTS();
     else handleReadAllFlashcards();
@@ -153,7 +153,7 @@ function AudioFlashcardsGenerator() {
                 {isSpeaking && !isPaused ? "Pause" : isPaused ? "Resume" : "Read Aloud"}
               </Button>
               {(isSpeaking || isPaused) && (
-                <Button onClick={cancelTTS} variant="ghost" size="icon"><StopCircle className="h-5 w-5" /></Button>
+                <Button onClick={() => { playClickSound(); cancelTTS() }} variant="ghost" size="icon"><StopCircle className="h-5 w-5" /></Button>
               )}
                <Button onClick={handleGenerateDiscussion} disabled={isGeneratingDiscussion || isLoading}>
                 {isGeneratingDiscussion ? <Loader2 className="h-4 w-4 mr-2 animate-spin"/> : <Users className="h-4 w-4 mr-2"/>}
@@ -192,7 +192,8 @@ function AudioSummarizer({
 }) {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3');
+  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const [generatedContent, setGeneratedContent] = useState<GenerateAudioSummaryOutput | null>(null);
   const [discussionAudio, setDiscussionAudio] = useState<string | null>(null);
 
@@ -230,7 +231,7 @@ function AudioSummarizer({
   
   const handleReadAloud = () => {
     if (!generatedContent?.summary) return;
-    speak(generatedContent.summary, {priority: 'essential'});
+    speak(generatedContent.summary, {priority: 'manual'});
   }
   
   const handleGenerateDiscussion = () => {
@@ -240,6 +241,7 @@ function AudioSummarizer({
   };
   
   const handlePlaybackControl = () => {
+    playClickSound();
     if (isSpeaking && !isPaused) pauseTTS();
     else if (isPaused) resumeTTS();
     else handleReadAloud();
@@ -270,7 +272,7 @@ function AudioSummarizer({
                 {isSpeaking && !isPaused ? "Pause" : isPaused ? "Resume" : "Read Aloud"}
               </Button>
                {(isSpeaking || isPaused) && (
-                <Button onClick={cancelTTS} variant="ghost" size="icon"><StopCircle className="h-5 w-5" /></Button>
+                <Button onClick={() => { playClickSound(); cancelTTS() }} variant="ghost" size="icon"><StopCircle className="h-5 w-5" /></Button>
               )}
                <Button onClick={handleGenerateDiscussion} disabled={isGeneratingDiscussion || isLoading}>
                 {isGeneratingDiscussion ? <Loader2 className="h-4 w-4 mr-2 animate-spin"/> : <Users className="h-4 w-4 mr-2"/>}
