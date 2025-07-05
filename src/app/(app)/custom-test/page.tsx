@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { generateQuizAction } from '@/lib/actions';
 import type { TestSettings, QuizQuestion as TestQuestionType, GenerateQuizQuestionsOutput } from '@/lib/types';
-import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon, FileText } from 'lucide-react';
+import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ReactMarkdown from 'react-markdown';
@@ -26,9 +26,7 @@ import { useTTS } from '@/hooks/useTTS';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSettings } from '@/contexts/SettingsContext';
-import { extractTextFromPdf } from '@/lib/utils';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
 const MAX_RECENT_TOPICS_SELECT = 3;
@@ -403,7 +401,7 @@ export default function CustomTestPage() {
     setValue('selectedRecentTopics', newSelected, { shouldValidate: true });
   };
 
-  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     playClickSound();
     const file = e.target.files?.[0];
     if (file) {
@@ -418,23 +416,8 @@ export default function CustomTestPage() {
           setValue('notesImage', reader.result as string);
         };
         reader.readAsDataURL(file);
-      } else if (file.type === 'application/pdf') {
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-          toast({ title: "PDF too large", description: "Please upload a PDF smaller than 5MB.", variant: "destructive" });
-          return;
-        }
-        toast({ title: "Processing PDF...", description: "Extracting text from your document." });
-        try {
-          const text = await extractTextFromPdf(file);
-          setValue('notes', text);
-          setNotesImagePreview(null);
-          setValue('notesImage', undefined);
-          toast({ title: "PDF Processed!", description: "Text has been placed in the notes field." });
-        } catch (error) {
-          toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
-        }
       } else {
-        toast({ title: "Unsupported File", description: "This feature currently supports Images and PDFs.", variant: "default" });
+        toast({ title: "Unsupported File", description: "This feature currently supports Image uploads.", variant: "default" });
       }
     }
   };
@@ -488,16 +471,9 @@ export default function CustomTestPage() {
                    <div className="flex gap-2">
                     <Textarea id="notes" placeholder="Paste your study notes here (min 50 characters)..." {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
                     <div className="flex flex-col gap-2">
-                     <TooltipProvider>
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <Button type="button" variant="outline" size="icon" onClick={() => notesImageInputRef.current?.click()} title="Attach Image or PDF">
-                             <ImageIcon className="w-5 h-5" />
-                           </Button>
-                         </TooltipTrigger>
-                         <TooltipContent><p>Attach Image or PDF</p></TooltipContent>
-                       </Tooltip>
-                     </TooltipProvider>
+                      <Button type="button" variant="outline" size="icon" onClick={() => notesImageInputRef.current?.click()} title="Attach Image">
+                        <ImageIcon className="w-5 h-5" />
+                      </Button>
                       {browserSupportsSpeechRecognition && (
                         <Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening}>
                           <Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} />
@@ -515,7 +491,7 @@ export default function CustomTestPage() {
                       </Button>
                     </div>
                   )}
-                  <input type="file" ref={notesImageInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
+                  <input type="file" ref={notesImageInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
                   {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
                 </div>
               )}

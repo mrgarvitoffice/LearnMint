@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If auth is not loading and we have a user, they should be on the dashboard.
+    // If auth is not loading and we have a user (anonymous or permanent), they should be on the dashboard.
     // This handles redirecting after a successful sign-in or if a logged-in user visits an auth page.
     if (!loading && user) {
       router.replace('/');

@@ -60,6 +60,24 @@ export default function SignUpPage() {
       </CardHeader>
       <CardContent>
         {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
+        <div className="space-y-2">
+            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
+              <GoogleIcon />
+              Sign Up with Google
+            </Button>
+            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
+                <User className="mr-2 h-4 w-4" />
+                Continue as Guest
+            </Button>
+        </div>
+
+        <div className="relative my-4">
+          <Separator className="my-1" />
+          <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+            OR
+          </p>
+        </div>
+        
         <form onSubmit={handleSubmit(handleEmailSignUp)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -82,23 +100,6 @@ export default function SignUpPage() {
           </Button>
         </form>
 
-        <div className="relative my-4">
-          <Separator className="my-1" />
-          <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-            OR
-          </p>
-        </div>
-        
-        <div className="space-y-2">
-            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
-              <GoogleIcon />
-              Sign Up with Google
-            </Button>
-            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
-                <User className="mr-2 h-4 w-4" />
-                Continue as Guest
-            </Button>
-        </div>
       </CardContent>
       <CardFooter className="justify-center text-sm">
         <p>

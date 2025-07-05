@@ -63,9 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        if (!firebaseUser.isAnonymous) {
-          await handleUserCreationInFirestore(firebaseUser);
-        }
+        await handleUserCreationInFirestore(firebaseUser);
         setUser(firebaseUser);
       } else {
         setUser(null);
@@ -87,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the rest, including loading state
+      // onAuthStateChanged will handle the rest, including loading state and navigation
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       let description = error.message;
@@ -98,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (error.code === 'auth/popup-blocked') {
         description = "Popup blocked by browser. Please allow popups for this site and try again.";
       }
-      toast({ title: "Google Sign-in Failed", description, variant: "destructive" });
+      toast({ title: "Google Sign-in Failed", description, variant: "destructive", duration: 8000 });
       setLoading(false); // Reset loading state on error
     }
   };

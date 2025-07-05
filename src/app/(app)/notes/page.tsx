@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Mic, FileSignature, Loader2, AlertTriangle, ImageIcon, XCircle, FileText } from "lucide-react"; 
+import { GraduationCap, Mic, FileSignature, Loader2, AlertTriangle, ImageIcon, XCircle } from "lucide-react"; 
 import Image from 'next/image';
 
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
@@ -19,9 +19,7 @@ import { useQuests } from '@/contexts/QuestContext';
 
 import { generateNotesAction } from "@/lib/actions";
 import type { CombinedStudyMaterialsOutput } from '@/lib/types'; 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTranslation } from '@/hooks/useTranslation';
-import { extractTextFromPdf } from '@/lib/utils';
 
 const RECENT_TOPICS_LS_KEY = "learnmint-recent-topics";
 const LOCALSTORAGE_KEY_PREFIX = "learnmint-study-";
@@ -41,7 +39,6 @@ export default function GenerateNotesPage() {
   const [notesError, setNotesError] = useState<string | null>(null);
   const [quizError, setQuizError] = useState<string | null>(null);
   const [flashcardsError, setFlashcardsError] = useState<string | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
 
   const { speak, setVoicePreference } = useTTS();
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition, error: voiceError } = useVoiceRecognition();
@@ -87,7 +84,6 @@ export default function GenerateNotesPage() {
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     playClickSound();
-    setFileError(null);
     const file = e.target.files?.[0];
     if (file) {
       if (file.type.startsWith('image/')) {
@@ -101,25 +97,8 @@ export default function GenerateNotesPage() {
           setImageData(reader.result as string);
         };
         reader.readAsDataURL(file);
-      } else if (file.type === 'application/pdf') {
-         if (file.size > 5 * 1024 * 1024) { // 5MB limit for PDFs
-          toast({ title: "PDF too large", description: "Please upload a PDF smaller than 5MB.", variant: "destructive" });
-          return;
-        }
-        toast({ title: "Processing PDF", description: "Extracting text from your document, please wait..." });
-        try {
-          const text = await extractTextFromPdf(file);
-          setTopic(text); // Set the extracted text into the topic input
-          setImagePreview(null); // Clear any image preview
-          setImageData(null);
-          toast({ title: "PDF Processed!", description: "Text has been extracted and placed in the topic field." });
-        } catch (error) {
-          console.error("Error parsing PDF:", error);
-          setFileError("Could not extract text from the PDF. The file might be corrupt or incompatible.");
-          toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
-        }
       } else {
-        toast({ title: "Unsupported File", description: "This feature currently supports Images and PDFs.", variant: "default" });
+        toast({ title: "Unsupported File", description: "This feature currently supports Image uploads.", variant: "default" });
       }
     }
   };
@@ -241,17 +220,10 @@ export default function GenerateNotesPage() {
               aria-label="Study Topic"
               onKeyDown={(e) => e.key === 'Enter' && !isLoadingAll && topic.trim().length >=3 && handleGenerateAllMaterials()}
             />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')}>
-                    <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent><p>Attach Image or PDF</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
+            <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')}>
+              <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+            </Button>
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
              {browserSupportsSpeechRecognition && (
               <Button
                 variant="outline"
@@ -265,7 +237,6 @@ export default function GenerateNotesPage() {
               </Button>
             )}
           </div>
-          {fileError && <p className="text-sm text-destructive text-center">{fileError}</p>}
           
           {imagePreview && (
             <div className="relative w-28 h-28 mx-auto">
