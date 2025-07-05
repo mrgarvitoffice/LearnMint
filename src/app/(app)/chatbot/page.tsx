@@ -44,9 +44,14 @@ export default function ChatbotPage() {
   const currentSpokenMessageRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // This effect runs when the selected character changes.
-    // It cancels any ongoing speech, sets the new voice preference,
-    // and sends the character's initial greeting message.
+    // If the user is a guest, don't initialize the character chat or play sounds.
+    if (user?.isAnonymous) {
+      setMessages([]);
+      cancelTTS();
+      return;
+    }
+
+    // This effect runs when the selected character changes for a logged-in user.
     cancelTTS();
     setVoicePreference(selectedCharacter);
 
@@ -65,7 +70,7 @@ export default function ChatbotPage() {
     currentSpokenMessageRef.current = greetingText;
     speak(greetingText, { priority: 'essential' });
 
-  }, [selectedCharacter, cancelTTS, setVoicePreference, setMessages, speak]);
+  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak, setMessages]);
 
 
   useEffect(() => {

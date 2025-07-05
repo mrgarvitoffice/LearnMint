@@ -23,6 +23,7 @@ function GoogleIcon() {
 }
 
 const formSchema = z.object({
+  displayName: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string(),
@@ -41,7 +42,7 @@ export default function SignUpPage() {
   });
 
   const handleEmailSignUp = async (data: FormData) => {
-    await signUpWithEmail(data.email, data.password);
+    await signUpWithEmail(data.email, data.password, data.displayName);
   };
   
   return (
@@ -72,6 +73,11 @@ export default function SignUpPage() {
         </div>
         
         <form onSubmit={handleSubmit(handleEmailSignUp)} className="space-y-4">
+           <div className="space-y-2">
+            <Label htmlFor="displayName">Display Name</Label>
+            <Input id="displayName" type="text" placeholder="Your Name" {...register('displayName')} disabled={loading} />
+            {errors.displayName && <p className="text-sm text-destructive">{errors.displayName.message}</p>}
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={loading} />

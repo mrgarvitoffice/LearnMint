@@ -10,6 +10,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInAnonymously as firebaseSignInAnonymously,
+  updateProfile,
   type User,
   GoogleAuthProvider
 } from 'firebase/auth';
@@ -24,7 +25,7 @@ interface AuthContextType {
   signOutUser: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signInAnonymously: () => Promise<void>;
 }
 
@@ -73,15 +74,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getRedirectResult(auth)
       .then(async (result) => {
         if (result) {
-          toast({ title: "Signed In", description: `Welcome back, ${result.user.displayName || 'user'}.` });
+          const displayName = result.user.displayName || 'user';
+          toast({ title: `Hi, ${displayName}!`, description: `Welcome back.` });
           // The onAuthStateChanged listener will handle setting user and firestore creation.
         }
       })
       .catch((error) => {
         console.error("Auth Redirect Error:", error);
         let description = "There was an issue with the sign-in redirect.";
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          description = "An account already exists with this email address. Please sign in with the original method."
+        const hostname = typeof window !== 'undefined' ? window.location.hostname : 'your-domain.com';
+        const authDomain = auth.config.authDomain;
+
+        if (error.code === 'auth/unauthorized-domain') {
+            description = "This domain is not authorized for sign-in. Please add it to your Firebase project's authorized domains list.";
+            console.error("--- DOMAIN AUTHORIZATION ERROR ---");
+            console.error(`You MUST add the following domains to the Firebase Auth 'Authorized domains' list:`);
+            console.error(`1. Your app's hostname: %c${hostname}`, "color: yellow;");
+            console.error(`2. Your project's authDomain: %c${authDomain}`, "color: yellow;");
+            console.error("3. If developing locally, also add: %clocalhost", "color: yellow;");
+            console.error("--- END ---");
+        } else if (error.code === 'auth/account-exists-with-different-credential') {
+          description = "An account already exists with this email. Please sign in with the original method."
         }
         toast({ title: "Sign-in Error", description, variant: "destructive" });
         setLoading(false);
@@ -93,13 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutUser = async () => {
     await signOut(auth);
-    router.push('/sign-in');
+    // Let the layout handle the redirect
   };
 
   const signInWithGoogle = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
-    // Use signInWithRedirect which is more robust than popups.
     await signInWithRedirect(auth, provider);
   };
   
@@ -118,7 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const displayName = userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'User';
+      toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
     } catch (error: any) {
       let description = "An unknown error occurred.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -131,10 +145,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  const signUpWithEmail = async (email: string, password: string, displayName: string) => {
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, { displayName });
+        await handleUserCreationInFirestore(userCredential.user);
+        setUser({ ...userCredential.user, displayName });
+        toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
+      }
     } catch (error: any) {
       let description = "An unknown error occurred.";
        if (error.code === 'auth/email-already-in-use') {
