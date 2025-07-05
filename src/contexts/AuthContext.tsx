@@ -3,19 +3,16 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { 
-  onAuthStateChanged, 
-  GoogleAuthProvider, 
+  onAuthStateChanged,
   signOut, 
   signInAnonymously,
-  type User,
-  signInWithRedirect
+  type User
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
   signInAsGuest: () => Promise<void>;
   signOutUser: () => Promise<void>;
 }
@@ -26,37 +23,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // This is the core listener. It's the single source of truth for auth state.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      setLoading(false); // Now we know the user's status for sure.
+      setLoading(false);
     });
-
-    // Cleanup the listener on component unmount
     return () => unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    // The redirect process result is handled by the (auth) layout
-    await signInWithRedirect(auth, provider);
-  };
-
   const signInAsGuest = async () => {
-    // onAuthStateChanged will automatically update the user state.
     await signInAnonymously(auth);
   };
 
   const signOutUser = async () => {
     await signOut(auth);
-    // onAuthStateChanged will set user to null.
   };
   
   const contextValue = {
     user,
     loading,
-    signInWithGoogle,
     signInAsGuest,
     signOutUser,
   };

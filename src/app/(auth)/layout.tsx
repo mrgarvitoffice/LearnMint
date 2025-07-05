@@ -4,64 +4,22 @@
 import type { ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
-import { getRedirectResult } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { useToast } from '@/hooks/use-toast';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
-  // This effect runs once on mount to handle the result from Google Sign-In.
   useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          // User has successfully signed in with Google.
-          toast({ title: "Sign-in successful!", description: "Welcome to LearnMint." });
-          const userRef = doc(db, 'users', result.user.uid);
-          const docSnap = await getDoc(userRef);
-          if (!docSnap.exists()) {
-            // Create user document in Firestore if it's a new user.
-            await setDoc(userRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              displayName: result.user.displayName,
-              photoURL: result.user.photoURL,
-              createdAt: serverTimestamp(),
-            });
-          }
-          // The onAuthStateChanged listener will update the global user state.
-          // The effect below will handle the final redirect to the main app.
-        }
-      })
-      .catch((error) => {
-        console.error("Google Redirect Result Error:", error);
-        toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in. Please try again.", variant: "destructive" });
-      })
-      .finally(() => {
-        // We're done processing the potential redirect.
-        setIsProcessingRedirect(false);
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on component mount.
-
-  // This effect handles redirecting logged-in users away from auth pages.
-  useEffect(() => {
-    // Wait for both the initial auth check and redirect processing to complete.
-    if (!loading && !isProcessingRedirect && user) {
-      // User is logged in, redirect them to the main app.
+    // If auth state is not loading and a non-guest user exists, redirect them away from auth pages.
+    if (!loading && user && !user.isAnonymous) {
       router.replace('/');
     }
-  }, [user, loading, isProcessingRedirect, router]);
+  }, [user, loading, router]);
 
-  // Show a spinner while the initial auth state and any redirect results are being processed.
-  if (loading || isProcessingRedirect) {
+  // Show a loading spinner while we're checking the auth state, or if a user is found and we're about to redirect.
+  if (loading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -70,7 +28,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
   
-  // If not loading and no user, it's safe to render the sign-in/sign-up page.
+  // If not loading and no user (or a guest user), render the children (sign-in/sign-up pages).
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
          style={{

@@ -27,20 +27,20 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 );
 
 export default function ProfilePage() {
-  const { user, loading: authLoading, signOutUser } = useAuth();
+  const { user, loading, signOutUser } = useAuth();
   const { quests } = useQuests();
   const { t } = useTranslation();
   const router = useRouter();
 
   useEffect(() => {
     // Wait until auth state is resolved before redirecting.
-    if (!authLoading && (!user || user.isAnonymous)) {
+    if (!loading && (!user || user.isAnonymous)) {
       router.replace('/sign-in');
     }
-  }, [user, authLoading, router]);
+  }, [user, loading, router]);
 
   // Show a loading screen while auth is resolving or if the user is a guest about to be redirected.
-  if (authLoading || !user || user.isAnonymous) {
+  if (loading || !user || user.isAnonymous) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
