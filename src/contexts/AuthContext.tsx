@@ -88,15 +88,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // onAuthStateChanged will handle the rest, including loading state and navigation
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
+      
+      console.error("--- GOOGLE SIGN-IN FAILED: DOMAIN AUTHORIZATION CHECK ---");
+      console.error("To fix this, you MUST add the following two domains to your Firebase project's 'Authorized domains' list:");
+      if (typeof window !== 'undefined') {
+        console.error(`1. Your App's Domain: %c${window.location.hostname}`, 'font-weight: bold; color: yellow;');
+      }
+      if (auth.config.authDomain) {
+        console.error(`2. Your Firebase Auth Domain: %c${auth.config.authDomain}`, 'font-weight: bold; color: yellow;');
+      }
+      console.error("Please go to the Firebase Console > Authentication > Settings > Authorized domains and add these exact values.");
+      console.error("--- END DOMAIN CHECK ---");
+
+
       let description = error.message;
       if (error.code === 'auth/popup-closed-by-user') {
-        description = "The sign-in popup was closed before completion. This can happen if the application's domain is not authorized in the Firebase console.";
+        description = "The sign-in popup was closed before completion. This often happens if the application's domain is not authorized in the Firebase console. Please check the console logs for the exact domains to add.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' to the authorized domains in your Firebase console. See the README for a step-by-step guide.`;
+        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' and '${auth.config.authDomain}' to the authorized domains in your Firebase console. See the README for a step-by-step guide.`;
       } else if (error.code === 'auth/popup-blocked') {
         description = "Popup blocked by browser. Please allow popups for this site and try again.";
       }
-      toast({ title: "Google Sign-in Failed", description, variant: "destructive", duration: 8000 });
+      toast({ title: "Google Sign-in Failed", description, variant: "destructive", duration: 10000 });
       setLoading(false); // Reset loading state on error
     }
   };

@@ -104,7 +104,7 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
 
-To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in popup closes immediately), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
+To prevent Google Sign-In errors like `auth/unauthorized-domain` or `auth/popup-closed-by-user` (where the sign-in popup closes immediately), you **MUST** enable the Google provider and add your domains to Firebase's authorized list. This is the most common setup issue.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`).
@@ -113,12 +113,17 @@ To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign
 5.  Click **Add new provider** and select **Google**.
 6.  **Enable** the Google provider and set a project public-facing email. Click **Save**.
 7.  While still in Authentication, go to the **Settings** tab.
-8.  Select the **Authorized domains** section.
+8.  Select the **Authorized domains** section. You will see a list of domains.
 9.  Click **Add domain** and add `localhost` for local development.
-10. Click **Add domain** again and add your **Firebase auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
+10. Click **Add domain** again and add your **Firebase auth domain**. This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
 11. If you are deploying or using a cloud workstation, click **Add domain** again and add your **cloud development domain** (e.g., `cluster-....cloudworkstations.dev`). **Do not include `https://` or port numbers.**
 
-Your Google sign-in should now work correctly. If it still fails, double-check that you have entered the domains exactly as shown, without any typos.
+Your list of authorized domains should now contain at least two (and possibly three) entries similar to this:
+*   `localhost`
+*   `learnflow-go3hi.firebaseapp.com`
+*   `your-cloud-workstation-domain.dev` (if applicable)
+
+If sign-in still fails, open your browser's developer console. The application will log the exact domains that need to be authorized when a sign-in error occurs. Double-check that these are present in your list without any typos.
 
 ### 3. CRITICAL: Set up Environment Variables using a `.env` file
 
