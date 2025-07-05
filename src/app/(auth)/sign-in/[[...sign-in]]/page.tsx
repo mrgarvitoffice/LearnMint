@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,7 +33,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInWithGoogleRedirect, signInWithEmail, loading } = useAuth();
+  const { signInWithGoogleRedirect, signInWithEmail, signInAnonymously, loading } = useAuth();
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -41,15 +41,17 @@ export default function SignInPage() {
   });
 
   const handleGoogleSignIn = async () => {
-    // This just initiates the redirect. The result is handled centrally.
     await signInWithGoogleRedirect();
+  };
+  
+  const handleGuestSignIn = async () => {
+    await signInAnonymously();
   };
 
   const handleEmailSignIn = async (data: FormData) => {
     setIsEmailSubmitting(true);
     try {
       await signInWithEmail(data.email, data.password);
-      // Success navigation is handled by the AuthLayout
     } catch (error: any) {
       console.error("Error signing in with email:", error);
       toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
@@ -92,10 +94,17 @@ export default function SignInPage() {
           </p>
         </div>
 
-        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
-          <GoogleIcon />
-          Sign In with Google
-        </Button>
+        <div className="space-y-2">
+            <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
+              <GoogleIcon />
+              Sign In with Google
+            </Button>
+            
+            <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isAnyLoading}>
+                <User className="mr-2 h-4 w-4" />
+                Continue as Guest
+            </Button>
+        </div>
         
       </CardContent>
       <CardFooter className="justify-center text-sm">

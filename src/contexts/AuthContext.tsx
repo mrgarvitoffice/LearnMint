@@ -9,6 +9,7 @@ import {
   getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInAnonymously,
   type User
 } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
@@ -23,6 +24,7 @@ interface AuthContextType {
   signInWithGoogleRedirect: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signInAnonymously: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,7 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setLoading(true);
       if (firebaseUser) {
-        await handleUserCreationInFirestore(firebaseUser);
+        if (!firebaseUser.isAnonymous) {
+          await handleUserCreationInFirestore(firebaseUser);
+        }
         setUser(firebaseUser);
       } else {
         setUser(null);
@@ -95,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutUser = async () => {
     await signOut(auth);
-    // The layout will handle the redirect to the sign-in page.
     router.push('/sign-in');
   };
 
@@ -109,20 +112,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     }
   };
+  
+  const signInAnonymously = async () => {
+    setLoading(true);
+    try {
+      await signInAnonymously(auth);
+    } catch (error: any) {
+      console.error("Error signing in anonymously:", error);
+      toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
+      setLoading(false);
+    }
+  };
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
-    // Navigation is handled by the auth layout
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await createUserWithEmailAndPassword(auth, email, password);
-    // Navigation is handled by the auth layout
   };
 
-  const value = { user, loading, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };
+  const value = { user, loading, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail, signInAnonymously };
 
   return (
     <AuthContext.Provider value={value}>

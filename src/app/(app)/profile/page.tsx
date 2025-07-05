@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuests } from '@/contexts/QuestContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,8 +30,6 @@ export default function ProfilePage() {
   const { quests } = useQuests();
   const { t } = useTranslation();
 
-  // The (app) layout already shows a loader and handles non-logged-in users.
-  // This is an extra guard for the brief moment user might be null before layout catches up.
   if (loading || !user) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
@@ -47,16 +46,19 @@ export default function ProfilePage() {
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm text-center">
           <CardHeader>
               <Avatar className="mx-auto h-24 w-24 text-primary/80 border-4 border-primary/30">
-                <AvatarImage src={user.photoURL || ''} alt={userDisplayName} />
+                <AvatarImage src={user.isAnonymous ? '' : user.photoURL || ''} alt={userDisplayName} />
                 <AvatarFallback className="text-4xl bg-secondary">
-                    {userDisplayName.charAt(0).toUpperCase()}
+                    {user.isAnonymous ? 'G' : userDisplayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <CardTitle className="text-3xl font-bold text-primary mt-4">
-                Hi, {userDisplayName}!
+                Hi, {user.isAnonymous ? 'Guest' : userDisplayName}!
               </CardTitle>
               <CardDescription className="text-base text-muted-foreground mt-1">
-                  Manage your account and track your daily progress.
+                  {user.isAnonymous 
+                    ? "You are browsing as a guest. Sign up to save your progress!" 
+                    : "Manage your account and track your daily progress."
+                  }
               </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 text-left px-4 sm:px-6">
@@ -65,7 +67,11 @@ export default function ProfilePage() {
                  <Mail className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
                    <p className="text-xs text-muted-foreground">Email</p>
-                   <p className="font-semibold truncate">{user.email}</p>
+                   {user.isAnonymous ? (
+                     <p className="italic text-muted-foreground/80">Sign up to add an email.</p>
+                   ) : (
+                     <p className="font-semibold truncate">{user.email}</p>
+                   )}
                  </div>
                </div>
                <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
@@ -90,11 +96,20 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
+            {user.isAnonymous && (
+                <Card className="mt-4 border-primary/30 bg-primary/10 text-center p-4">
+                    <CardTitle className="text-lg text-primary">Unlock Full Potential!</CardTitle>
+                    <CardDescription className="text-primary/80 mt-1">Sign up to save your progress permanently.</CardDescription>
+                    <Button asChild className="mt-3">
+                        <Link href="/sign-up">Sign Up Now</Link>
+                    </Button>
+                </Card>
+            )}
+
              <Button onClick={signOutUser} variant="destructive" className="w-full mt-4">
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
              </Button>
-
           </CardContent>
       </Card>
     </div>

@@ -89,9 +89,9 @@ export function GuestUsageProvider({ children }: { children: ReactNode }) {
     incrementTestsCreated,
     incrementNewsSearches,
     resetUsage,
-    isNotesAllowed: usage.notesGenerated < 1,
-    isTestAllowed: usage.testsCreated < 1,
-    isNewsAllowed: usage.newsSearches < 2,
+    isNotesAllowed: true,
+    isTestAllowed: true,
+    isNewsAllowed: true,
   };
 
   return (

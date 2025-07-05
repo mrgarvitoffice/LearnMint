@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,7 +37,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const { signUpWithEmail, signInWithGoogleRedirect, loading } = useAuth();
+  const { signUpWithEmail, signInWithGoogleRedirect, signInAnonymously, loading } = useAuth();
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -48,7 +48,6 @@ export default function SignUpPage() {
     setIsEmailSubmitting(true);
     try {
       await signUpWithEmail(data.email, data.password);
-      // Navigation is handled by the AuthLayout
     } catch (error: any) {
       console.error("Error signing up with email:", error);
       toast({ title: "Sign-up Failed", description: error.message, variant: "destructive" });
@@ -59,6 +58,10 @@ export default function SignUpPage() {
 
   const handleGoogleSignUp = async () => {
     await signInWithGoogleRedirect();
+  };
+  
+  const handleGuestSignUp = async () => {
+    await signInAnonymously();
   };
   
   const isAnyLoading = loading || isEmailSubmitting;
@@ -99,11 +102,17 @@ export default function SignUpPage() {
             OR
           </p>
         </div>
-
-        <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isAnyLoading}>
-          <GoogleIcon />
-          Sign Up with Google
-        </Button>
+        
+        <div className="space-y-2">
+            <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isAnyLoading}>
+              <GoogleIcon />
+              Sign Up with Google
+            </Button>
+            <Button onClick={handleGuestSignUp} variant="secondary" className="w-full" disabled={isAnyLoading}>
+                <User className="mr-2 h-4 w-4" />
+                Continue as Guest
+            </Button>
+        </div>
       </CardContent>
       <CardFooter className="justify-center text-sm">
         <p>
