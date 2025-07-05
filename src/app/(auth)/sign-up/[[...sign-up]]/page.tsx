@@ -55,13 +55,13 @@ export default function SignUpPage() {
       <CardContent>
         {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
         <div className="space-y-2">
-            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
-                <User className="mr-2 h-4 w-4" />
-                Continue as Guest
-            </Button>
             <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
               <GoogleIcon />
               Sign Up with Google
+            </Button>
+            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
+                <User className="mr-2 h-4 w-4" />
+                Continue as Guest
             </Button>
         </div>
 

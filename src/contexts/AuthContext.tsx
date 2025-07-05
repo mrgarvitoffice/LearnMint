@@ -75,16 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutUser = async () => {
     await signOut(auth);
-    // Let the layout handle the redirect
+    // The main app layout will handle the redirect to /sign-in
   };
 
   const signInWithGoogle = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const displayName = result.user.displayName || 'user';
-      toast({ title: `Hi, ${displayName}!`, description: `Welcome back.` });
+      await signInWithPopup(auth, provider);
+      // Let onAuthStateChanged handle the user state and redirects.
     } catch (error: any) {
         console.error("Auth Popup Error:", error);
         let description = "There was an issue with the sign-in popup.";
@@ -104,9 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (error.code === 'auth/account-exists-with-different-credential') {
           description = "An account already exists with this email. Please sign in with the original method."
         }
-        toast({ title: "Sign-in Error", description, variant: "destructive" });
-    } finally {
-      // onAuthStateChanged will set loading to false
+        toast({ title: "Sign-in Error", description, variant: "destructive", duration: 8000 });
+        setLoading(false);
     }
   };
   
@@ -124,7 +122,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const displayName = userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'User';
+      // Fetch user data from Firestore to ensure we have the display name
+      const userDocRef = doc(db, 'users', userCredential.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
+      
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
     } catch (error: any) {
       let description = "An unknown error occurred.";
@@ -134,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description = error.message;
       }
       toast({ title: "Sign-in Failed", description, variant: "destructive" });
-       setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -143,8 +145,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       if (userCredential.user) {
+        // Update the auth profile first
         await updateProfile(userCredential.user, { displayName });
-        await handleUserCreationInFirestore(userCredential.user);
+        // Then handle the Firestore doc creation
+        await handleUserCreationInFirestore({ ...userCredential.user, displayName });
+        // Manually update the local user state to be sure
         setUser({ ...userCredential.user, displayName });
         toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
       }
@@ -156,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description = error.message;
       }
       toast({ title: "Sign-up Failed", description, variant: "destructive" });
-       setLoading(false);
+      setLoading(false);
     }
   };
 
