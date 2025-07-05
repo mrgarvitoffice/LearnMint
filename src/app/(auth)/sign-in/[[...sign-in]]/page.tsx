@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User } from 'lucide-react';
-import { useState } from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
@@ -33,34 +32,20 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInWithGoogleRedirect, signInWithEmail, signInAnonymously, loading } = useAuth();
-  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
+  const { signInWithGoogle, signInWithEmail, signInAnonymously, loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
-  const handleGoogleSignIn = async () => {
-    await signInWithGoogleRedirect();
-  };
-  
-  const handleGuestSignIn = async () => {
-    await signInAnonymously();
-  };
-
   const handleEmailSignIn = async (data: FormData) => {
-    setIsEmailSubmitting(true);
     try {
       await signInWithEmail(data.email, data.password);
     } catch (error: any) {
       console.error("Error signing in with email:", error);
       toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsEmailSubmitting(false);
     }
   };
-
-  const isAnyLoading = loading || isEmailSubmitting;
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -70,19 +55,21 @@ export default function SignInPage() {
         <CardDescription>Sign in to access your LearnMint dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
+        
         <form onSubmit={handleSubmit(handleEmailSignIn)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={isAnyLoading} />
+            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={loading} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" {...register('password')} disabled={isAnyLoading} />
+            <Input id="password" type="password" {...register('password')} disabled={loading} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isAnyLoading}>
-            {isEmailSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign In with Email
           </Button>
         </form>
@@ -95,12 +82,12 @@ export default function SignInPage() {
         </div>
 
         <div className="space-y-2">
-            <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
+            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
               <GoogleIcon />
               Sign In with Google
             </Button>
             
-            <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isAnyLoading}>
+            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
                 Continue as Guest
             </Button>

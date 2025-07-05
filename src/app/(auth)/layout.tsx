@@ -13,15 +13,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // If auth is not loading and we have a user, they should be on the dashboard.
-    // This handles redirecting after a successful sign-in or if a logged-in user visits the page.
+    // This handles redirecting after a successful sign-in or if a logged-in user visits an auth page.
     if (!loading && user) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
-  // While loading, or if a user is being redirected, show a loader.
-  // This prevents the sign-in page from flashing before redirecting.
-  if (loading || (!loading && user)) {
+  // While loading, or if a user exists and is about to be redirected, show a loader.
+  // This prevents the sign-in page from flashing before the redirect happens.
+  if (loading || user) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
   
-  // If not loading, and there's no user, show the auth pages (sign-in/sign-up).
+  // If not loading and there's no user, show the auth pages (sign-in/sign-up).
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
         style={{

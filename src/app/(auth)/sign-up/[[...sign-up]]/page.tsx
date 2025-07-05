@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User } from 'lucide-react';
-import { useState } from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
@@ -37,35 +36,21 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const { signUpWithEmail, signInWithGoogleRedirect, signInAnonymously, loading } = useAuth();
-  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
+  const { signUpWithEmail, signInWithGoogle, signInAnonymously, loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
   const handleEmailSignUp = async (data: FormData) => {
-    setIsEmailSubmitting(true);
     try {
       await signUpWithEmail(data.email, data.password);
     } catch (error: any) {
       console.error("Error signing up with email:", error);
       toast({ title: "Sign-up Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsEmailSubmitting(false);
     }
   };
-
-  const handleGoogleSignUp = async () => {
-    await signInWithGoogleRedirect();
-  };
   
-  const handleGuestSignUp = async () => {
-    await signInAnonymously();
-  };
-  
-  const isAnyLoading = loading || isEmailSubmitting;
-
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
       <CardHeader className="text-center">
@@ -74,24 +59,25 @@ export default function SignUpPage() {
         <CardDescription>Join LearnMint to unlock all features.</CardDescription>
       </CardHeader>
       <CardContent>
+        {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
         <form onSubmit={handleSubmit(handleEmailSignUp)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={isAnyLoading} />
+            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={loading} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" {...register('password')} disabled={isAnyLoading} />
+            <Input id="password" type="password" {...register('password')} disabled={loading} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={isAnyLoading} />
+            <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={loading} />
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isAnyLoading}>
-             {isEmailSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full" disabled={loading}>
+             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign Up with Email
           </Button>
         </form>
@@ -104,11 +90,11 @@ export default function SignUpPage() {
         </div>
         
         <div className="space-y-2">
-            <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isAnyLoading}>
+            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
               <GoogleIcon />
               Sign Up with Google
             </Button>
-            <Button onClick={handleGuestSignUp} variant="secondary" className="w-full" disabled={isAnyLoading}>
+            <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
                 Continue as Guest
             </Button>

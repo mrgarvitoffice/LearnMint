@@ -6,13 +6,15 @@ import {
   onAuthStateChanged,
   signOut,
   signInWithRedirect,
+  signInWithPopup,
   getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInAnonymously,
-  type User
+  type User,
+  GoogleAuthProvider
 } from 'firebase/auth';
-import { auth, db, googleProvider } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -21,7 +23,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOutUser: () => Promise<void>;
-  signInWithGoogleRedirect: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signInAnonymously: () => Promise<void>;
@@ -36,15 +38,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
-    // This function will not run for anonymous users, but we keep the check for robustness.
     if (user.isAnonymous) return;
     
     const userRef = doc(db, 'users', user.uid);
-    
     try {
         const docSnap = await getDoc(userRef);
         if (!docSnap.exists()) {
-            console.log(`[AuthContext] No Firestore document for new user ${user.uid}. Creating one...`);
             await setDoc(userRef, {
               uid: user.uid,
               email: user.email,
@@ -52,27 +51,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               photoURL: user.photoURL,
               createdAt: serverTimestamp(),
             });
-            console.log(`[AuthContext] Successfully created Firestore document for: ${user.uid}`);
         }
-    } catch (error) {
-        console.error("****************************************************************");
-        console.error("[AuthContext] CRITICAL ERROR during Firestore user creation:", error);
-        console.error("This is often caused by incorrect Firestore Security Rules.");
-        console.error("Please ensure your 'firestore.rules' allow authenticated users to write to their own document (`/users/{userId}`).");
-        console.error("Example rule: `allow write: if request.auth.uid == userId;`");
-        console.error("****************************************************************");
+    } catch (error: any) {
+        console.error("Firestore user creation error:", error);
         toast({
-            title: "Sign-In Successful, Profile Issue",
-            description: "We couldn't save your profile data. You can still use the app, but some features might be limited.",
+            title: "Profile Error",
+            description: "Could not save your profile data due to a database issue. You can still use the app.",
             variant: "destructive",
-            duration: 10000,
         });
     }
   }, [toast]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
       if (firebaseUser) {
         if (!firebaseUser.isAnonymous) {
           await handleUserCreationInFirestore(firebaseUser);
@@ -84,32 +75,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    getRedirectResult(auth)
-      .catch((error) => {
-        console.error("Error from getRedirectResult:", error);
-        if (error.code === 'auth/unauthorized-domain' && typeof window !== 'undefined') {
-             toast({ title: "Sign-in Error: Unauthorized Domain", description: `Please add '${window.location.hostname}' to the authorized domains in your Firebase console.`, variant: "destructive", duration: 10000 });
-        } else if (error.code !== 'auth/no-redirect-result') {
-            toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
-        }
-      });
-      
     return () => unsubscribe();
-  }, [handleUserCreationInFirestore, toast]);
+  }, [handleUserCreationInFirestore]);
 
   const signOutUser = async () => {
+    setLoading(true);
     await signOut(auth);
     router.push('/sign-in');
   };
 
-  const signInWithGoogleRedirect = async () => {
+  const signInWithGoogle = async () => {
     setLoading(true);
+    const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, googleProvider);
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle the rest
     } catch (error: any) {
-        console.error("Error initiating Google sign-in redirect:", error);
-        toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
-        setLoading(false);
+      console.error("Error signing in with Google:", error);
+      let description = error.message;
+      if (error.code === 'auth/popup-closed-by-user') {
+        description = "The sign-in popup was closed before completion.";
+      } else if (error.code === 'auth/unauthorized-domain') {
+        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' to the authorized domains in your Firebase console.`;
+      } else if (error.code === 'auth/popup-blocked') {
+        description = "Popup blocked by browser. Please allow popups for this site and try again.";
+      }
+      toast({ title: "Google Sign-in Failed", description, variant: "destructive" });
+      setLoading(false); // Reset loading state on error
     }
   };
   
@@ -117,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       await signInAnonymously(auth);
+      // onAuthStateChanged will handle navigation
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
@@ -127,14 +120,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged will handle navigation
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await createUserWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged will handle navigation
   };
 
-  const value = { user, loading, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail, signInAnonymously };
+  const value = { user, loading, signOutUser, signInWithGoogle, signInWithEmail, signUpWithEmail, signInAnonymously };
 
   return (
     <AuthContext.Provider value={value}>
