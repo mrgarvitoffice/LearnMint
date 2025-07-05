@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,15 +27,17 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+
+  const isAnyLoading = isLoadingEmail || isLoadingGoogle;
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
 
   const onEmailSubmit = async (data: SignUpFormData) => {
-    setIsLoading(true);
+    setIsLoadingEmail(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const userRef = doc(db, 'users', userCredential.user.uid);
@@ -47,8 +48,8 @@ export default function SignUpPage() {
         photoURL: '',
         createdAt: serverTimestamp(),
       });
+      // No navigation here. The layout's onAuthStateChanged will trigger the redirect.
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      router.replace('/');
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -58,16 +59,18 @@ export default function SignUpPage() {
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+       setIsLoadingEmail(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
-    // The auth layout will handle the result when the user is redirected back.
+    await signInWithRedirect(auth, provider).catch((error) => {
+        console.error("Google Sign In Redirect Error:", error);
+        toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
+        setIsLoadingGoogle(false);
+    });
   };
 
   return (
@@ -79,8 +82,8 @@ export default function SignUpPage() {
       </CardHeader>
       <CardContent className="space-y-4">
         
-        <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+        <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isAnyLoading}>
+          {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
           Sign Up with Google
         </Button>
         
@@ -96,16 +99,16 @@ export default function SignUpPage() {
         <form onSubmit={handleSubmit(onEmailSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" {...register('email')} disabled={isLoading} />
+            <Input id="email" type="email" placeholder="you@example.com" {...register('email')} disabled={isAnyLoading} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isLoading} />
+            <Input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isAnyLoading} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full" disabled={isAnyLoading}>
+            {isLoadingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign Up
           </Button>
         </form>

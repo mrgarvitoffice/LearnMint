@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // onAuthStateChanged is the single source of truth for auth state
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -32,11 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInAsGuest = async () => {
+    setLoading(true); // Set loading while we sign in
     await signInAnonymously(auth);
+    // onAuthStateChanged will handle setting the user and setting loading to false
   };
 
   const signOutUser = async () => {
+    setLoading(true); // Set loading while we sign out
     await signOut(auth);
+    // onAuthStateChanged will handle setting user to null and loading to false
   };
   
   const contextValue = {
