@@ -42,15 +42,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         console.error("Google Redirect Result Error:", error);
         toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in. Please try again.", variant: "destructive" });
       });
-  }, [toast]); // We don't need router in dependency array as it's stable.
+  }, [toast]);
 
   useEffect(() => {
-    // This effect handles redirecting users who are already logged in.
-    if (!loading && user) {
+    // This effect handles redirecting FULLY LOGGED-IN users away from auth pages.
+    // It will NOT redirect guest users.
+    if (!loading && user && !user.isAnonymous) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
+  // If initial auth check is happening, show a spinner.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -60,8 +62,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If not loading and there's no user, show the sign-in/sign-up page.
-  // If a user exists, the effect above will redirect away.
+  // If a full user is logged in, they will be redirected. Show a spinner during the brief redirect period.
+  if (user && !user.isAnonymous) {
+      return (
+        <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="mt-3 text-lg">Redirecting to dashboard...</p>
+        </div>
+      );
+  }
+  
+  // If we're not loading and the user is either null or a guest, render the auth pages (sign-in/sign-up).
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
          style={{
@@ -74,8 +85,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             backgroundAttachment: 'fixed',
          }}
     >
-      {/* Don't render children if user exists to avoid flash of content before redirect */}
-      {!user && children}
+      {children}
     </div>
   );
 }
