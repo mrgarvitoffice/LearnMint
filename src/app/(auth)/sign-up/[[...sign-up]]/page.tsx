@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>({
@@ -47,7 +48,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      // The (auth) layout will redirect once the user state updates.
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -66,7 +67,7 @@ export default function SignUpPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     await signInWithRedirect(auth, provider);
-    // The sign-in page will handle the result when the user is redirected back.
+    // The auth layout will handle the result when the user is redirected back.
   };
 
   return (
