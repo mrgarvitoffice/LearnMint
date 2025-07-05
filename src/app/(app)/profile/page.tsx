@@ -75,7 +75,7 @@ export default function ProfilePage() {
                  <KeyRound className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
                    <p className="text-xs text-muted-foreground">User ID</p>
-                   <p className="font-mono text-xs truncate">{user.uid}</p>
+                   <p className="font-mono text-xs break-all">{user.uid}</p>
                  </div>
                </div>
             </div>
