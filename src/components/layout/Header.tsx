@@ -4,6 +4,8 @@ import React from 'react';
 import { useTheme } from "next-themes";
 import { useSettings } from '@/contexts/SettingsContext';
 import { useSound } from '@/hooks/useSound';
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -15,16 +17,18 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu';
-import { Sun, Moon, Volume2, Volume1, VolumeX, Languages, CaseSensitive, Settings } from 'lucide-react';
+import { Sun, Moon, Volume2, Volume1, VolumeX, Languages, CaseSensitive, Settings, User } from 'lucide-react';
 import { APP_LANGUAGES } from '@/lib/constants';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '../ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
 export function Header() {
   const { t } = useTranslation();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
   const { theme, setTheme } = useTheme();
   const { soundMode, setSoundMode, fontSize, setFontSize, appLanguage, setAppLanguage } = useSettings();
+  const { user } = useAuth();
   
   const handleSoundModeChange = (value: string) => {
     playClickSound();
@@ -49,6 +53,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6">
        <div className="flex items-center gap-2">
+          {user && (
+            <Link href="/profile" className="flex items-center">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={user.isAnonymous ? undefined : user.photoURL || undefined} alt={user.displayName || "User"} />
+                <AvatarFallback>
+                  {user.isAnonymous ? <User className="h-5 w-5" /> : user.displayName ? user.displayName.charAt(0).toUpperCase() : <User />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">

@@ -18,12 +18,13 @@ With **LearnMint**, you're not just studying; you're minting knowledge with cutt
 *   [🛠️ Tech Stack Powerhouse](#️-tech-stack-powerhouse-)
 *   [🚀 Getting Started with LearnMint](#-getting-started-with-learnmint-)
     *   [Prerequisites](#1-prerequisites)
-    *   [CRITICAL: Set up Environment Variables (.env)](#2-critical-set-up-environment-variables-using-a-env-file)
-    *   [Install Dependencies](#3-install-dependencies)
-    *   [CRITICAL: Restart Development Server](#4-critical-restart-your-development-server)
-    *   [CRITICAL: Add Required Static Assets](#5-critical-add-required-static-assets)
-    *   [Run Development Server](#6-run-the-development-server)
-    *   [Run Genkit Dev Server](#7-run-genkit-dev-server-optional-but-recommended)
+    *   [CRITICAL: Authorize Your Domain in Firebase](#2-critical-authorize-your-domain-in-firebase)
+    *   [CRITICAL: Set up Environment Variables (.env)](#3-critical-set-up-environment-variables-using-a-env-file)
+    *   [Install Dependencies](#4-install-dependencies)
+    *   [CRITICAL: Restart Development Server](#5-critical-restart-your-development-server)
+    *   [CRITICAL: Add Required Static Assets](#6-critical-add-required-static-assets)
+    *   [Run Development Server](#7-run-the-development-server)
+    *   [Run Genkit Dev Server](#8-run-genkit-dev-server-optional-but-recommended)
 *   [☁️ Deployment to Firebase Hosting](#️-deployment-to-firebase-hosting)
 *   [🎨 Customization](#-customization-)
 *   [💖 Creator's Note](#️-creators-note)
@@ -100,7 +101,20 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 *   Node.js (LTS version recommended)
 *   `npm` or `yarn`
 
-### 2. CRITICAL: Set up Environment Variables using a `.env` file
+### 2. CRITICAL: Authorize Your Domain in Firebase
+
+To prevent sign-in loops on your deployed development environment (like Cloud Workstations or Gitpod), you **MUST** add your development domain to Firebase's authorized list.
+
+1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2.  **Select your project**: `learnflow-go3hi`
+3.  Navigate to **Authentication** (in the Build section).
+4.  Go to the **Settings** tab.
+5.  Select the **Authorized domains** section.
+6.  Click **Add domain**.
+7.  Enter the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+8.  Click **Add**. Your sign-in should now work correctly on that domain.
+
+### 3. CRITICAL: Set up Environment Variables using a `.env` file
 
 <details>
 <summary><strong>⚠️ Click here for DETAILED `.env` Configuration Guide ⚠️</strong></summary>
@@ -114,8 +128,8 @@ Create `.env` in the **project root**. Populate with your API keys. **This is es
 # === Firebase Authentication ===
 # These keys are required for user sign-in and sign-up.
 # Get them from your Firebase project settings.
-# CRITICAL: Ensure the Auth Domain (e.g., learnflow-go3hi.firebaseapp.com) is added
-# to the "Authorized domains" list in your Firebase project's Authentication settings.
+# CRITICAL: Ensure the Auth Domain (e.g., learnflow-go3hi.firebaseapp.com) and your dev domain
+# (e.g., cluster-....cloudworkstations.dev) are added to the "Authorized domains" list.
 NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCNcktsyCTevZebTrc4aBnG4b0pRbYx4tk
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=learnflow-go3hi.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=learnflow-go3hi
@@ -171,7 +185,7 @@ GOOGLE_BOOKS_API_KEY=AIzaSyYOUR_GOOGLE_BOOKS_API_KEY
 
 </details>
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 npm install
@@ -179,7 +193,7 @@ npm install
 yarn install
 ```
 
-### 4. CRITICAL: Restart Your Development Server
+### 5. CRITICAL: Restart Your Development Server
 
 After creating/modifying `.env`, **STOP AND RESTART** your Next.js server:
 ```bash
@@ -189,13 +203,13 @@ npm run dev -- --port 9002
 yarn dev --port 9002
 ```
 
-### 5. CRITICAL: Add Required Static Assets
+### 6. CRITICAL: Add Required Static Assets
 
 *   **PWA Icons**: `public/icons/icon-192x192.png` & `public/icons/icon-512x512.png`.
 *   **Sound Effects**: `public/sounds/` (add `ting.mp3`, `custom-sound-2.mp3`, `correct-answer.mp3`, `incorrect-answer.mp3`).
 *   **Chatbot Avatar**: `public/images/kazuma-dp.jpg` (and `public/images/megumin-dp.jpg`).
 
-### 6. Run the Development Server
+### 7. Run the Development Server
 
 ```bash
 npm run dev -- --port 9002
@@ -204,7 +218,7 @@ yarn dev --port 9002
 ```
 Access LearnMint at `http://localhost:9002`.
 
-### 7. Run Genkit Dev Server (Optional but Recommended)
+### 8. Run Genkit Dev Server (Optional but Recommended)
 
 For debugging AI flows:
 ```bash

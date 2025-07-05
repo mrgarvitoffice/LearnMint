@@ -9,10 +9,9 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Logo } from '../icons/Logo';
 import { motion } from 'framer-motion';
-import { Header } from './Header'; // Re-importing Header for settings
+import { Header } from './Header'; // This now includes settings and the avatar.
 
 export function TopMobileNav() {
-  const { playSound } = useSound('/sounds/ting.mp3', 0.2);
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -30,32 +29,9 @@ export function TopMobileNav() {
             </Link>
         </motion.div>
         
-        {/* Renders the Settings Dropdown and PWA install button */}
+        {/* Header now includes the settings dropdown AND the user avatar */}
         <Header />
       </div>
-
-      <nav className="grid h-16 grid-cols-5 items-center justify-around border-t bg-background/80 px-1 backdrop-blur-sm">
-        {TOP_NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const isActive = (item.href !== '/' && pathname.startsWith(item.href)) || pathname === item.href;
-          const title = t(item.title);
-          
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex h-full flex-col items-center justify-center gap-1 rounded-md p-1 text-center text-muted-foreground transition-colors group",
-                isActive ? "text-primary" : "hover:text-primary"
-              )}
-              onClick={playSound}
-            >
-              <Icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
-              <span className="text-[10px] font-medium leading-tight">{title}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </header>
   );
 }
