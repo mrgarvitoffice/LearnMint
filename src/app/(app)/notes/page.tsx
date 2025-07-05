@@ -141,7 +141,7 @@ export default function GenerateNotesPage() {
   const handleGenerateAllMaterials = async () => {
     playActionSound(); 
     if (user?.isAnonymous && !isNotesAllowed) {
-      toast({ title: "Guest Limit Reached", description: "Please sign in to generate more notes.", variant: "destructive" });
+      toast({ title: "Guest Limit Reached", description: "You have used your free note generation for today. Please sign in for unlimited access.", variant: "destructive" });
       return;
     }
 

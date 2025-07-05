@@ -260,7 +260,7 @@ export default function CustomTestPage() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (user?.isAnonymous && !isTestAllowed) {
-      toast({ title: "Guest Limit Reached", description: "Please sign in to create more tests.", variant: "destructive" });
+      toast({ title: "Guest Limit Reached", description: "You have used your free custom test for today. Please sign in for unlimited access.", variant: "destructive" });
       return;
     }
     
@@ -461,11 +461,8 @@ export default function CustomTestPage() {
     }
   };
   
-  if (user?.isAnonymous) {
-    if (!isTestAllowed) {
-      return <GuestLock featureName="Custom Test Creator" message="You have used your one free custom test generation for today as a guest." />;
-    }
-    return <GuestLock featureName="Custom Test Creator" />;
+  if (user?.isAnonymous && !isTestAllowed) {
+    return <GuestLock featureName="Custom Test Creator" message="You have used your one free custom test generation for today as a guest." />;
   }
 
   if (!testState) {
