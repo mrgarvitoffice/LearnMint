@@ -4,7 +4,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { 
   onAuthStateChanged, 
-  signInWithPopup, 
   GoogleAuthProvider, 
   signOut, 
   signInAnonymously,
