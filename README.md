@@ -1,4 +1,4 @@
-
+i
 # 🌱 LearnMint: Your AI-Powered Study Revolution! 🚀
 ## Made by **MrGarvit**!
 
@@ -6,7 +6,7 @@
   <img src="https://placehold.co/600x300.png?text=LearnMint+by+MrGarvit&font=raleway&bg=220_30_10&fc=190_80_85" alt="LearnMint Banner by MrGarvit" data-ai-hint="modern abstract">
 </p>
 
-**Welcome to LearnMint!** The ultimate Next.js application meticulously engineered by **MrGarvit** to transform your study sessions into a dynamic, productive, and engaging experience. Wave goodbye to tedious material preparation and say hello to AI-driven learning that's tailored, insightful, and lightning-fast.
+**Welcome to LearnMint!** The ultimate Next.js application meticulously engineered by **MrGarvit** to transform your study sessions into a dynamic, productive, and engaging experience. Wave goodbye! to tedious material preparation and say hello to AI-driven learning that's tailored, insightful, and lightning-fast.
 
 With **LearnMint**, you're not just studying; you're minting knowledge with cutting-edge AI, all under the creative genius of **MrGarvit**.
 
