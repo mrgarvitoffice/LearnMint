@@ -2,6 +2,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,6 +28,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -49,7 +51,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      // Navigation is handled by the auth layout
+      router.replace('/'); // Navigate to dashboard on success
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -67,7 +69,7 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    // The redirect will be handled by the logic in the (auth)/layout.tsx
+    // The redirect will be handled by the logic on the sign-in page
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
