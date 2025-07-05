@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -16,8 +17,6 @@ import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -29,7 +28,6 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
@@ -44,8 +42,8 @@ export default function SignInPage() {
     setIsLoadingEmail(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
+      // The auth layout will handle the redirect.
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      router.replace('/');
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -62,6 +60,7 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
+    // This will redirect away, and the logic in the auth layout will handle the result.
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
@@ -73,8 +72,8 @@ export default function SignInPage() {
     setIsLoadingGuest(true);
     try {
       await signInAsGuest();
+      // The auth layout will handle the redirect.
       toast({ title: "Signed in as guest", description: "Redirecting..." });
-      router.replace('/');
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });

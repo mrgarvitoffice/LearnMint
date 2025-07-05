@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -16,7 +17,6 @@ import { Loader2, UserPlus, Chrome } from 'lucide-react';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
-import { useRouter } from 'next/navigation';
 
 const signUpSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -27,7 +27,6 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -49,8 +48,8 @@ export default function SignUpPage() {
         photoURL: '',
         createdAt: serverTimestamp(),
       });
+      // The auth layout will handle the redirect.
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      router.replace('/');
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -67,6 +66,7 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
+    // This will redirect away, and the logic in the auth layout will handle the result.
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
