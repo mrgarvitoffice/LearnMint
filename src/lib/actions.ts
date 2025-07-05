@@ -9,6 +9,9 @@ import { generateFlashcards, type GenerateFlashcardsInput, type GenerateFlashcar
 import { generateAudioFlashcards, type GenerateAudioFlashcardsInput, type GenerateAudioFlashcardsOutput } from "@/ai/flows/generate-audio-flashcards";
 import { generateAudioSummary, type GenerateAudioSummaryInput, type GenerateAudioSummaryOutput } from "@/ai/flows/generate-audio-summary";
 import { generateDiscussionAudio, type GenerateDiscussionAudioInput, type GenerateDiscussionAudioOutput } from "@/ai/flows/generate-discussion-audio";
+import { generateQuizFromNotes, type GenerateQuizFromNotesInput } from "@/ai/flows/generate-quiz-from-notes";
+import { generateFlashcardsFromNotes, type GenerateFlashcardsFromNotesInput } from "@/ai/flows/generate-flashcards-from-notes";
+
 
 import type { YoutubeSearchInput, YoutubeSearchOutput, YoutubeVideoItem, GoogleBooksSearchInput, GoogleBooksSearchOutput, GoogleBookItem } from './types';
 
@@ -19,6 +22,7 @@ import type { YoutubeSearchInput, YoutubeSearchOutput, YoutubeVideoItem, GoogleB
  */
 export interface CombinedStudyMaterialsOutput {
   notesOutput: GenerateStudyNotesOutput;
+  notesError?: string; // Add notesError field
   quizOutput?: GenerateQuizQuestionsOutput;
   flashcardsOutput?: GenerateFlashcardsOutput;
   quizError?: string;
@@ -29,11 +33,11 @@ export interface CombinedStudyMaterialsOutput {
  * generateNotesAction (Combined Material Generation)
  *
  * This server action orchestrates the generation of study notes, a 30-question quiz,
- * and 20 flashcards based on a single topic input.
+ * and 20 flashcards based on a single topic input. It can also accept user-provided notes
+ * as a primary source.
  *
- * @param input - Contains the topic string for which materials are to be generated.
- * @returns A promise that resolves to an object containing the generated notes, quiz,
- *          flashcards, and any errors encountered for the quiz or flashcards.
+ * @param input - Contains the topic string, and optional image or notes content.
+ * @returns A promise that resolves to an object containing the generated materials and any errors.
  * @throws Error if the primary notes generation fails or input.topic is not a string.
  */
 export async function generateNotesAction(input: GenerateStudyNotesInput): Promise<CombinedStudyMaterialsOutput> {
@@ -41,20 +45,22 @@ export async function generateNotesAction(input: GenerateStudyNotesInput): Promi
   console.log(`[Server Action] ${actionName} called for topic: ${input.topic}`);
 
   if (typeof input.topic !== 'string') {
+    const errorMsg = `[Server Action - ${actionName}] Critical error: Topic must be a string. Received type: ${typeof input.topic}, value: ${input.topic}`;
     console.error(`[Server Action Error - ${actionName}] Topic is not a string, received:`, input.topic);
-    throw new Error(`[Server Action - ${actionName}] Critical error: Topic must be a string. Received type: ${typeof input.topic}, value: ${input.topic}`);
+    throw new Error(errorMsg);
   }
   const trimmedTopic = input.topic.trim();
 
-  let notesResult: GenerateStudyNotesOutput;
+  let notesResult: GenerateStudyNotesOutput | undefined;
+  let notesGenError: string | undefined;
+
   try {
     // Primary step: Generate study notes. This includes AI image generation.
-    notesResult = await generateStudyNotes({ topic: trimmedTopic, image: input.image });
+    notesResult = await generateStudyNotes({ topic: trimmedTopic, image: input.image, notes: input.notes });
     if (!notesResult || !notesResult.notes) {
       throw new Error("AI returned empty or invalid notes data.");
     }
   } catch (error: any) {
-    // Handle errors specifically related to notes generation
     console.error(`[Server Action Error - ${actionName} - Notes Gen] Error generating notes:`, error);
     let clientErrorMessage = "Failed to generate study notes. This is the primary step and it failed.";
     if (error.message && (error.message.includes("GOOGLE_API_KEY") || error.message.includes("API key is invalid") || error.message.includes("API_KEY_INVALID"))) {
@@ -62,59 +68,62 @@ export async function generateNotesAction(input: GenerateStudyNotesInput): Promi
     } else if (error.message) {
       clientErrorMessage = `Study Notes: Generation failed (primary step). Error: ${error.message.substring(0, 150)}. Check server logs for full details.`;
     }
-    // If notes (primary content) fail, we throw the error and don't proceed.
-    throw new Error(clientErrorMessage);
+    notesGenError = clientErrorMessage;
+  }
+  
+  if (!notesResult?.notes) {
+     return {
+        notesOutput: { notes: "" },
+        notesError: notesGenError || "Primary notes generation failed to produce content.",
+        quizError: "Skipped due to notes failure.",
+        flashcardsError: "Skipped due to notes failure.",
+    };
   }
 
-  // Notes generated successfully, now attempt quiz and flashcards for the same topic.
-  const quizInput: GenerateQuizQuestionsInput = { topic: trimmedTopic, numQuestions: 30, difficulty: 'medium' as const };
-  const flashcardsInput: GenerateFlashcardsInput = { topic: trimmedTopic, numFlashcards: 20 };
+  // Notes generated successfully, now generate quiz and flashcards FROM THE NOTES.
+  const quizInput: GenerateQuizFromNotesInput = { notesContent: notesResult.notes, numQuestions: 30 };
+  const flashcardsInput: GenerateFlashcardsFromNotesInput = { notesContent: notesResult.notes, numQuestions: 20 };
 
   let quizData: GenerateQuizQuestionsOutput | undefined;
   let flashcardsData: GenerateFlashcardsOutput | undefined;
   let quizGenError: string | undefined;
   let flashcardsGenError: string | undefined;
 
-  console.log(`[Server Action - ${actionName}] Attempting to generate quiz for topic: ${trimmedTopic}`);
-  console.log(`[Server Action - ${actionName}] Attempting to generate flashcards for topic: ${trimmedTopic}`);
+  console.log(`[Server Action - ${actionName}] Attempting to generate quiz and flashcards from generated notes for topic: ${trimmedTopic}`);
 
-  // Using Promise.allSettled to ensure all attempts (quiz and flashcards) are made, even if one fails.
   const results = await Promise.allSettled([
-    generateQuizQuestions(quizInput),
-    generateFlashcards(flashcardsInput)
+    generateQuizFromNotes(quizInput),
+    generateFlashcardsFromNotes(flashcardsInput)
   ]);
 
-  // Process quiz generation result
   const quizResultOutcome = results[0];
   if (quizResultOutcome.status === 'fulfilled') {
-    if (quizResultOutcome.value && quizResultOutcome.value.questions && quizResultOutcome.value.questions.length > 0) {
+    if (quizResultOutcome.value?.questions?.length > 0) {
       quizData = quizResultOutcome.value;
-      console.log(`[Server Action - ${actionName}] Quiz generated successfully for topic: ${trimmedTopic}`);
+      console.log(`[Server Action - ${actionName}] Quiz generated successfully from notes.`);
     } else {
-      quizGenError = "AI returned no quiz questions or invalid quiz data.";
-      console.warn(`[Server Action - ${actionName}] Quiz generation for topic "${trimmedTopic}" resulted in empty/invalid data from AI.`);
+      quizGenError = "AI returned no quiz questions or invalid quiz data from notes.";
+      console.warn(`[Server Action - ${actionName}] Quiz generation from notes for topic "${trimmedTopic}" resulted in empty/invalid data.`);
     }
-  } else { // quizResultOutcome.status === 'rejected'
-    console.error(`[Server Action Error - ${actionName} - Quiz Gen] Error generating quiz for topic "${trimmedTopic}":`, quizResultOutcome.reason);
-    quizGenError = quizResultOutcome.reason?.message?.substring(0, 150) || "Failed to generate quiz questions.";
+  } else {
+    console.error(`[Server Action Error - ${actionName} - Quiz Gen] Error generating quiz from notes:`, quizResultOutcome.reason);
+    quizGenError = quizResultOutcome.reason?.message?.substring(0, 150) || "Failed to generate quiz questions from notes.";
   }
 
-  // Process flashcard generation result
   const flashcardsResultOutcome = results[1];
   if (flashcardsResultOutcome.status === 'fulfilled') {
-     if (flashcardsResultOutcome.value && flashcardsResultOutcome.value.flashcards && flashcardsResultOutcome.value.flashcards.length > 0) {
+     if (flashcardsResultOutcome.value?.flashcards?.length > 0) {
       flashcardsData = flashcardsResultOutcome.value;
-      console.log(`[Server Action - ${actionName}] Flashcards generated successfully for topic: ${trimmedTopic}`);
+      console.log(`[Server Action - ${actionName}] Flashcards generated successfully from notes.`);
     } else {
-      flashcardsGenError = "AI returned no flashcards or invalid flashcard data.";
-      console.warn(`[Server Action - ${actionName}] Flashcard generation for topic "${trimmedTopic}" resulted in empty/invalid data from AI.`);
+      flashcardsGenError = "AI returned no flashcards or invalid flashcard data from notes.";
+      console.warn(`[Server Action - ${actionName}] Flashcard generation from notes for topic "${trimmedTopic}" resulted in empty/invalid data.`);
     }
-  } else { // flashcardsResultOutcome.status === 'rejected'
-    console.error(`[Server Action Error - ${actionName} - Flashcard Gen] Error generating flashcards for topic "${trimmedTopic}":`, flashcardsResultOutcome.reason);
-    flashcardsGenError = flashcardsResultOutcome.reason?.message?.substring(0, 150) || "Failed to generate flashcards.";
+  } else {
+    console.error(`[Server Action Error - ${actionName} - Flashcard Gen] Error generating flashcards from notes:`, flashcardsResultOutcome.reason);
+    flashcardsGenError = flashcardsResultOutcome.reason?.message?.substring(0, 150) || "Failed to generate flashcards from notes.";
   }
 
-  // Return the combined results
   return {
     notesOutput: notesResult,
     quizOutput: quizData,
@@ -319,7 +328,7 @@ export async function fetchStudyNotesAction(input: GenerateStudyNotesInput): Pro
   const trimmedTopic = input.topic.trim();
 
   try {
-    const notesResult = await generateStudyNotes({ topic: trimmedTopic, image: input.image });
+    const notesResult = await generateStudyNotes({ topic: trimmedTopic, image: input.image, notes: input.notes });
     if (!notesResult || !notesResult.notes) {
       throw new Error("AI returned empty or invalid notes data for fetchStudyNotesAction.");
     }

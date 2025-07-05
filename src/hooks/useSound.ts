@@ -6,13 +6,11 @@ import { useSettings } from '@/contexts/SettingsContext';
 
 interface SoundOptions {
   volume?: number;
-  priority?: 'essential' | 'incidental';
+  priority?: 'essential' | 'incidental'; // Kept for component clarity, but logic is simplified
 }
 
 export function useSound(soundPath: string, options: SoundOptions = {}) {
-  // 'incidental' sounds (like UI clicks) only play in 'full' mode.
-  // 'essential' sounds (like actions) play in 'full' and 'essential' modes.
-  const { volume = 0.5, priority = 'incidental' } = options;
+  const { volume = 0.5 } = options;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [hasLoadError, setHasLoadError] = useState(false); 
   const { soundMode } = useSettings();
@@ -57,17 +55,13 @@ export function useSound(soundPath: string, options: SoundOptions = {}) {
   }, [soundPath, volume]);
 
   const playSound = useCallback(() => {
-    // 'muted': no sounds play.
     if (soundMode === 'muted') {
       return;
     }
     
-    // 'essential': only sounds with 'essential' priority play.
-    if (soundMode === 'essential' && priority === 'incidental') {
-      return;
-    }
-    // 'full': all sounds play (no check needed).
-
+    // Both 'essential' and 'full' modes will play sounds from this hook.
+    // The main distinction between modes is handled in useTTS for spoken announcements.
+    
     if (hasLoadError || !audioRef.current) {
       return;
     }
@@ -84,7 +78,7 @@ export function useSound(soundPath: string, options: SoundOptions = {}) {
       }
     });
     
-  }, [soundMode, priority, hasLoadError, soundPath]);
+  }, [soundMode, hasLoadError, soundPath]);
   
   return { 
     playSound

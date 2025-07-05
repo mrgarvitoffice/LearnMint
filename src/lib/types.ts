@@ -18,7 +18,8 @@ export interface Flashcard {
 // Input/Output types for AI flows (matching Zod schemas in flows)
 export type GenerateStudyNotesInput = { 
   topic: string;
-  image?: string; 
+  image?: string;
+  notes?: string; 
 };
 export type GenerateStudyNotesOutput = { notes: string };
 
@@ -221,6 +222,16 @@ export interface GoogleBooksSearchInput {
 }
 export interface GoogleBooksSearchOutput {
   books: GoogleBookItem[];
+}
+
+// For Combined Study Materials Action
+export interface CombinedStudyMaterialsOutput {
+  notesOutput: GenerateStudyNotesOutput;
+  notesError?: string;
+  quizOutput?: GenerateQuizQuestionsOutput;
+  flashcardsOutput?: GenerateFlashcardsOutput;
+  quizError?: string;
+  flashcardsError?: string;
 }
 
 // Generic type for TanStack Query useQuery error (can be more specific if needed)

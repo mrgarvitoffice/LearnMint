@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Mic, FileSignature, Loader2, AlertTriangle, ImageIcon, XCircle } from "lucide-react"; 
+import { GraduationCap, Mic, FileSignature, Loader2, AlertTriangle, ImageIcon, XCircle, FileText } from "lucide-react"; 
 import Image from 'next/image';
 
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
@@ -20,6 +20,7 @@ import { useQuests } from '@/contexts/QuestContext';
 import { generateNotesAction } from "@/lib/actions";
 import type { CombinedStudyMaterialsOutput } from '@/lib/types'; 
 import { useTranslation } from '@/hooks/useTranslation';
+import { extractTextFromPdf } from '@/lib/utils';
 
 const RECENT_TOPICS_LS_KEY = "learnmint-recent-topics";
 const LOCALSTORAGE_KEY_PREFIX = "learnmint-study-";
@@ -32,8 +33,14 @@ export default function GenerateNotesPage() {
 
   const [topic, setTopic] = useState<string>("");
   const [isLoadingAll, setIsLoadingAll] = useState<boolean>(false);
+  
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
+  
+  const [pdfFileName, setPdfFileName] = useState<string | null>(null);
+  const [pdfText, setPdfText] = useState<string | null>(null);
+  
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [notesError, setNotesError] = useState<string | null>(null);
@@ -42,7 +49,7 @@ export default function GenerateNotesPage() {
 
   const { speak, setVoicePreference } = useTTS();
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition, error: voiceError } = useVoiceRecognition();
-  const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+  const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
   const { soundMode } = useSettings();
 
@@ -55,14 +62,14 @@ export default function GenerateNotesPage() {
   useEffect(() => {
     const PAGE_TITLE = t('generate.title');
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current && !isLoadingAll && soundMode === 'full') {
+      if (!pageTitleSpokenRef.current && !isLoadingAll) {
         speak(PAGE_TITLE, { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, isLoadingAll, t, soundMode]);
+  }, [speak, isLoadingAll, t]);
 
   useEffect(() => {
     if (transcript) setTopic(transcript);
@@ -86,27 +93,45 @@ export default function GenerateNotesPage() {
     playClickSound();
     const file = e.target.files?.[0];
     if (file) {
+      handleRemoveFile(false); // Clear previous file state
+      setIsProcessingFile(true);
       if (file.type.startsWith('image/')) {
         if (file.size > 2 * 1024 * 1024) { // 2MB limit for images
           toast({ title: "Image too large", description: "Please upload an image smaller than 2MB.", variant: "destructive" });
-          return;
+          setIsProcessingFile(false); return;
         }
         const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-          setImageData(reader.result as string);
-        };
+        reader.onloadend = () => { setImagePreview(reader.result as string); setImageData(reader.result as string); };
         reader.readAsDataURL(file);
+      } else if (file.type === 'application/pdf') {
+        if (file.size > 5 * 1024 * 1024) {
+          toast({ title: "PDF too large", description: "Please upload a PDF smaller than 5MB.", variant: "destructive" });
+          setIsProcessingFile(false); return;
+        }
+        setPdfFileName(file.name);
+        try {
+          const text = await extractTextFromPdf(file);
+          setPdfText(text);
+          toast({ title: "PDF Processed", description: "Text extracted and will be used as primary source material." });
+        } catch (err) {
+          toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
+          setPdfFileName(null);
+        }
+      } else if (file.type.startsWith('audio/')) {
+        toast({ title: "Feature Coming Soon", description: "Audio file processing is not yet available.", variant: "default" });
       } else {
-        toast({ title: "Unsupported File", description: "This feature currently supports Image uploads.", variant: "default" });
+        toast({ title: "Unsupported File", description: "This feature supports Image and PDF uploads.", variant: "default" });
       }
+      setIsProcessingFile(false);
     }
   };
 
-  const handleRemoveImage = () => {
-    playClickSound();
+  const handleRemoveFile = (withSound = true) => {
+    if (withSound) playClickSound();
     setImagePreview(null);
     setImageData(null);
+    setPdfFileName(null);
+    setPdfText(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -124,7 +149,7 @@ export default function GenerateNotesPage() {
     setIsLoadingAll(true);
     pageTitleSpokenRef.current = true; 
 
-    if (soundMode === 'full') speak("Generating all study materials. This may take a moment.", { priority: 'optional' });
+    speak("Generating all study materials. This may take a moment.", { priority: 'essential' });
 
     const trimmedTopic = topic.trim();
     try {
@@ -138,7 +163,11 @@ export default function GenerateNotesPage() {
     } catch (e) { console.error("Failed to save recent topic to localStorage", e); }
 
     try {
-      const combinedResult: CombinedStudyMaterialsOutput = await generateNotesAction({ topic: trimmedTopic, image: imageData || undefined });
+      const combinedResult: CombinedStudyMaterialsOutput = await generateNotesAction({ 
+        topic: trimmedTopic, 
+        image: imageData || undefined,
+        notes: pdfText || undefined
+      });
       let navigationSuccess = false;
 
       // Handle notes
@@ -147,7 +176,7 @@ export default function GenerateNotesPage() {
         navigationSuccess = true;
         completeQuest1(); // Mark quest 1 as complete
       } else {
-        setNotesError(t('generate.toast.notesErrorDesc'));
+        setNotesError(combinedResult.notesError || t('generate.toast.notesErrorDesc'));
       }
 
       // Handle quiz
@@ -178,7 +207,7 @@ export default function GenerateNotesPage() {
             description: successMessage,
           });
 
-          if (soundMode === 'full') speak("Study materials are ready!", { priority: 'optional' });
+          speak("Study materials are ready!", { priority: 'essential' });
           router.push(`/study?topic=${encodeURIComponent(trimmedTopic)}`);
 
       } else {
@@ -191,12 +220,11 @@ export default function GenerateNotesPage() {
       setQuizError("Could not attempt quiz generation due to initial notes failure.");
       setFlashcardsError("Could not attempt flashcard generation due to initial notes failure.");
       toast({ title: t('generate.toast.generationFailed'), description: err.message, variant: 'destructive' });
-      if (soundMode !== 'muted') speak("Sorry, failed to generate study materials.", { priority: 'essential' });
+      speak("Sorry, failed to generate study materials.", { priority: 'essential' });
     } finally {
       setIsLoadingAll(false);
       setTopic('');
-      setImageData(null);
-      setImagePreview(null);
+      handleRemoveFile(false);
     }
   };
   
@@ -220,10 +248,10 @@ export default function GenerateNotesPage() {
               aria-label="Study Topic"
               onKeyDown={(e) => e.key === 'Enter' && !isLoadingAll && topic.trim().length >=3 && handleGenerateAllMaterials()}
             />
-            <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')}>
-              <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+            <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')} disabled={isLoadingAll || isProcessingFile}>
+              {isProcessingFile ? <Loader2 className="w-5 h-5 animate-spin"/> : <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />}
             </Button>
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf,audio/*" className="hidden" />
              {browserSupportsSpeechRecognition && (
               <Button
                 variant="outline"
@@ -246,10 +274,20 @@ export default function GenerateNotesPage() {
                 variant="ghost"
                 size="icon"
                 className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80"
-                onClick={handleRemoveImage}
+                onClick={() => handleRemoveFile()}
               >
                 <XCircle className="h-5 w-5" />
               </Button>
+            </div>
+          )}
+
+          {pdfFileName && (
+            <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate flex-1" title={pdfFileName}>{pdfFileName}</span>
+                <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
+                    <XCircle className="w-4 h-4 text-destructive/70" />
+                </Button>
             </div>
           )}
           

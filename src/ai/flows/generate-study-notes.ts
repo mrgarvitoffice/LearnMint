@@ -14,6 +14,7 @@ import { generateImageFromPrompt } from './generate-image-from-prompt';
 
 const GenerateStudyNotesInputSchema = z.object({
   topic: z.string().describe('The academic topic for which to generate study notes.'),
+  notes: z.string().optional().describe('Optional user-provided notes to use as the primary source material for generation.'),
   image: z.string().optional().describe(
     "An optional image provided by the user as a data URI for context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
   ),
@@ -34,8 +35,16 @@ const generateStudyNotesPrompt = aiForNotes.definePrompt({
 
 Topic: {{{topic}}}
 
+{{#if notes}}
+---
+IMPORTANT: You MUST base the generated notes primarily on the following text provided by the user. The topic above provides context, but the content below is the main source of truth.
+USER-PROVIDED NOTES:
+{{{notes}}}
+---
+{{/if}}
+
 {{#if image}}
-The user has also provided an image for additional context. Use it to enhance the notes where relevant, especially if it helps clarify a concept mentioned in the topic.
+The user has also provided an image for additional context. Use it to enhance the notes where relevant, especially if it helps clarify a concept mentioned in the topic or notes.
 User's Image: {{media url=image}}
 {{/if}}
 
