@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle, signInAsGuest } = useAuth();
@@ -39,8 +41,9 @@ export default function SignInPage() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      toast({ title: "Sign-in successful!", description: "Welcome back to LearnMint." });
-      // The AuthContext will handle the redirect.
+      // On success, AuthContext will update and the main layout will redirect.
+      // A direct redirect can be faster and more reliable.
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -50,7 +53,6 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -70,7 +72,7 @@ export default function SignInPage() {
   const handleGuestSignIn = async () => {
     setIsLoading(true);
     await signInAsGuest();
-    // No finally block to set loading false, as the context change will trigger a redirect.
+    router.replace('/');
   }
 
   return (

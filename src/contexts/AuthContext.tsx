@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // Start the redirect process. The result will be handled on the page the user lands on.
+    // Start the redirect process. The result will be handled by the AuthLayout.
     await signInWithRedirect(auth, provider);
   };
 
