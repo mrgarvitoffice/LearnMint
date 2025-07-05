@@ -31,7 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Start as true
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -56,74 +56,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // This is the main effect for handling authentication state.
   useEffect(() => {
-    // Process the redirect result from Google as soon as the app loads.
+    // onAuthStateChanged is the single source of truth for the user's state.
+    // It handles both initial load and subsequent login/logout events.
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // User is signed in.
+        await handleUserCreationInFirestore(firebaseUser);
+        setUser(firebaseUser);
+      } else {
+        // User is signed out.
+        setUser(null);
+      }
+      // CRITICAL: Only set loading to false AFTER we have a definitive answer.
+      // This prevents race conditions on page load.
+      setLoading(false);
+    });
+
+    // Separately, process the redirect result to catch specific errors from Google.
+    // This doesn't set the user; onAuthStateChanged does. This completes the flow.
     getRedirectResult(auth)
-      .then((result) => {
-        // If the sign-in was successful, `result.user` will exist.
-        // `onAuthStateChanged` will handle the actual state update,
-        // but we can show a success toast here.
-        if (result?.user) {
-          toast({ title: "Sign-in Successful!", description: "Welcome! Redirecting you..." });
-        }
-      })
       .catch((error) => {
-        // Handle specific errors from the redirect flow.
         console.error("Error from getRedirectResult:", error);
-        // This error often means the domain isn't authorized in the Firebase console.
         if (error.code === 'auth/unauthorized-domain' && typeof window !== 'undefined') {
              toast({ title: "Sign-in Error: Unauthorized Domain", description: `Please add '${window.location.hostname}' to the authorized domains in your Firebase console.`, variant: "destructive", duration: 10000 });
-        } else if (error.code !== 'auth/no-redirect-result') { // Ignore the benign "no result" error
+        } else if (error.code !== 'auth/no-redirect-result') { // Ignore benign "no result" error
             toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
         }
       });
-
-    // onAuthStateChanged is the single source of truth for the user's state.
-    // It will fire after getRedirectResult completes successfully.
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // If a user is logged in, create their Firestore doc if it doesn't exist.
-        await handleUserCreationInFirestore(firebaseUser);
-      }
-      // Set the user state (it could be the user object or null).
-      setUser(firebaseUser);
-      // We are now certain of the user's login status, so we can stop loading.
-      setLoading(false);
-    });
       
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [handleUserCreationInFirestore, toast]);
 
   const signInAsGuest = async () => {
     setLoading(true);
     await signInAnonymously(auth);
-    // setLoading(false) is handled by onAuthStateChanged
+    // State update and setLoading(false) is handled by onAuthStateChanged
   };
   
   const signOutUser = async () => {
-    setLoading(true);
     await signOut(auth);
     router.push('/sign-in');
-    // setLoading(false) is handled by onAuthStateChanged
+    // State update is handled by onAuthStateChanged
   };
 
   const signInWithGoogleRedirect = async () => {
     setLoading(true); // Show loader immediately before redirecting away
-    await signInWithRedirect(auth, googleProvider);
+    try {
+      await signInWithRedirect(auth, googleProvider);
+    } catch (error: any) {
+        console.error("Error initiating Google sign-in redirect:", error);
+        toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
+        setLoading(false);
+    }
   };
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
-    // setLoading(false) is handled by onAuthStateChanged
+    // State update and setLoading(false) is handled by onAuthStateChanged
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     setLoading(true);
     await createUserWithEmailAndPassword(auth, email, password);
-    // setLoading(false) is handled by onAuthStateChanged
+    // State update and setLoading(false) is handled by onAuthStateChanged
   };
 
   const value = { user, loading, signInAsGuest, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };

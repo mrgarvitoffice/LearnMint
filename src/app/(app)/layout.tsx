@@ -37,6 +37,8 @@ function NotAuthenticatedScreen() {
 export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
+  // This is the gatekeeper for all protected routes.
+  // It waits until the auth state is definitively known.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -46,11 +48,11 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  // If loading is finished and there is a user, show the main app.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // If not loading and no user, show the access denied screen.
-  // This is the gatekeeper for all pages inside the (app) group.
+  // If loading is finished and there is no user, deny access.
   return <NotAuthenticatedScreen />;
 }

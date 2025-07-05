@@ -20,6 +20,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   }, [user, loading, router]);
 
   // While loading, or if a non-guest user is being redirected, show a loader.
+  // This prevents the sign-in page from flashing before redirecting.
   if (loading || (!loading && user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">

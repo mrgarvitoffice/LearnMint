@@ -42,14 +42,9 @@ export default function SignInPage() {
   });
 
   const handleGoogleSignIn = async () => {
-    // isLoading is handled globally by the context now
-    try {
-      await signInWithGoogleRedirect();
-      // The result is caught by the AuthProvider and navigation handled by layouts
-    } catch (error: any) {
-      console.error("Error initiating Google sign-in redirect:", error);
-      toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
-    }
+    // This just initiates the redirect. The result is handled centrally
+    // by the AuthContext when the app reloads.
+    await signInWithGoogleRedirect();
   };
 
   const handleEmailSignIn = async (data: FormData) => {
@@ -60,7 +55,8 @@ export default function SignInPage() {
     } catch (error: any) {
       console.error("Error signing in with email:", error);
       toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
-      setIsEmailSubmitting(false); // Only stop loading on error
+    } finally {
+      setIsEmailSubmitting(false);
     }
   };
   
@@ -69,10 +65,11 @@ export default function SignInPage() {
     try {
       await signInAsGuest();
       // Navigation is handled by AuthLayout
-    } catch (error: any) {
+    } catch (error: any) => {
       console.error("Error signing in as guest:", error);
       toast({ title: "Guest Sign-In Failed", description: error.message, variant: "destructive" });
-      setIsGuestSubmitting(false); // Only stop loading on error
+    } finally {
+      setIsGuestSubmitting(false);
     }
   };
 
@@ -111,7 +108,7 @@ export default function SignInPage() {
         </div>
 
         <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
-          {loading && !isEmailSubmitting && !isGuestSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+          <GoogleIcon />
           Sign In with Google
         </Button>
         

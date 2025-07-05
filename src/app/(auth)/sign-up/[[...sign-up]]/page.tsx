@@ -49,21 +49,16 @@ export default function SignUpPage() {
     try {
       await signUpWithEmail(data.email, data.password);
       // Navigation is handled by the AuthLayout
-    } catch (error: any) => {
+    } catch (error: any) {
       console.error("Error signing up with email:", error);
       toast({ title: "Sign-up Failed", description: error.message, variant: "destructive" });
-      setIsEmailSubmitting(false); // Only stop on error
+    } finally {
+      setIsEmailSubmitting(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    try {
-      await signInWithGoogleRedirect();
-      // Redirect result is handled by the AuthContext
-    } catch (error: any) {
-      console.error("Error initiating Google sign-up:", error);
-      toast({ title: "Sign-up Error", description: error.message, variant: "destructive" });
-    }
+    await signInWithGoogleRedirect();
   };
   
   const isAnyLoading = loading || isEmailSubmitting;
@@ -106,7 +101,7 @@ export default function SignUpPage() {
         </div>
 
         <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isAnyLoading}>
-          {loading && !isEmailSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
+          <GoogleIcon />
           Sign Up with Google
         </Button>
       </CardContent>
