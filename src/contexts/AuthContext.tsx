@@ -11,6 +11,8 @@ import {
   updateProfile,
   linkWithCredential,
   EmailAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
   type User,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
@@ -25,6 +27,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signInAnonymously: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,10 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
 
   const signOutUser = async () => {
-    setLoading(true);
-    await signOut(auth);
-    router.push('/sign-in');
-    setLoading(false);
+    try {
+      await signOut(auth);
+      // The onAuthStateChanged listener will handle setting user to null and loading to false.
+      // The main app layout will handle the redirect when `user` becomes null.
+      toast({ title: "Signed Out", description: "You have been successfully signed out." });
+    } catch (error: any) {
+      console.error("Error signing out:", error);
+      toast({ title: "Sign Out Error", description: error.message, variant: "destructive" });
+    }
   };
   
   const signInAnonymously = async () => {
@@ -127,6 +135,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description = error.message;
       }
       toast({ title: "Sign-in Failed", description, variant: "destructive" });
+    } finally {
+        setLoading(false);
+    }
+  };
+  
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      // The onAuthStateChanged listener will handle the rest, including Firestore updates.
+      toast({ title: "Welcome!", description: "You are now signed in with Google." });
+    } catch (error: any) {
+      let description = "An unknown error occurred.";
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        description = "An account already exists with the same email address but different sign-in credentials.";
+      } else {
+        description = error.message;
+      }
+      toast({ title: "Google Sign-in Failed", description: description, variant: "destructive" });
     } finally {
         setLoading(false);
     }
@@ -171,7 +199,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, loading, signOutUser, signInWithEmail, signUpWithEmail, signInAnonymously };
+  const value = { user, loading, signOutUser, signInWithEmail, signUpWithEmail, signInAnonymously, signInWithGoogle };
 
   return (
     <AuthContext.Provider value={value}>
