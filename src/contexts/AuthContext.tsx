@@ -5,9 +5,7 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import {
   onAuthStateChanged,
   signOut,
-  signInWithRedirect,
   signInWithPopup,
-  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInAnonymously,
@@ -89,14 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the rest
+      // onAuthStateChanged will handle the rest, including loading state
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       let description = error.message;
       if (error.code === 'auth/popup-closed-by-user') {
-        description = "The sign-in popup was closed before completion.";
+        description = "The sign-in popup was closed before completion. This can happen if the application's domain is not authorized in the Firebase console.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' to the authorized domains in your Firebase console.`;
+        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' to the authorized domains in your Firebase console. See the README for a step-by-step guide.`;
       } else if (error.code === 'auth/popup-blocked') {
         description = "Popup blocked by browser. Please allow popups for this site and try again.";
       }
