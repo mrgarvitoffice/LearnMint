@@ -54,16 +54,6 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6">
        <div className="flex items-center gap-2">
-          {user && (
-            <Link href="/profile" className="flex items-center">
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={user.isAnonymous ? undefined : user.photoURL || undefined} alt={user.displayName || "User"} />
-                <AvatarFallback>
-                  {user.isAnonymous ? <User className="h-5 w-5" /> : user.displayName ? user.displayName.charAt(0).toUpperCase() : <User />}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">

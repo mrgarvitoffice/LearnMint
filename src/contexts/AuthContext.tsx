@@ -75,24 +75,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [toast]);
   
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Always handle Firestore update on auth state change to catch profile updates
-        await handleUserCreationInFirestore(firebaseUser);
-        
-        // If the local state is out of sync with the Firebase user object (e.g., after profile update)
-        // we update the local state to trigger re-renders with the new info.
-        if (JSON.stringify(user) !== JSON.stringify(firebaseUser)) {
-           setUser(firebaseUser);
-        }
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        // Always handle Firestore update on auth state change to catch profile updates.
+        await handleUserCreationInFirestore(currentUser);
+        // The user object from onAuthStateChanged is the source of truth.
+        setUser(currentUser);
       } else {
         setUser(null);
       }
       setLoading(false);
     });
 
+    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [handleUserCreationInFirestore, user]);
+  }, [handleUserCreationInFirestore]);
   
 
   const signOutUser = async () => {
