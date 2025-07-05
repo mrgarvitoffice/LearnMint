@@ -88,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await firebaseSignInAnonymously(auth);
       toast({ title: "Welcome, Guest!", description: "You can now explore all features." });
-      router.push('/');
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
@@ -101,13 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Fetch user from Firestore to get displayName for the toast
       const userDocRef = doc(db, 'users', userCredential.user.uid);
       const userDoc = await getDoc(userDocRef);
       const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
       
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
-      router.push('/');
     } catch (error: any) {
       let description = "An unknown error occurred.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -126,34 +123,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const currentUser = auth.currentUser;
 
-      // Handle upgrading a guest account to a permanent one
       if (currentUser && currentUser.isAnonymous) {
         const credential = EmailAuthProvider.credential(email, password);
-        // Link guest account to the new email/password credential
         const linkResult = await linkWithCredential(currentUser, credential);
         const linkedUser = linkResult.user;
         
-        // Update profile with display name
         await updateProfile(linkedUser, { displayName });
-
-        // Ensure user document is created/updated in Firestore
         await handleUserCreationInFirestore({ ...linkedUser, displayName, email });
         
-        // Manually update the local user state to reflect the upgrade
         setUser({ ...linkedUser, displayName, email, isAnonymous: false });
         
         toast({ title: `Welcome, ${displayName}!`, description: "Your account has been upgraded and saved." });
-        router.push('/');
 
       } else {
-        // Handle standard new user sign-up
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         if (userCredential.user) {
           await updateProfile(userCredential.user, { displayName });
           await handleUserCreationInFirestore({ ...userCredential.user, displayName });
-          // onAuthStateChanged will set the user, so we can just redirect
           toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
-          router.push('/');
         }
       }
     } catch (error: any) {
