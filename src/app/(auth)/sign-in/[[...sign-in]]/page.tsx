@@ -1,10 +1,11 @@
+
 "use client";
 
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -31,58 +32,73 @@ export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
   const router = useRouter();
-  const [isLoadingEmail, setIsLoadingEmail] = useState(false);
-  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
-  const [isLoadingGuest, setIsLoadingGuest] = useState(false);
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true); // Start as true
-
-  const isAnyLoading = isLoadingEmail || isLoadingGoogle || isLoadingGuest || isProcessingRedirect;
+  const [isPageLoading, setIsPageLoading] = useState(true); // Page-level loading state
+  const [isSubmitting, setIsSubmitting] = useState(false); // For form submissions
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
 
-  // This hook is crucial for handling the result of signInWithRedirect
   useEffect(() => {
-    const processRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          toast({ title: "Signed in with Google!", description: "Welcome back! Redirecting..." });
+    let isMounted = true;
 
-          // Ensure user document exists in Firestore
-          const userRef = doc(db, 'users', result.user.uid);
-          const docSnap = await getDoc(userRef);
-          if (!docSnap.exists()) {
-            await setDoc(userRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              displayName: result.user.displayName,
-              photoURL: result.user.photoURL,
-              createdAt: serverTimestamp(),
-            });
-          }
-          // Redirect to dashboard on successful login
-          router.replace('/'); // The dashboard is at the root of the app
+    // This function checks for a redirect result from Google and handles user creation
+    const handleGoogleRedirect = async () => {
+        try {
+            const result = await getRedirectResult(auth);
+            if (result && result.user && isMounted) {
+                toast({ title: "Signed in with Google!", description: "Welcome back! Setting up your session..." });
+
+                // Ensure user document exists in Firestore
+                const userRef = doc(db, 'users', result.user.uid);
+                const docSnap = await getDoc(userRef);
+                if (!docSnap.exists()) {
+                    await setDoc(userRef, {
+                        uid: result.user.uid,
+                        email: result.user.email,
+                        displayName: result.user.displayName,
+                        photoURL: result.user.photoURL,
+                        createdAt: serverTimestamp(),
+                    });
+                }
+                // The onAuthStateChanged listener below will handle the redirect
+            }
+        } catch (error: any) {
+            console.error("Google Redirect Error:", error);
+            toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
         }
-      } catch (error: any) {
-        console.error("Google Redirect Error:", error);
-        toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
-      } finally {
-        setIsProcessingRedirect(false); // Stop the main loader
-      }
     };
+    
+    // Attempt to handle the redirect first.
+    handleGoogleRedirect().finally(() => {
+        // Then, set up the primary auth state listener.
+        // This will run AFTER getRedirectResult has been attempted.
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!isMounted) return;
 
-    processRedirect();
+            if (user && !user.isAnonymous) {
+                // If a user is found (either from the redirect or an existing session), navigate to dashboard
+                router.replace('/'); 
+            } else {
+                // If no user, or user is a guest, stop the loading state and show the sign-in form
+                setIsPageLoading(false);
+            }
+        });
+        
+        return () => {
+            isMounted = false;
+            unsubscribe();
+        };
+    });
+
   }, [router, toast]);
 
-
   const onEmailSubmit = async (data: SignInFormData) => {
-    setIsLoadingEmail(true);
+    setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      router.replace('/');
+      // The useEffect hook with onAuthStateChanged will handle the redirect
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -92,24 +108,25 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoadingEmail(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoadingGoogle(true);
+    setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
-    // This will redirect the user to Google's sign-in page. The result is handled by the useEffect hook.
-    await signInWithRedirect(auth, provider).catch((error) => {
-        console.error("Google Sign In Redirect Error:", error);
-        toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
-        setIsLoadingGoogle(false);
-    });
+    try {
+      await signInWithRedirect(auth, provider);
+      // The redirect will happen, and the result will be handled by the useEffect on page load.
+    } catch (error) {
+      console.error("Google Sign In Redirect Error:", error);
+      toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
+      setIsSubmitting(false);
+    }
   };
 
   const handleGuestSignIn = async () => {
-    setIsLoadingGuest(true);
+    setIsSubmitting(true);
     try {
       await signInAsGuest();
       toast({ title: "Signed in as guest", description: "Redirecting..." });
@@ -117,13 +134,18 @@ export default function SignInPage() {
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
-    } finally {
-        setIsLoadingGuest(false);
+       setIsSubmitting(false);
     }
   }
 
-  // A full page loader could be shown here if `isProcessingRedirect` is true
-  // but for a better user experience, we just show loaders on the buttons.
+  if (isPageLoading) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-transparent">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="mt-3 text-lg">Checking authentication status...</p>
+      </div>
+    );
+  }
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -135,12 +157,12 @@ export default function SignInPage() {
       <CardContent className="space-y-4">
 
         <div className="space-y-2">
-           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isAnyLoading}>
-              {isLoadingGoogle || isProcessingRedirect ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
               Sign In with Google
             </Button>
-            <Button variant="secondary" className="w-full" onClick={handleGuestSignIn} disabled={isAnyLoading}>
-              {isLoadingGuest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
+            <Button variant="secondary" className="w-full" onClick={handleGuestSignIn} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
               Continue as Guest
             </Button>
         </div>
@@ -157,16 +179,16 @@ export default function SignInPage() {
         <form onSubmit={handleSubmit(onEmailSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" {...register('email')} disabled={isAnyLoading} />
+            <Input id="email" type="email" placeholder="you@example.com" {...register('email')} disabled={isSubmitting} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isAnyLoading} />
+            <Input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isSubmitting} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isAnyLoading}>
-            {isLoadingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign In
           </Button>
         </form>
