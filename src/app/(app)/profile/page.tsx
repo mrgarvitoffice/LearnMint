@@ -1,10 +1,11 @@
 
 "use client";
 
+import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Mail, KeyRound, LogOut, CheckCircle, Brain } from 'lucide-react';
+import { Mail, KeyRound, LogOut, CheckCircle, Brain, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuests } from '@/contexts/QuestContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -26,17 +27,26 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 );
 
 export default function ProfilePage() {
-  const { user, signOutUser } = useAuth();
+  const { user, loading: authLoading, signOutUser } = useAuth();
   const { quests } = useQuests();
   const { t } = useTranslation();
   const router = useRouter();
 
-  if (!user || user.isAnonymous) {
-      // FIX: Redirect guest users to the sign-in page.
-      if (typeof window !== 'undefined') {
-          router.replace('/sign-in');
-      }
-      return null;
+  useEffect(() => {
+    // Wait until auth state is resolved before redirecting.
+    if (!authLoading && (!user || user.isAnonymous)) {
+      router.replace('/sign-in');
+    }
+  }, [user, authLoading, router]);
+
+  // Show a loading screen while auth is resolving or if the user is a guest about to be redirected.
+  if (authLoading || !user || user.isAnonymous) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="mt-3 text-lg">Loading Profile...</p>
+      </div>
+    );
   }
 
   const userDisplayName = user.displayName || user.email?.split('@')[0] || "User";
