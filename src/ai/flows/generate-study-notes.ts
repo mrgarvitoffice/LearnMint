@@ -1,12 +1,14 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview An AI agent for generating comprehensive study notes.
+ *
+ * - generateStudyNotes - Handles the study note generation process.
+ * - GenerateStudyNotesInput - The input type for the function.
+ * - GenerateStudyNotesOutput - The return type for the function.
+ */
 
 'use server';
-/**
- * @fileOverview A study note generation AI agent.
- *
- * - generateStudyNotes - A function that handles the study note generation process.
- * - GenerateStudyNotesInput - The input type for the generateStudyNotes function.
- * - GenerateStudyNotesOutput - The return type for the generateStudyNotes function.
- */
 
 import {aiForNotes} from '@/ai/genkit'; 
 import {z} from 'zod';
@@ -201,3 +203,5 @@ export async function generateStudyNotes(input: GenerateStudyNotesInput): Promis
     throw new Error(clientErrorMessage);
   }
 }
+
+    

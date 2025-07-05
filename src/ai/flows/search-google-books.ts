@@ -1,12 +1,14 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview A Genkit flow to search for Google Books.
  *
  * - searchGoogleBooks - A function that searches Google Books based on a query.
- * - GoogleBooksSearchInput - The input type for the searchGoogleBooks function.
- * - GoogleBooksSearchOutput - The return type for the searchGoogleBooks function.
+ * - GoogleBooksSearchInput - The input type for the function.
+ * - GoogleBooksSearchOutput - The return type for the function.
  */
+
+'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
@@ -123,3 +125,5 @@ export async function searchGoogleBooks(input: GoogleBooksSearchInput): Promise<
     return { books: [] };
   }
 }
+
+    

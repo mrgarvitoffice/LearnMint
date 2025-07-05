@@ -1,3 +1,7 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 
 import type {NextConfig} from 'next';
 
@@ -96,15 +100,10 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Add other news image hostnames here as they appear. For example:
-      // {
-      //   protocol: 'https',
-      //   hostname: 'some.other-news-image-domain.com',
-      //   port: '',
-      //   pathname: '/**',
-      // },
     ],
   },
 };
 
 export default nextConfig;
+
+    

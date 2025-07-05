@@ -1,4 +1,7 @@
-
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 import type { Config } from "tailwindcss";
 
 const config = {
@@ -79,3 +82,5 @@ const config = {
 } satisfies Config
 
 export default config;
+
+    

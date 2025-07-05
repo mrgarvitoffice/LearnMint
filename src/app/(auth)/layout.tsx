@@ -1,3 +1,11 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * 
+ * This layout component is for the authentication pages (sign-in, sign-up).
+ * It ensures that already logged-in (non-guest) users are redirected away from
+ * these pages to the main application dashboard, preventing redundant logins.
+ */
 
 "use client";
 
@@ -20,7 +28,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   }, [user, loading, router]);
 
   // While loading, or if a permanent user exists and is about to be redirected, show a loader.
-  // This prevents the sign-in page from flashing for logged-in users, but allows guests to see it.
+  // This prevents the sign-in page from flashing for logged-in users.
   if (loading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
@@ -47,3 +55,5 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+    

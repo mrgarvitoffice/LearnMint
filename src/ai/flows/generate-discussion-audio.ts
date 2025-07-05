@@ -1,6 +1,6 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
  *
  * - generateDiscussionAudio - A function that handles the discussion generation process.
@@ -8,7 +8,9 @@
  * - GenerateDiscussionAudioOutput - The return type for this function.
  */
 
-import { ai, aiForTTS } from '@/ai/genkit';
+'use server';
+
+import { aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -40,7 +42,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 }
 
 // Prompt to generate the dialogue script
-const dialoguePrompt = aiForTTS.definePrompt({ // Use the same client as the flow
+const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: z.object({ content: z.string() }) },
@@ -115,3 +117,5 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
     };
   }
 );
+
+    

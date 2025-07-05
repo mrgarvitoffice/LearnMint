@@ -1,12 +1,14 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview A Genkit flow to search for YouTube videos.
  *
  * - searchYoutubeVideos - A function that searches YouTube based on a query.
- * - YoutubeSearchInput - The input type for the searchYoutubeVideos function.
- * - YoutubeSearchOutput - The return type for the searchYoutubeVideos function.
+ * - YoutubeSearchInput - The input type for the function.
+ * - YoutubeSearchOutput - The return type for the function.
  */
+
+'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
@@ -122,3 +124,5 @@ export async function searchYoutubeVideos(input: YoutubeSearchInput): Promise<Yo
     return { videos: [] };
   }
 }
+
+    

@@ -1,11 +1,14 @@
-
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* New Futuristic "Elite" Dark Theme based on user image */
+    /* Futuristic "Elite" Dark Theme */
     --background: 222 47% 11%;      /* Deep Midnight Blue */
     --foreground: 210 40% 98%;       /* Light Cyan/White */
 
@@ -107,22 +110,15 @@
     --chart-5: 340 75% 50%;
   }
 
-  /* Font Size Variables - This approach ensures all rem-based units scale correctly */
-  html.font-size-small {
-    font-size: 15px;
-  }
-  html.font-size-normal {
-    font-size: 16px; /* Default */
-  }
-  html.font-size-large {
-    font-size: 17.5px;
-  }
+  /* Font Size Variables for accessibility */
+  html.font-size-small { font-size: 15px; }
+  html.font-size-normal { font-size: 16px; /* Default */ }
+  html.font-size-large { font-size: 17.5px; }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
+
   body {
     @apply text-foreground;
     @apply min-h-screen flex flex-col;
@@ -130,8 +126,8 @@
     font-weight: 400;
     letter-spacing: 0.3px;
 
-    /* CSS-only background to create the hacker aesthetic without an external image */
-    background-color: #00030a; /* A deep black-blue fallback */
+    /* Futuristic background gradient for dark mode */
+    background-color: #00030a; /* Fallback */
     background-image: 
       radial-gradient(at 0% 0%, hsla(180, 100%, 50%, 0.15) 0px, transparent 50%),
       radial-gradient(at 98% 98%, hsla(170, 100%, 50%, 0.1) 0px, transparent 50%),
@@ -151,86 +147,25 @@
     50% { opacity: 0.5; transform: scale(1.2); }
   }
 
-  .animate-pulse-status {
-    animation: pulse-status 2s infinite ease-in-out;
-  }
+  .animate-pulse-status { animation: pulse-status 2s infinite ease-in-out; }
 
-  /* Custom styles for prose content (e.g., generated notes) */
-  .prose h1, .dark .prose h1, .light .prose h1 {
-    color: hsl(var(--primary));
-    font-size: 2.25rem;
-    @apply font-extrabold mt-0 mb-6 first:mt-0;
-  }
-  
-  .prose h2, .dark .prose h2, .light .prose h2 {
-    color: hsl(var(--foreground));
-    font-size: 1.875rem;
-    @apply font-bold mt-8 mb-4 border-b pb-2;
-  }
-  
-  .prose h3, .dark .prose h3, .light .prose h3 {
-    color: hsl(var(--foreground));
-    font-size: 1.5rem;
-    @apply font-semibold mt-6 mb-3;
-  }
-  
-  .prose h4, .dark .prose h4, .light .prose h4 {
-    color: hsl(var(--foreground));
-    font-size: 1.25rem;
-    @apply font-semibold mt-4 mb-2;
-  }
-
-  .prose blockquote {
-    @apply border-l-4 px-4 py-2 my-4 rounded-r-md;
-    border-color: hsl(var(--primary));
-    background-color: hsl(var(--primary) / 0.1);
-    color: hsl(var(--primary-foreground) / 0.95);
-  }
-  
-  .dark .prose blockquote {
-    color: hsl(var(--foreground));
-  }
-  .light .prose blockquote {
-    color: hsl(var(--card-foreground));
-  }
-   .prose blockquote p { 
-    font-size: 1rem; 
-    @apply mb-0; 
-  }
-  .prose blockquote p:last-child {
-    @apply mb-0;
-  }
-
-  .prose div[data-ai-hint] { 
-    @apply my-6; 
-  }
+  /* Custom styles for Markdown content from AI */
+  .prose h1, .dark .prose h1, .light .prose h1 { color: hsl(var(--primary)); font-size: 2.25rem; @apply font-extrabold mt-0 mb-6 first:mt-0; }
+  .prose h2, .dark .prose h2, .light .prose h2 { color: hsl(var(--foreground)); font-size: 1.875rem; @apply font-bold mt-8 mb-4 border-b pb-2; }
+  .prose h3, .dark .prose h3, .light .prose h3 { color: hsl(var(--foreground)); font-size: 1.5rem; @apply font-semibold mt-6 mb-3; }
+  .prose h4, .dark .prose h4, .light .prose h4 { color: hsl(var(--foreground)); font-size: 1.25rem; @apply font-semibold mt-4 mb-2; }
+  .prose blockquote { @apply border-l-4 px-4 py-2 my-4 rounded-r-md; border-color: hsl(var(--primary)); background-color: hsl(var(--primary) / 0.1); }
+  .dark .prose blockquote { color: hsl(var(--foreground)); }
+  .light .prose blockquote { color: hsl(var(--card-foreground)); }
+  .prose blockquote p { font-size: 1rem; @apply mb-0; }
+  .prose blockquote p:last-child { @apply mb-0; }
+  .prose div[data-ai-hint] { @apply my-6; }
 }
 
-/* NProgress styling */
-#nprogress {
-  pointer-events: none;
-}
-#nprogress .bar {
-  background: hsl(var(--primary));
-  position: fixed;
-  z-index: 10310;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-}
-#nprogress .peg {
-  display: block;
-  position: absolute;
-  right: 0px;
-  width: 100px;
-  height: 100%;
-  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary));
-  opacity: 1.0;
-  -webkit-transform: rotate(3deg) translate(0px, -4px);
-      -ms-transform: rotate(3deg) translate(0px, -4px);
-          transform: rotate(3deg) translate(0px, -4px);
-}
-#nprogress .spinner {
-  display: none;
-}
+/* NProgress (top loading bar) styling */
+#nprogress { pointer-events: none; }
+#nprogress .bar { background: hsl(var(--primary)); position: fixed; z-index: 10310; top: 0; left: 0; width: 100%; height: 3px; }
+#nprogress .peg { display: block; position: absolute; right: 0px; width: 100px; height: 100%; box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary)); opacity: 1.0; transform: rotate(3deg) translate(0px, -4px); }
+#nprogress .spinner { display: none; }
+
+    

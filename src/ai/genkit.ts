@@ -1,3 +1,13 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * 
+ * This file configures the Genkit AI clients used throughout the application.
+ * It intelligently selects API keys from environment variables, allowing for
+ * separate keys for different features (e.g., notes, chatbot, images) with
+ * a robust fallback to the main GOOGLE_API_KEY. This provides flexibility
+ * for managing API usage and permissions.
+ */
 
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
@@ -8,13 +18,12 @@ const GOOGLE_API_KEY_NOTES = process.env.GOOGLE_API_KEY_NOTES;
 const GOOGLE_API_KEY_CHATBOT = process.env.GOOGLE_API_KEY_CHATBOT;
 const GOOGLE_API_KEY_IMAGES = process.env.GOOGLE_API_KEY_IMAGES;
 const GOOGLE_API_KEY_QUIZZES = process.env.GOOGLE_API_KEY_QUIZZES;
-const GOOGLE_API_KEY_TTS = process.env.GOOGLE_API_KEY_TTS; // Added for Text-to-Speech
+const GOOGLE_API_KEY_TTS = process.env.GOOGLE_API_KEY_TTS;
 
 // A robust helper to check if a key is a known placeholder or simply missing.
 const isApiKeyMissingOrPlaceholder = (keyToCheck?: string, keyName?: string) => {
   if (!keyToCheck || keyToCheck.trim() === '') {
     if (keyName) {
-      // Log a warning if a specific key is missing, but not if it's the main key (which gets a critical error)
       console.warn(
         `LearnMint AI Config: ${keyName} is not set. The feature will use the main GOOGLE_API_KEY as a fallback.`
       );
@@ -115,3 +124,5 @@ export const aiForTTS = genkit({
     plugins: [googleAI({ apiKey: ttsApiKey })],
     enableTracingAndMetrics: true,
 });
+
+    

@@ -1,12 +1,14 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview An AI agent that creates flashcards based on provided notes.
+ *
+ * - generateFlashcardsFromNotes - Handles flashcard generation from notes.
+ * - GenerateFlashcardsFromNotesInput - Input type for the generation function.
+ * - GenerateFlashcardsOutput - Return type (shared with generate-flashcards.ts).
+ */
 
 'use server';
-/**
- * @fileOverview A flashcard generation AI agent that creates flashcards based on provided notes.
- *
- * - generateFlashcardsFromNotes - A function that handles the flashcard generation process from notes.
- * - GenerateFlashcardsFromNotesInput - The input type for this function.
- * - GenerateFlashcardsOutput - The return type (shared with generate-flashcards.ts).
- */
 
 import {aiForQuizzes} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -38,7 +40,7 @@ const prompt = aiForQuizzes.definePrompt({
   name: 'generateFlashcardsFromNotesPrompt',
   model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateFlashcardsFromNotesInputSchema},
-  output: {schema: GenerateFlashcardsOutputSchema}, // Use the locally defined output schema
+  output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an expert educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes. Each flashcard should have a key term and its corresponding definition.
 
 Study Notes Content:
@@ -70,3 +72,5 @@ const generateFlashcardsFromNotesFlow = aiForQuizzes.defineFlow(
     return output;
   }
 );
+
+    

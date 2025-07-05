@@ -1,6 +1,6 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview An AI agent that generates a text summary from content (text or image).
  * NOTE: This flow has been updated to ONLY generate text. Audio is now handled client-side.
  *
@@ -8,6 +8,8 @@
  * - GenerateAudioSummaryInput - The input type for this function.
  * - GenerateAudioSummaryOutput - The return type for this function.
  */
+
+'use server';
 
 import { aiForNotes, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
@@ -105,3 +107,5 @@ const generateAudioSummaryFlow = aiForNotes.defineFlow(
     };
   }
 );
+
+    

@@ -1,12 +1,14 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview An AI chatbot with Holo the Wise Wolf's persona.
  *
  * - holoChatbot - A function that handles the chatbot interaction with Holo.
  * - HoloChatbotInput - The input type for the holoChatbot function.
  * - HoloChatbotOutput - The return type for the holoChatbot function.
  */
+
+'use server';
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -96,3 +98,5 @@ const holoChatbotFlow = aiForChatbot.defineFlow(
     return output;
   }
 );
+
+    

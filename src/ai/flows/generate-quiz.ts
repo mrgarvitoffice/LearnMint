@@ -1,12 +1,14 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview A quiz generation AI agent.
  *
  * - generateQuiz - A function that handles the quiz generation process.
  * - GenerateQuizInput - The input type for the generateQuiz function.
  * - GenerateQuizOutput - The return type for the generateQuiz function.
  */
+
+'use server';
 
 import {aiForQuizzes} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -74,3 +76,5 @@ export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQu
     throw new Error(clientErrorMessage);
   }
 }
+
+    

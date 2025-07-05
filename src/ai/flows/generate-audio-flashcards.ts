@@ -1,6 +1,6 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview A flashcard generation AI agent that creates flashcards.
  * NOTE: This flow has been updated to ONLY generate text. Audio is now handled client-side.
  *
@@ -8,6 +8,8 @@
  * - GenerateAudioFlashcardsInput - The input type for this function.
  * - GenerateAudioFlashcardsOutput - The return type for this function.
  */
+
+'use server';
 
 import { aiForQuizzes } from '@/ai/genkit';
 import { z } from 'zod';
@@ -67,3 +69,5 @@ const generateAudioFlashcardsFlow = aiForQuizzes.defineFlow(
     };
   }
 );
+
+    

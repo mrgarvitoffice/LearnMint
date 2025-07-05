@@ -1,4 +1,7 @@
-
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 'use client' // Error components must be Client Components
 
 import { useEffect } from 'react'
@@ -48,3 +51,5 @@ export default function GlobalError({
     </div>
   )
 }
+
+    

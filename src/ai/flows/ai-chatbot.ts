@@ -1,12 +1,14 @@
-
-'use server';
 /**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
  * @fileOverview An AI chatbot with Satoru Gojo's persona.
  *
  * - gojoChatbot - A function that handles the chatbot interaction.
  * - GojoChatbotInput - The input type for the gojoChatbot function.
  * - GojoChatbotOutput - The return type for the gojoChatbot function.
  */
+
+'use server';
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -97,3 +99,5 @@ const gojoChatbotFlow = aiForChatbot.defineFlow(
     return output;
   }
 );
+
+    

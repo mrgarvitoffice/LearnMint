@@ -1,4 +1,11 @@
-
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * 
+ * This file is the entry point for the Genkit development server.
+ * It loads environment variables and imports all AI flow definitions
+ * so they can be discovered and tested in the Genkit Developer UI.
+ */
 import { config } from 'dotenv';
 config(); // Load .env variables
 
@@ -16,14 +23,8 @@ import '@/ai/flows/generate-flashcards-from-notes';
 import '@/ai/flows/search-youtube-videos';
 import '@/ai/flows/search-google-books';
 import '@/ai/flows/generate-image-from-prompt';
-// import '@/ai/flows/text-to-speech'; // DEPRECATED: Replaced with browser-based TTS.
 import '@/ai/flows/generate-audio-flashcards';
 import '@/ai/flows/generate-audio-summary';
 import '@/ai/flows/generate-discussion-audio';
-
-
-// The Genkit dev server will pick up flows defined with ai.defineFlow(...)
-// Just importing the files that contain ai.defineFlow is sufficient for the dev UI.
-// Ensure each flow file correctly defines its flows and any related prompts or tools.
 
     

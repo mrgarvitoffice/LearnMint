@@ -1,3 +1,11 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * 
+ * This layout component handles the main application view. It wraps all pages
+ * that require user authentication. It verifies the user's session and redirects
+ * to the sign-in page if no user is found, ensuring protected routes.
+ */
 
 "use client";
 
@@ -13,14 +21,14 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If auth has been checked and there is no user, redirect to sign-in page.
+    // If auth state has been checked and there is no user, redirect to the sign-in page.
     if (!loading && !user) {
       router.replace('/sign-in');
     }
   }, [user, loading, router]);
 
-  // While checking the auth state, show a full-screen loader.
-  // This prevents content flash and ensures we know the user's status before rendering.
+  // While checking the auth state, show a full-screen loader to prevent content
+  // flashing and ensure we know the user's status before rendering anything.
   if (loading) {
      return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
@@ -30,14 +38,14 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If loading is complete and we have a user, render the application layout.
-  // The useEffect hook above will have already initiated a redirect if no user was found.
-  // This prevents rendering the children for a logged-out user.
+  // If loading is complete and a user exists, render the main application layout.
+  // The useEffect hook above handles the redirect case, preventing this from rendering
+  // for a logged-out user.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // Fallback while redirecting. This also shows the loader to prevent flashes.
+  // Fallback loader to show while the redirect is in progress.
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -45,3 +53,5 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+    

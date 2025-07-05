@@ -1,18 +1,17 @@
-
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * 
+ * Root Page Component
+ * This component acts as the main entry point for the application's root URL ('/').
+ * Its sole purpose is to immediately redirect the user to the main dashboard.
+ */
 "use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-/**
- * Root Page Component
- *
- * This component acts as the main entry point for the application's root URL ('/').
- * Its sole purpose is to immediately redirect the user to the main dashboard at '/dashboard'.
- * The authentication status and further routing are handled by the layouts for the '/dashboard' route.
- * This resolves any ambiguity about which page should handle the root path.
- */
 export default function RootPageRedirect() {
   const router = useRouter();
 
@@ -29,3 +28,5 @@ export default function RootPageRedirect() {
     </div>
   );
 }
+
+    

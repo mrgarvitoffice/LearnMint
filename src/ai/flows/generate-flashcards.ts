@@ -1,12 +1,14 @@
-
-'use server';
 /**
- * @fileOverview Flashcard generation AI agent.
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview A flashcard generation AI agent.
  *
  * - generateFlashcards - A function that handles the flashcard generation process.
- * - GenerateFlashcardsInput - The input type for the generateFlashcards function.
- * - GenerateFlashcardsOutput - The return type for the generateFlashcards function.
+ * - GenerateFlashcardsInput - The input type for the function.
+ * - GenerateFlashcardsOutput - The return type for the function.
  */
+
+'use server';
 
 import {aiForQuizzes} from '@/ai/genkit';
 import {z} from 'zod';
@@ -16,7 +18,6 @@ const FlashcardSchema = z.object({
   definition: z.string().describe('A concise definition, explanation, or answer for the flashcard back. For complex topics, use 2-3 bullet points. Include formulas if relevant and concise enough for a flashcard.'),
 });
 
-// NOT EXPORTED as an object
 const GenerateFlashcardsInputSchema = z.object({
   topic: z.string().describe('The academic topic for which to generate flashcards.'),
   numFlashcards: z.number().min(1).max(50).describe('The number of flashcards to generate.'),
@@ -29,7 +30,6 @@ const GenerateFlashcardsInputSchema = z.object({
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
-// NOT EXPORTED as an object
 const GenerateFlashcardsOutputSchema = z.object({
   flashcards: z.array(FlashcardSchema).describe('An array of generated flashcards.'),
 });
@@ -102,3 +102,5 @@ export async function generateFlashcards(input: GenerateFlashcardsInput): Promis
     throw new Error(clientErrorMessage);
   }
 }
+
+    

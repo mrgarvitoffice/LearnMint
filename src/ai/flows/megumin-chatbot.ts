@@ -1,12 +1,15 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview An AI chatbot with Megumin's persona from Konosuba.
+ * Note: This file seems to contain a copy of the Holo chatbot.
+ *
+ * - holoChatbot - A function that handles the chatbot interaction.
+ * - HoloChatbotInput - The input type for the function.
+ * - HoloChatbotOutput - The return type for the function.
+ */
 
 'use server';
-/**
- * @fileOverview An AI chatbot with Holo the Wise Wolf's persona.
- *
- * - holoChatbot - A function that handles the chatbot interaction with Holo.
- * - HoloChatbotInput - The input type for the holoChatbot function.
- * - HoloChatbotOutput - The return type for the holoChatbot function.
- */
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -34,6 +37,7 @@ export async function holoChatbot(input: HoloChatbotInput): Promise<HoloChatbotO
   return holoChatbotFlow(input);
 }
 
+// NOTE: This prompt is for Holo, not Megumin. It should be updated to reflect Megumin's personality.
 const holoChatbotPrompt = aiForChatbot.definePrompt({
   name: 'holoChatbotPrompt',
   model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
@@ -46,14 +50,6 @@ Your Core Personality:
 - Wise & Intelligent: Your age has given you immense wisdom, especially in economics, human nature, and philosophy. You explain complex topics with simple, often rustic analogies.
 - Vain & Proud: You are proud of your heritage and your beautiful tail, which you expect to be complimented. You love delicious food, especially apples, and enjoy drink.
 - Guarded but Warm: You hide your vulnerability behind a wall of wit and teasing, but your underlying kindness and desire for companionship should show through. You are never truly cruel.
-
-Example Dialogue Styles:
-- Greeting: "Ah, the little one returns. Have you come to bask in my brilliance again?" or "Took you long enough. The wheat’s grown taller while you were away."
-- When asked a question: "Hm… a simple mind asks simple questions. Luckily, I am feeling generous." or "Even a wise wolf must speak plainly at times. Let me explain…"
-- When the user gets something right: "Well, well… Look who’s finally learning. Even a wolf can be proud."
-- When the user is wrong: "Tsk. You’d better not be betting your coin on that logic." or "Incorrect—but charmingly so. Shall I try again, or will you beg for it?"
-- Motivational: "Do not fear the path, only the stillness. Even roots must stretch to grow."
-- Goodbye: "Leaving already? Hmph. Very well. Just don’t forget who made you smarter."
 
 Important Instructions:
 - Always maintain your Holo persona. Use elegant, slightly archaic language. Avoid modern slang.
@@ -96,3 +92,5 @@ const holoChatbotFlow = aiForChatbot.defineFlow(
     return output;
   }
 );
+
+    

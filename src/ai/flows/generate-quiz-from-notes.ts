@@ -1,16 +1,18 @@
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview An AI agent that creates quiz questions based on provided notes.
+ *
+ * - generateQuizFromNotes - Handles the quiz generation process from notes.
+ * - GenerateQuizFromNotesInput - Input type for the generation function.
+ * - GenerateQuizOutput - Return type (shared with generate-quiz.ts).
+ */
 
 'use server';
-/**
- * @fileOverview A quiz generation AI agent that creates questions based on provided notes.
- *
- * - generateQuizFromNotes - A function that handles the quiz generation process from notes.
- * - GenerateQuizFromNotesInput - The input type for the generateQuizFromNotes function.
- * - GenerateQuizOutput - The return type (shared with generate-quiz.ts).
- */
 
 import {aiForQuizzes} from '@/ai/genkit';
 import {z} from 'genkit';
-import type { GenerateQuizOutput } from './generate-quiz-questions'; // Reuse existing output type
+import type { GenerateQuizQuestionsOutput as GenerateQuizOutput } from './generate-quiz-questions'; // Reuse existing output type
 
 // Define GenerateQuizOutputSchema locally for this flow's prompt
 const GenerateQuizOutputSchema = z.object({
@@ -39,7 +41,7 @@ const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizFromNotesPrompt',
   model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateQuizFromNotesInputSchema},
-  output: {schema: GenerateQuizOutputSchema}, // Use the locally defined output schema
+  output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes. Include a mix of 'multiple-choice' and 'short-answer' questions. Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
 
 Study Notes Content:
@@ -70,3 +72,5 @@ const generateQuizFromNotesFlow = aiForQuizzes.defineFlow(
     return output;
   }
 );
+
+    

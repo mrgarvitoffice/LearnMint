@@ -1,12 +1,14 @@
-
-'use server';
 /**
- * @fileOverview A quiz question generation AI agent.
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ * @fileOverview An AI agent for generating quiz questions.
  *
- * - generateQuizQuestions - A function that handles the quiz question generation process.
+ * - generateQuizQuestions - A function that handles quiz question generation.
  * - GenerateQuizQuestionsInput - The input type for this function.
  * - GenerateQuizQuestionsOutput - The return type for this function.
  */
+
+'use server';
 
 import {aiForQuizzes} from '@/ai/genkit';
 import {z} from 'zod';
@@ -19,7 +21,6 @@ const QuizQuestionSchema = z.object({
   explanation: z.string().optional().describe('A brief explanation for why the answer is correct or relevant context.'),
 });
 
-// NOT EXPORTED as an object
 const GenerateQuizQuestionsInputSchema = z.object({
   topic: z.string().describe('The academic topic or notes for which to generate quiz questions.'),
   image: z
@@ -35,7 +36,6 @@ const GenerateQuizQuestionsInputSchema = z.object({
 });
 export type GenerateQuizQuestionsInput = z.infer<typeof GenerateQuizQuestionsInputSchema>;
 
-// NOT EXPORTED as an object
 const GenerateQuizQuestionsOutputSchema = z.object({
   questions: z.array(QuizQuestionSchema).describe('An array of generated quiz questions.'),
 });
@@ -142,3 +142,5 @@ export async function generateQuizQuestions(input: GenerateQuizQuestionsInput): 
     throw new Error(clientErrorMessage);
   }
 }
+
+    
