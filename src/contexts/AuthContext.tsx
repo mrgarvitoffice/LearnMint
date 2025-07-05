@@ -87,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       await firebaseSignInAnonymously(auth);
+      router.push('/dashboard');
       toast({ title: "Welcome, Guest!", description: "You can now explore all features." });
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
