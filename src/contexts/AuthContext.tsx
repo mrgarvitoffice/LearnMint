@@ -1,17 +1,14 @@
-
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import {
   onAuthStateChanged,
   signOut,
-  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInAnonymously as firebaseSignInAnonymously, // Renamed to avoid conflict
+  signInAnonymously as firebaseSignInAnonymously,
   updateProfile,
   type User,
-  GoogleAuthProvider
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -22,7 +19,6 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOutUser: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signInAnonymously: () => Promise<void>;
@@ -37,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
-    if (user.isAnonymous) return;
+    if (!user || user.isAnonymous) return;
     
     const userRef = doc(db, 'users', user.uid);
     try {
@@ -50,6 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               photoURL: user.photoURL,
               createdAt: serverTimestamp(),
             });
+             console.log("Firestore user document created for:", user.uid);
+        } else {
+             console.log("Firestore user document already exists for:", user.uid);
         }
     } catch (error: any) {
         console.error("Firestore user creation error:", error);
@@ -60,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
     }
   }, [toast]);
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
@@ -72,51 +71,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, [handleUserCreationInFirestore]);
+  
 
   const signOutUser = async () => {
     await signOut(auth);
     router.push('/sign-in');
-  };
-
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      // Let onAuthStateChanged handle the user state and redirects.
-    } catch (error: any) {
-        console.error("Auth Popup Error:", error);
-        let description = "There was an issue with the sign-in popup.";
-        const hostname = typeof window !== 'undefined' ? window.location.hostname : 'your-domain.com';
-        const authDomain = auth.config.authDomain;
-
-        if (error.code === 'auth/popup-closed-by-user') {
-            description = "The sign-in popup was closed. Please try again.";
-        } else if (error.code === 'auth/unauthorized-domain') {
-            description = "This domain is not authorized for sign-in. Please add it to your Firebase project's authorized domains list.";
-            console.error("--- DOMAIN AUTHORIZATION ERROR ---");
-            console.error(`You MUST add the following domains to the Firebase Auth 'Authorized domains' list:`);
-            console.error(`1. Your app's hostname: %c${hostname}`, "color: yellow;");
-            console.error(`2. Your project's authDomain: %c${authDomain}`, "color: yellow;");
-            console.error("3. If developing locally, also add: %clocalhost", "color: yellow;");
-            console.error("--- END ---");
-        } else if (error.code === 'auth/account-exists-with-different-credential') {
-          description = "An account already exists with this email. Please sign in with the original method."
-        }
-        toast({ title: "Sign-in Error", description, variant: "destructive", duration: 8000 });
-        setLoading(false);
-    }
   };
   
   const signInAnonymously = async () => {
     setLoading(true);
     try {
       await firebaseSignInAnonymously(auth);
-      // onAuthStateChanged will handle the rest
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
-      setLoading(false); // Explicitly set loading to false on error
+      setLoading(false);
     }
   };
 
@@ -129,7 +98,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
       
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
-      // onAuthStateChanged will handle loading state and redirects
     } catch (error: any) {
       let description = "An unknown error occurred.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -164,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, loading, signOutUser, signInWithGoogle, signInWithEmail, signUpWithEmail, signInAnonymously };
+  const value = { user, loading, signOutUser, signInWithEmail, signUpWithEmail, signInAnonymously };
 
   return (
     <AuthContext.Provider value={value}>

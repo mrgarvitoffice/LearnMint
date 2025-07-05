@@ -1,10 +1,9 @@
-
 // This file configures and initializes the Firebase application instance.
 // It reads the configuration from environment variables and exports the initialized auth and firestore services.
 // NOTE: This setup ensures Firebase is initialized only once, preventing common errors.
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration, sourced from environment variables.
@@ -32,9 +31,6 @@ export const auth = getAuth(app);
 // Export the Firestore database service.
 export const db = getFirestore(app);
 
-// Export a provider instance for Google Sign-In.
-export const googleProvider = new GoogleAuthProvider();
-
 
 // --- Startup Verification Log ---
 // This log helps confirm that the Firebase config is being loaded correctly.
@@ -45,13 +41,6 @@ const logConfigVerification = () => {
     if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
       console.log(`✅ Project ID: ${firebaseConfig.projectId}`);
       console.log(`✅ Auth Domain: ${firebaseConfig.authDomain}`);
-      console.log("%c-> CRITICAL: For Google Sign-In to work, you MUST add the following domains to your Firebase project's 'Authorized domains' list:", "color: yellow; font-weight: bold;");
-      console.log(`   1. The Auth Domain itself: %c${firebaseConfig.authDomain}`, "color: lightblue;");
-      if (typeof window !== 'undefined') {
-        console.log(`   2. Your app's current domain: %c${window.location.hostname}`, "color: lightblue;");
-        console.log("   (If running locally, you might also need to add 'localhost')");
-      }
-      console.log("   Failure to do so will cause the sign-in popup to close immediately with an 'auth/popup-closed-by-user' or 'auth/unauthorized-domain' error.");
     } else {
       console.error("❌ CRITICAL: Firebase config is MISSING from your .env file!");
       console.error("   Please ensure NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, and NEXT_PUBLIC_FIREBASE_API_KEY are set.");
