@@ -50,7 +50,7 @@ LearnMint is built on the principles of efficiency, engagement, and elegance.
 
 ## 🔥 Key Features
 
-LearnMint is packed with a suite of powerful, AI-driven tools:
+LearnMint Ai is packed with a suite of powerful, AI-driven tools:
 
 *   **Firebase Authentication**: Secure user sign-in via Google or Email, plus a fully-featured Guest Mode.
 *   **Unified AI Material Generation**:
