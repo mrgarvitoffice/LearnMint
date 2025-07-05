@@ -44,20 +44,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userRef = doc(db, 'users', user.uid);
     try {
         const docSnap = await getDoc(userRef);
+        const userData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            lastLogin: serverTimestamp(),
+        };
+
         if (!docSnap.exists()) {
+            // New user: set data including createdAt
             await setDoc(userRef, {
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName || user.email?.split('@')[0],
-              photoURL: user.photoURL,
-              createdAt: serverTimestamp(),
+                ...userData,
+                createdAt: serverTimestamp(),
             });
-             console.log("Firestore user document created for:", user.uid);
+            console.log("Firestore user document created for:", user.uid);
         } else {
-             console.log("Firestore user document already exists for:", user.uid);
+            // Existing user: merge new info to update photoURL, displayName, etc.
+            await setDoc(userRef, userData, { merge: true });
+            console.log("Firestore user document updated for:", user.uid);
         }
     } catch (error: any) {
-        console.error("Firestore user creation error:", error);
+        console.error("Firestore user creation/update error:", error);
         toast({
             title: "Profile Error",
             description: "Could not save your profile data. You may have restrictive security rules in Firestore.",
@@ -68,15 +76,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
       if (firebaseUser) {
+        // Always handle Firestore update on auth state change to catch profile updates
         await handleUserCreationInFirestore(firebaseUser);
+        
+        // If the local state is out of sync with the Firebase user object (e.g., after profile update)
+        // we update the local state to trigger re-renders with the new info.
+        if (JSON.stringify(user) !== JSON.stringify(firebaseUser)) {
+           setUser(firebaseUser);
+        }
+      } else {
+        setUser(null);
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [handleUserCreationInFirestore]);
+  }, [handleUserCreationInFirestore, user]);
   
 
   const signOutUser = async () => {
@@ -105,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-      await handleUserCreationInFirestore(userCredential.user);
+      // The onAuthStateChanged listener will handle the Firestore document creation/update.
       router.push('/dashboard');
       toast({ title: `Welcome back, ${userCredential.user.displayName}!`, description: "You are now signed in." });
     } catch (error: any) {
@@ -149,9 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const linkedUser = linkResult.user;
         
         await updateProfile(linkedUser, { displayName });
-        await handleUserCreationInFirestore({ ...linkedUser, displayName, email });
-        
-        setUser({ ...linkedUser, displayName, email, isAnonymous: false });
+        // The onAuthStateChanged listener will handle the Firestore update.
         
         toast({ title: `Welcome, ${displayName}!`, description: "Your account has been upgraded and saved." });
 
@@ -159,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         if (userCredential.user) {
           await updateProfile(userCredential.user, { displayName });
-          await handleUserCreationInFirestore({ ...userCredential.user, displayName });
+          // The onAuthStateChanged listener will handle the Firestore update.
           toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
         }
       }

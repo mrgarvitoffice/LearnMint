@@ -6,7 +6,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 
 interface SoundOptions {
   volume?: number;
-  priority?: 'essential' | 'incidental';
+  priority?: 'essential' | 'incidental' | 'optional';
 }
 
 // Global cache to store a single Audio element instance per sound file.
@@ -14,15 +14,18 @@ interface SoundOptions {
 const audioCache = new Map<string, { audio: HTMLAudioElement; hasError: boolean }>();
 
 export function useSound(soundPath: string, options: SoundOptions = {}) {
-  const { volume = 0.5 } = options;
+  const { volume = 0.5, priority = 'incidental' } = options;
   const { soundMode } = useSettings();
 
   const playSound = useCallback(() => {
-    // UI click sounds are considered "incidental" and will only play in 'full' mode.
-    // Critical sounds (like correct/incorrect answers) are handled separately where they are used.
-    if (soundMode !== 'full') {
-      return;
+    // Determine if the sound should play based on the sound mode and priority.
+    if (soundMode === 'muted') {
+      return; // Never play sounds when muted.
     }
+    if (soundMode === 'essential' && priority === 'optional') {
+      return; // Don't play optional sounds (like page load announcements) in essential mode.
+    }
+    // Incidental (clicks) and Essential sounds will play in both 'full' and 'essential' modes.
 
     let cacheEntry = audioCache.get(soundPath);
 
@@ -45,15 +48,21 @@ export function useSound(soundPath: string, options: SoundOptions = {}) {
 
     if (cacheEntry.hasError) return;
 
-    cacheEntry.audio.currentTime = 0;
+    // A common mobile browser fix: ensure any previous play is paused before starting a new one.
+    if (!cacheEntry.audio.paused) {
+      cacheEntry.audio.pause();
+      cacheEntry.audio.currentTime = 0;
+    }
+
     cacheEntry.audio.play().catch(playError => {
       // Don't log 'AbortError' which happens on fast navigations.
       if (playError.name !== 'AbortError' && cacheEntry && !cacheEntry.hasError) {
         console.warn(`LearnMint Sound System: Playback failed for "${soundPath}". Error: ${playError.message}`);
-        cacheEntry.hasError = true; // Prevent further attempts
+        // Do not disable on first failure, as it might be an intermittent issue.
+        // Caching the error state might be too aggressive.
       }
     });
-  }, [soundMode, soundPath, volume]);
+  }, [soundMode, soundPath, volume, priority]);
   
   return { playSound };
 }
