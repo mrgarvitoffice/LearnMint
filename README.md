@@ -18,7 +18,7 @@ With **LearnMint**, you're not just studying; you're minting knowledge with cutt
 *   [🛠️ Tech Stack Powerhouse](#️-tech-stack-powerhouse-)
 *   [🚀 Getting Started with LearnMint](#-getting-started-with-learnmint-)
     *   [Prerequisites](#1-prerequisites)
-    *   [CRITICAL: Authorize Your Domain in Firebase](#2-critical-authorize-your-domain-in-firebase)
+    *   [CRITICAL: Enable Firebase Auth & Authorize Domain](#2-critical-enable-firebase-auth--authorize-domain)
     *   [CRITICAL: Set up Environment Variables (.env)](#3-critical-set-up-environment-variables-using-a-env-file)
     *   [Install Dependencies](#4-install-dependencies)
     *   [CRITICAL: Restart Development Server](#5-critical-restart-your-development-server)
@@ -48,7 +48,7 @@ LearnMint is built on the principles of efficiency, engagement, and elegance, a 
 
 **MrGarvit** has packed LearnMint with a suite of powerful, AI-driven tools:
 
-*   **Firebase Authentication**: Robust and secure user authentication using Firebase (Email/Password and Google Sign-In).
+*   **Firebase Authentication**: Robust and secure user authentication using **Google Sign-In (Redirect Flow)** and a **Guest Mode**.
 *   **AI Content Generation Suite**:
     *   **Unified Material Generation**: Enter a topic for AI-generated:
         *   📝 **Comprehensive Notes**: Markdown formatted, emojis, and embedded AI-generated images.
@@ -81,7 +81,7 @@ LearnMint leverages a modern, robust tech stack, carefully selected by **MrGarvi
 *   TypeScript
 *   Tailwind CSS
 *   ShadCN UI Components
-*   **Firebase Authentication** (Email/Password, Google)
+*   **Firebase Authentication** (Google Sign-In, Anonymous)
 *   Genkit (Google Gemini for AI text & image generation)
 *   Lucide Icons
 *   `@tanstack/react-query`
@@ -101,20 +101,23 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 *   Node.js (LTS version recommended)
 *   `npm` or `yarn`
 
-### 2. CRITICAL: Authorize Your Domain in Firebase
+### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
 
-To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** add your development and authentication domains to Firebase's authorized list.
+To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
-2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`). This is a critical step.
+2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`).
 3.  Navigate to **Authentication** (in the Build section on the left sidebar).
-4.  Go to the **Settings** tab.
-5.  Select the **Authorized domains** section.
-6.  Click **Add domain**.
-7.  **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
-8.  Click **Add domain** again.
-9.  **Add your auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
-10. Click **Add**. Your sign-in should now work correctly on your deployed environment.
+4.  Go to the **Sign-in method** tab.
+5.  Click **Add new provider** and select **Google**.
+6.  **Enable** the Google provider and set a project public-facing email. Click **Save**.
+7.  While still in Authentication, go to the **Settings** tab.
+8.  Select the **Authorized domains** section.
+9.  Click **Add domain**.
+10. **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+11. Click **Add domain** again.
+12. **Add your Firebase auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
+13. Click **Add**. Your Google sign-in should now work correctly on your deployed environment.
 
 If sign-in still fails, double-check that you have entered the domains exactly as shown in your URL bar and `.env` file, without any typos.
 

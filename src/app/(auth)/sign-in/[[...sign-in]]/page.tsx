@@ -2,9 +2,6 @@
 "use client";
 
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { getRedirectResult, signInWithRedirect } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -19,11 +16,6 @@ import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 import { useGuestUsage } from '@/contexts/GuestUsageContext';
-
-const signInSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-});
-type SignInFormData = z.infer<typeof signInSchema>;
 
 function GoogleIcon() {
   return (
