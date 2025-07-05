@@ -5,16 +5,14 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { sendSignInLinkToEmail, getRedirectResult, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { getRedirectResult, signInWithRedirect } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MailCheck } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
@@ -26,7 +24,6 @@ const signInSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
 });
 type SignInFormData = z.infer<typeof signInSchema>;
-const EMAIL_FOR_SIGN_IN_KEY = 'learnmint-emailForSignIn';
 
 function GoogleIcon() {
   return (
@@ -44,10 +41,6 @@ export default function SignInPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
-
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
-  });
 
   const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
     const userRef = doc(db, 'users', user.uid);
@@ -85,10 +78,6 @@ export default function SignInPage() {
     };
     processRedirectResult();
   }, [handleUserCreation, toast]);
-
-  const onEmailSubmit = async (data: SignInFormData) => {
-    // This is for passwordless, keeping it as an option.
-  };
 
   const handleGoogleSignIn = async () => {
     try {

@@ -21,6 +21,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchMathFact } from '@/lib/math-fact-api';
 import type { MathFact } from '@/lib/types';
 import { MATH_FACTS_FALLBACK } from '@/lib/constants';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RECENT_TOPICS_LS_KEY = 'learnmint-recent-topics';
 const MAX_RECENT_TOPICS_DISPLAY = 5;
@@ -81,10 +82,10 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 export default function DashboardPage() {
     const { t, isReady } = useTranslation();
     const { speak, setVoicePreference } = useTTS();
-    const { soundMode } = useSettings();
     const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
     const router = useRouter();
     const { quests } = useQuests();
+    const { user } = useAuth();
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
     const [totalLearners, setTotalLearners] = useState(137); // Fake fluctuating count
@@ -145,15 +146,15 @@ export default function DashboardPage() {
     }, [setVoicePreference]);
   
     useEffect(() => {
-        if (soundMode !== 'muted' && isReady && !pageTitleSpokenRef.current) {
+        if (isReady && !pageTitleSpokenRef.current) {
             const PAGE_TITLE = t('dashboard.welcome');
             const timer = setTimeout(() => {
-                speak(PAGE_TITLE, { priority: 'essential' });
+                speak(PAGE_TITLE, { priority: 'optional' });
                 pageTitleSpokenRef.current = true;
             }, 500);
             return () => clearTimeout(timer);
         }
-    }, [speak, soundMode, t, isReady]);
+    }, [speak, t, isReady]);
 
     const handleRecentTopicClick = (topic: string) => {
         playClickSound();
@@ -190,11 +191,14 @@ export default function DashboardPage() {
                         
                          <div className="mt-3 h-6 flex justify-center items-center gap-2 group cursor-pointer transition-transform duration-300 hover:scale-105">
                             <Users className="h-5 w-5 text-primary/80 group-hover:text-primary transition-colors" />
-                            <span className="font-semibold text-primary group-hover:text-primary/90 transition-colors">
-                                {t('dashboard.totalLearners')}: {totalLearners.toLocaleString()}
-                            </span>
+                            {user?.isAnonymous ? (
+                                <span className="text-sm text-muted-foreground italic">{t('dashboard.totalLearnersGuestMessage')}</span>
+                            ) : (
+                                <span className="font-semibold text-primary group-hover:text-primary/90 transition-colors">
+                                    {t('dashboard.totalLearners')}: {totalLearners.toLocaleString()}
+                                </span>
+                            )}
                          </div>
-
                     </CardHeader>
                 </Card>
             </motion.div>
