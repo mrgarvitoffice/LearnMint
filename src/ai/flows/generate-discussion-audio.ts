@@ -8,7 +8,7 @@
  * - GenerateDiscussionAudioOutput - The return type for this function.
  */
 
-import { aiForTTS } from '@/ai/genkit';
+import { aiForNotes, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -40,7 +40,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 }
 
 // Prompt to generate the dialogue script
-const dialoguePrompt = aiForTTS.definePrompt({
+const dialoguePrompt = aiForNotes.definePrompt({ // Using aiForNotes for text generation
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: z.object({ content: z.string() }) },

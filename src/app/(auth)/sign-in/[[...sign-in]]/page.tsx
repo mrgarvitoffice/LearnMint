@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, User, LogIn } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
+import { GoogleIcon } from '@/components/icons/GoogleIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 
@@ -22,7 +23,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
-  const { signInWithEmail, signInAnonymously, loading } = useAuth();
+  const { signInWithEmail, signInWithGoogle, signInAnonymously, loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -43,6 +44,10 @@ export default function SignInPage() {
         {loading && <div className="absolute inset-0 bg-background/50 flex justify-center items-center z-10 rounded-lg"><Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" /></div>}
         
         <div className="space-y-2">
+            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
+                <GoogleIcon className="mr-2 h-5 w-5" />
+                Sign In with Google
+            </Button>
             <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
                 Continue as Guest
