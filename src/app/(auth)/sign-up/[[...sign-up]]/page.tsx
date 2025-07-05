@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,8 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Chrome } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 
@@ -28,27 +27,12 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
-  const [isPageLoading, setIsPageLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
   
-  // This effect prevents logged-in users from seeing the sign-up page.
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user && !user.isAnonymous) {
-            router.replace('/');
-        } else {
-            setIsPageLoading(false);
-        }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
   const onEmailSubmit = async (data: SignUpFormData) => {
     setIsSubmitting(true);
     try {
@@ -63,7 +47,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      // The onAuthStateChanged listener will handle the redirect
+      // The auth layout will handle the redirect.
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -73,6 +57,7 @@ export default function SignUpPage() {
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -90,15 +75,6 @@ export default function SignUpPage() {
     }
   };
   
-  if (isPageLoading) {
-    return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-transparent">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
       <CardHeader className="text-center">
