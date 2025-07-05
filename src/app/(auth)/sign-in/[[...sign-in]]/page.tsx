@@ -59,7 +59,7 @@ export default function SignInPage() {
                         createdAt: serverTimestamp(),
                     });
                 }
-                router.replace('/');
+                // DO NOT NAVIGATE HERE. The (auth)/layout.tsx will handle it.
             }
         } catch (error: any) {
             console.error("Google Redirect Error:", error);
@@ -71,7 +71,7 @@ export default function SignInPage() {
         }
     };
     processRedirectResult();
-  }, [toast, router]);
+  }, [toast]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsLoadingEmail(true);
