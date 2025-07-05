@@ -19,16 +19,19 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   }, [user, loading, router]);
 
   // While auth state is loading, or if the user is logged in and we are about to redirect, show a loader.
+  // We do NOT show the children during this time to prevent flashes of content.
   if (loading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{loading ? 'Loading...' : 'Redirecting...'}</p>
+        <p className="mt-3 text-lg">{loading ? 'Loading Session...' : 'Redirecting...'}</p>
       </div>
     );
   }
   
   // If loading is complete and there is no user (or user is a guest), show the auth page.
+  // The children here will be the sign-in or sign-up page, which now have their own logic
+  // to handle the redirect result from Google.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
         style={{

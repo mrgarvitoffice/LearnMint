@@ -103,7 +103,7 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Authorize Your Domain in Firebase
 
-To prevent Google Sign-In errors like `auth/popup-closed-by-user` or `auth/unauthorized-domain` (where the login popup closes immediately), you **MUST** add your development and authentication domains to Firebase's authorized list.
+To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** add your development and authentication domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`). This is a critical step.
