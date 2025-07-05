@@ -5,8 +5,7 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import {
   onAuthStateChanged,
   signOut,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInAnonymously as firebaseSignInAnonymously,
@@ -71,21 +70,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result) {
-          const displayName = result.user.displayName || 'user';
-          toast({ title: `Hi, ${displayName}!`, description: `Welcome back.` });
-          // The onAuthStateChanged listener will handle setting user and firestore creation.
-        }
-      })
-      .catch((error) => {
-        console.error("Auth Redirect Error:", error);
-        let description = "There was an issue with the sign-in redirect.";
+    return () => unsubscribe();
+  }, [handleUserCreationInFirestore]);
+
+  const signOutUser = async () => {
+    await signOut(auth);
+    // Let the layout handle the redirect
+  };
+
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const displayName = result.user.displayName || 'user';
+      toast({ title: `Hi, ${displayName}!`, description: `Welcome back.` });
+    } catch (error: any) {
+        console.error("Auth Popup Error:", error);
+        let description = "There was an issue with the sign-in popup.";
         const hostname = typeof window !== 'undefined' ? window.location.hostname : 'your-domain.com';
         const authDomain = auth.config.authDomain;
 
-        if (error.code === 'auth/unauthorized-domain') {
+        if (error.code === 'auth/popup-closed-by-user') {
+            description = "The sign-in popup was closed. Please try again.";
+        } else if (error.code === 'auth/unauthorized-domain') {
             description = "This domain is not authorized for sign-in. Please add it to your Firebase project's authorized domains list.";
             console.error("--- DOMAIN AUTHORIZATION ERROR ---");
             console.error(`You MUST add the following domains to the Firebase Auth 'Authorized domains' list:`);
@@ -97,22 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description = "An account already exists with this email. Please sign in with the original method."
         }
         toast({ title: "Sign-in Error", description, variant: "destructive" });
-        setLoading(false);
-      });
-
-    return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleUserCreationInFirestore]);
-
-  const signOutUser = async () => {
-    await signOut(auth);
-    // Let the layout handle the redirect
-  };
-
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
+    } finally {
+      // onAuthStateChanged will set loading to false
+    }
   };
   
   const signInAnonymously = async () => {
@@ -122,8 +117,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
-    } finally {
-      // setLoading(false) is handled by onAuthStateChanged
     }
   };
 

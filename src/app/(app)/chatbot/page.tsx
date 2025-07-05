@@ -70,7 +70,7 @@ export default function ChatbotPage() {
     currentSpokenMessageRef.current = greetingText;
     speak(greetingText, { priority: 'essential' });
 
-  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak, setMessages]);
+  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak]);
 
 
   useEffect(() => {
