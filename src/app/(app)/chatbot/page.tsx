@@ -15,12 +15,15 @@ import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
+import { GuestLock } from '@/components/features/auth/GuestLock';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
 
 type ChatbotCharacter = 'gojo' | 'holo';
 
 export default function ChatbotPage() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [isAiResponding, setIsAiResponding] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<ChatbotCharacter>('gojo');
@@ -170,6 +173,16 @@ export default function ChatbotPage() {
   const getCurrentCharacterAIName = () => selectedCharacter === 'gojo' ? 'Gojo AI' : 'Holo AI';
   const getCurrentCharacterAIDescription = () => selectedCharacter === 'gojo' ? 'The Honored One is here to help.' : 'The Wise Wolf of Yoitsu.';
   const getCurrentCharacterAvatarHint = () => selectedCharacter === 'gojo' ? 'Gojo Satoru' : 'Holo wise wolf';
+
+  if (user?.isAnonymous) {
+    return (
+      <GuestLock
+        featureName="AI Chatbot"
+        featureDescription="Engage in dynamic conversations with personalized AI characters."
+        Icon={Bot}
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col">

@@ -27,6 +27,8 @@ import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { GuestLock } from '@/components/features/auth/GuestLock';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
 const MAX_RECENT_TOPICS_SELECT = 3;
@@ -75,6 +77,7 @@ interface CustomTestState {
 }
 
 export default function CustomTestPage() {
+  const { user } = useAuth();
   const [testState, setTestState] = useState<CustomTestState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [recentTopics, setRecentTopics] = useState<string[]>([]);
@@ -430,6 +433,16 @@ export default function CustomTestPage() {
       notesImageInputRef.current.value = "";
     }
   };
+
+  if (user?.isAnonymous) {
+    return (
+      <GuestLock
+        featureName="Custom Test Creator"
+        featureDescription="Build tailored tests with specific topics, difficulty, timers, and more."
+        Icon={TestTubeDiagonal}
+      />
+    );
+  }
   
   if (!testState) {
     return (

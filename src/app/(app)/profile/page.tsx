@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Mail, KeyRound, LogOut, CheckCircle, Brain, Loader2 } from 'lucide-react';
+import { Mail, KeyRound, LogOut, CheckCircle, Brain } from 'lucide-react';
 
 const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: string }) => (
     <div className={cn("flex items-center gap-3 p-3 bg-muted/50 rounded-md", isCompleted && "text-muted-foreground line-through")}>
@@ -26,36 +26,29 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 );
 
 export default function ProfilePage() {
-  const { user, loading, signOutUser } = useAuth();
+  // The layout has already handled the main loading and redirect for non-logged-in users.
+  // So by the time this component renders, `loading` is false and `user` is not null.
+  const { user, signOutUser } = useAuth();
   const { quests } = useQuests();
   const { t } = useTranslation();
 
-  if (loading || !user) {
-    return (
-      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Loading Profile...</p>
-      </div>
-    );
-  }
-  
-  const userDisplayName = user.displayName || user.email?.split('@')[0] || "User";
+  const userDisplayName = user!.displayName || user!.email?.split('@')[0] || "User";
 
   return (
     <div className="container mx-auto max-w-2xl py-8">
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm text-center">
           <CardHeader>
               <Avatar className="mx-auto h-24 w-24 text-primary/80 border-4 border-primary/30">
-                <AvatarImage src={user.isAnonymous ? '' : user.photoURL || ''} alt={userDisplayName} />
+                <AvatarImage src={user!.isAnonymous ? '' : user!.photoURL || ''} alt={userDisplayName} />
                 <AvatarFallback className="text-4xl bg-secondary">
-                    {user.isAnonymous ? 'G' : userDisplayName.charAt(0).toUpperCase()}
+                    {user!.isAnonymous ? 'G' : userDisplayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <CardTitle className="text-3xl font-bold text-primary mt-4">
-                Hi, {user.isAnonymous ? 'Guest' : userDisplayName}!
+                Hi, {user!.isAnonymous ? 'Guest' : userDisplayName}!
               </CardTitle>
               <CardDescription className="text-base text-muted-foreground mt-1">
-                  {user.isAnonymous 
+                  {user!.isAnonymous 
                     ? "You are browsing as a guest. Sign up to save your progress!" 
                     : "Manage your account and track your daily progress."
                   }
@@ -67,10 +60,10 @@ export default function ProfilePage() {
                  <Mail className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
                    <p className="text-xs text-muted-foreground">Email</p>
-                   {user.isAnonymous ? (
+                   {user!.isAnonymous ? (
                      <p className="italic text-muted-foreground/80">Sign up to add an email.</p>
                    ) : (
-                     <p className="font-semibold truncate">{user.email}</p>
+                     <p className="font-semibold truncate">{user!.email}</p>
                    )}
                  </div>
                </div>
@@ -78,7 +71,7 @@ export default function ProfilePage() {
                  <KeyRound className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
                    <p className="text-xs text-muted-foreground">User ID</p>
-                   <p className="font-mono text-xs truncate">{user.uid}</p>
+                   <p className="font-mono text-xs truncate">{user!.uid}</p>
                  </div>
                </div>
             </div>
@@ -96,7 +89,7 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            {user.isAnonymous && (
+            {user!.isAnonymous && (
                 <Card className="mt-4 border-primary/30 bg-primary/10 text-center p-4">
                     <CardTitle className="text-lg text-primary">Unlock Full Potential!</CardTitle>
                     <CardDescription className="text-primary/80 mt-1">Sign up to save your progress permanently.</CardDescription>

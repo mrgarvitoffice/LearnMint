@@ -10,9 +10,13 @@ import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+import { useAuth } from '@/contexts/AuthContext';
+import { GuestLock } from '@/components/features/auth/GuestLock';
+
 const PAGE_TITLE = "LearnMint Arcade";
 
 export default function ArcadePage() {
+  const { user } = useAuth();
   const { speak, setVoicePreference } = useTTS();
   const pageTitleSpokenRef = useRef(false);
 
@@ -30,6 +34,16 @@ export default function ArcadePage() {
 
     return () => clearTimeout(timer);
   }, [speak]);
+
+  if (user?.isAnonymous) {
+    return (
+      <GuestLock
+        featureName="LearnMint Arcade"
+        featureDescription="Play fun, educational games to sharpen your mind and test your knowledge."
+        Icon={Gamepad2}
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8 space-y-8">
