@@ -70,7 +70,7 @@ export function Header() {
                 <Settings className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={8} className="w-48">
+            <DropdownMenuContent align="end" sideOffset={8}>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Languages className="mr-2 h-4 w-4" />
