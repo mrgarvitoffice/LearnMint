@@ -20,6 +20,8 @@ export type GenerateStudyNotesInput = {
   topic: string;
   image?: string;
   notes?: string; 
+  audio?: string;
+  video?: string;
 };
 export type GenerateStudyNotesOutput = { notes: string };
 
@@ -28,6 +30,8 @@ export type GenerateQuizQuestionsInput = {
   numQuestions: number, 
   difficulty?: 'easy' | 'medium' | 'hard',
   image?: string;
+  audio?: string;
+  video?: string;
 };
 export type GenerateQuizQuestionsOutput = { questions: QuizQuestion[] };
 
@@ -161,6 +165,8 @@ export interface ChatMessage {
   content: string;
   image?: string; 
   pdfFileName?: string;
+  audioFileName?: string;
+  videoFileName?: string;
   timestamp: Date;
   type?: 'typing_indicator';
 }

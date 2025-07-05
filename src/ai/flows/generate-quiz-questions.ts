@@ -28,6 +28,8 @@ const GenerateQuizQuestionsInputSchema = z.object({
     .describe(
       "An optional image provided by the user as a data URI for context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  audio: z.string().optional().describe("An optional audio file provided by the user as a data URI for context."),
+  video: z.string().optional().describe("An optional video file provided by the user as a data URI for context."),
   numQuestions: z.number().min(1).max(50).describe('The number of quiz questions to generate.'),
   difficulty: z.enum(['easy', 'medium', 'hard']).optional().describe('The difficulty level of the quiz questions.'),
 });
@@ -49,6 +51,14 @@ const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   {{#if image}}
   The user has also provided an image for additional context. Use it to inform the questions where relevant.
   User's Image: {{media url=image}}
+  {{/if}}
+  {{#if audio}}
+  The user has also provided an audio file for additional context. Use it to inform the questions where relevant.
+  User's Audio: {{media url=audio}}
+  {{/if}}
+  {{#if video}}
+  The user has also provided a video file for additional context. Use it to inform the questions where relevant.
+  User's Video: {{media url=video}}
   {{/if}}
 
   The questions should cover key concepts and test understanding effectively.

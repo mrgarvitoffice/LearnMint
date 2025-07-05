@@ -18,6 +18,8 @@ const GenerateStudyNotesInputSchema = z.object({
   image: z.string().optional().describe(
     "An optional image provided by the user as a data URI for context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
   ),
+  audio: z.string().optional().describe("An optional audio file provided by the user as a data URI for context."),
+  video: z.string().optional().describe("An optional video file provided by the user as a data URI for context."),
 });
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
@@ -46,6 +48,16 @@ USER-PROVIDED NOTES:
 {{#if image}}
 The user has also provided an image for additional context. Use it to enhance the notes where relevant, especially if it helps clarify a concept mentioned in the topic or notes.
 User's Image: {{media url=image}}
+{{/if}}
+
+{{#if audio}}
+The user has also provided an audio file for additional context. Use it to enhance the notes.
+User's Audio: {{media url=audio}}
+{{/if}}
+
+{{#if video}}
+The user has also provided a video file for additional context. Use it to enhance the notes.
+User's Video: {{media url=video}}
 {{/if}}
 
 Please generate study notes on this topic with the following characteristics:

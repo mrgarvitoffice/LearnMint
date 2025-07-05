@@ -89,8 +89,16 @@ export default function ChatbotPage() {
     }
   }, [messages]);
 
-  const handleSendMessage = async (messageText: string, image?: string, pdfContent?: { name: string, text: string }) => {
-    if (!messageText.trim() && !image && !pdfContent) return;
+  const handleSendMessage = async (
+    messageText: string,
+    image?: string,
+    pdfContent?: { name: string; text: string },
+    audio?: string,
+    video?: string,
+    audioFileName?: string,
+    videoFileName?: string
+  ) => {
+    if (!messageText.trim() && !image && !pdfContent && !audio && !video) return;
     
     cancelTTS(); // Stop any currently playing speech before sending a new message.
 
@@ -100,6 +108,8 @@ export default function ChatbotPage() {
       content: messageText, 
       image: image,
       pdfFileName: pdfContent?.name,
+      audioFileName,
+      videoFileName,
       timestamp: new Date() 
     };
     const typingIndicatorMessage = selectedCharacter === 'gojo'
@@ -121,8 +131,12 @@ export default function ChatbotPage() {
         messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;
       }
 
-      const input: GojoChatbotInput | HoloChatbotInput = { message: messageForAI };
-      if (image) input.image = image;
+      const input: GojoChatbotInput | HoloChatbotInput = {
+        message: messageForAI,
+        image,
+        audio,
+        video,
+      };
 
       const response = selectedCharacter === 'gojo'
         ? await gojoChatbot(input as GojoChatbotInput)

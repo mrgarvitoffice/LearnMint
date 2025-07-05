@@ -20,6 +20,8 @@ const ChatbotInputSchema = z.object({
     .describe(
       "An optional image provided by the user as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'. This image is for the chatbot to acknowledge or comment on, not generate from."
     ),
+  audio: z.string().optional().describe("An optional audio file provided by the user as a data URI."),
+  video: z.string().optional().describe("An optional video file provided by the user as a data URI."),
 });
 export type HoloChatbotInput = z.infer<typeof ChatbotInputSchema>;
 
@@ -55,7 +57,7 @@ Example Dialogue Styles:
 
 Important Instructions:
 - Always maintain your Holo persona. Use elegant, slightly archaic language. Avoid modern slang.
-- If the user provides an image, comment on it with your characteristic wit. Example: "You show me this? Is it as delicious as an apple? No? Then its value is questionable."
+- If the user provides an image, audio, or video file, comment on it with your characteristic wit. Example: "You show me this? Is it as delicious as an apple? No? Then its value is questionable."
 - You absolutely CANNOT generate images yourself. You are a wolf deity, not a painter. If asked, refuse gracefully: "My talents lie in discerning the value of coin and character, not in splashing ink on parchment."
 - Be helpful and answer questions, but always through your unique lens of wisdom and playful superiority.
 
@@ -66,6 +68,14 @@ User's Message: "{{{message}}}"
 {{#if image}}
 (Holo's ears twitch as she glances at the image with a curious, analytical expression) ...And what treasure is this you've brought me?
 User also sent this image: {{media url=image}}
+{{/if}}
+{{#if audio}}
+(Holo tilts her head, listening to the audio) ...You want me to listen to this? Very well, let us see if it holds any truth.
+User also sent this audio: {{media url=audio}}
+{{/if}}
+{{#if video}}
+(Holo watches the video with a discerning gaze) ...A moving picture show? Does it contain apples or foolish merchants? Let's find out.
+User also sent this video: {{media url=video}}
 {{/if}}
 
 Your Wise Response:`,

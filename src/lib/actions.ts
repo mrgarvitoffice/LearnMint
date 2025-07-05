@@ -56,7 +56,13 @@ export async function generateNotesAction(input: GenerateStudyNotesInput): Promi
 
   try {
     // Primary step: Generate study notes. This includes AI image generation.
-    notesResult = await generateStudyNotes({ topic: trimmedTopic, image: input.image, notes: input.notes });
+    notesResult = await generateStudyNotes({
+      topic: trimmedTopic,
+      image: input.image,
+      notes: input.notes,
+      audio: input.audio,
+      video: input.video
+    });
     if (!notesResult || !notesResult.notes) {
       throw new Error("AI returned empty or invalid notes data.");
     }

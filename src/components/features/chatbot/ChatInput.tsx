@@ -4,7 +4,7 @@
 import { useState, useRef, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Mic, ImageIcon, Loader2, X, FileText } from 'lucide-react';
+import { Send, Mic, ImageIcon, Loader2, X, FileText, AudioLines, Video } from 'lucide-react';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -12,7 +12,15 @@ import { useSound } from '@/hooks/useSound';
 import { extractTextFromPdf } from '@/lib/utils';
 
 interface ChatInputProps {
-  onSendMessage: (message: string, image?: string, pdfContent?: { name: string, text: string }) => void;
+  onSendMessage: (
+    message: string, 
+    image?: string, 
+    pdfContent?: { name: string, text: string },
+    audio?: string,
+    video?: string,
+    audioFileName?: string,
+    videoFileName?: string
+  ) => void;
   isLoading: boolean;
 }
 
@@ -21,6 +29,10 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   const [pdfContent, setPdfContent] = useState<{ name: string, text: string } | null>(null);
+  const [audioData, setAudioData] = useState<string | null>(null);
+  const [videoData, setVideoData] = useState<string | null>(null);
+  const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [videoFileName, setVideoFileName] = useState<string | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -45,8 +57,8 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
       handleRemoveFile(false); // Clear previous file state without sound
       setIsProcessingFile(true);
       if (file.type.startsWith('image/')) {
-        if (file.size > 2 * 1024 * 1024) { // 2MB limit
-          toast({ title: "Image too large", description: "Please upload an image smaller than 2MB.", variant: "destructive" });
+        if (file.size > 4 * 1024 * 1024) { // 4MB limit
+          toast({ title: "Image too large", description: "Please upload an image smaller than 4MB.", variant: "destructive" });
           setIsProcessingFile(false);
           return;
         }
@@ -58,8 +70,8 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         };
         reader.readAsDataURL(file);
       } else if (file.type === 'application/pdf') {
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            toast({ title: "PDF too large", description: "Please upload a PDF smaller than 5MB.", variant: "destructive" });
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            toast({ title: "PDF too large", description: "Please upload a PDF smaller than 10MB.", variant: "destructive" });
             setIsProcessingFile(false);
             return;
         }
@@ -72,8 +84,32 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         } finally {
           setIsProcessingFile(false);
         }
+      } else if (file.type.startsWith('audio/')) {
+        if (file.size > 25 * 1024 * 1024) { // 25MB limit
+          toast({ title: "Audio file too large", description: "Max 25MB.", variant: "destructive" });
+          setIsProcessingFile(false); return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setAudioData(reader.result as string);
+          setAudioFileName(file.name);
+          setIsProcessingFile(false);
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type.startsWith('video/')) {
+        if (file.size > 25 * 1024 * 1024) { // 25MB limit
+          toast({ title: "Video file too large", description: "Max 25MB.", variant: "destructive" });
+          setIsProcessingFile(false); return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setVideoData(reader.result as string);
+          setVideoFileName(file.name);
+          setIsProcessingFile(false);
+        };
+        reader.readAsDataURL(file);
       } else {
-        toast({ title: "Unsupported File", description: "Chat supports image and PDF uploads.", variant: "default" });
+        toast({ title: "Unsupported File", description: "Chat supports image, PDF, audio, and video uploads.", variant: "default" });
         setIsProcessingFile(false);
       }
     }
@@ -82,9 +118,17 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     playClickSound();
-    if (isLoading || (!inputValue.trim() && !imageData && !pdfContent)) return;
+    if (isLoading || (!inputValue.trim() && !imageData && !pdfContent && !audioData && !videoData)) return;
 
-    onSendMessage(inputValue.trim(), imageData || undefined, pdfContent || undefined);
+    onSendMessage(
+      inputValue.trim(), 
+      imageData || undefined, 
+      pdfContent || undefined, 
+      audioData || undefined, 
+      videoData || undefined, 
+      audioFileName || undefined, 
+      videoFileName || undefined
+    );
 
     setInputValue('');
     handleRemoveFile(false); // Reset all file states without sound
@@ -110,37 +154,61 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
     setImagePreview(null); 
     setImageData(null); 
     setPdfContent(null);
+    setAudioData(null);
+    setVideoData(null);
+    setAudioFileName(null);
+    setVideoFileName(null);
     if(fileInputRef.current) fileInputRef.current.value = "";
   }
 
   return (
     <div className="bg-background/80 backdrop-blur-md p-4 border-t">
       <form onSubmit={handleSubmit} >
-        {imagePreview && (
-          <div className="mb-2 relative w-24 h-24">
-            <Image src={imagePreview} alt="Preview" layout="fill" objectFit="cover" className="rounded-md" data-ai-hint="image preview" />
-            <Button type="button" variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6 bg-destructive/80 text-destructive-foreground rounded-full" onClick={() => handleRemoveFile()}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-        {pdfContent && (
-            <div className="mb-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground truncate flex-1" title={pdfContent.name}>{pdfContent.name}</span>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {imagePreview && (
+            <div className="relative w-24 h-24">
+              <Image src={imagePreview} alt="Preview" layout="fill" objectFit="cover" className="rounded-md" data-ai-hint="image preview" />
+              <Button type="button" variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6 bg-destructive/80 text-destructive-foreground rounded-full" onClick={() => handleRemoveFile()}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          {pdfContent && (
+              <div className="p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground truncate flex-1" title={pdfContent.name}>{pdfContent.name}</span>
+                  <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
+                      <X className="w-4 h-4 text-destructive/70" />
+                  </Button>
+              </div>
+          )}
+          {audioFileName && (
+            <div className="p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                <AudioLines className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate flex-1" title={audioFileName}>{audioFileName}</span>
                 <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
                     <X className="w-4 h-4 text-destructive/70" />
                 </Button>
             </div>
-        )}
+          )}
+          {videoFileName && (
+            <div className="p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                <Video className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate flex-1" title={videoFileName}>{videoFileName}</span>
+                <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
+                    <X className="w-4 h-4 text-destructive/70" />
+                </Button>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isProcessingFile}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isProcessingFile} title="Attach File">
              {isProcessingFile ? <Loader2 className="w-5 h-5 animate-spin"/> : <ImageIcon className="w-5 h-5" />}
           </Button>
-          <input type="file" accept="image/*,application/pdf" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+          <input type="file" accept="image/*,application/pdf,audio/*,video/*" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
 
           {browserSupportsSpeechRecognition && (
-            <Button type="button" variant="ghost" size="icon" onClick={toggleListening} disabled={isLoading}>
+            <Button type="button" variant="ghost" size="icon" onClick={toggleListening} disabled={isLoading} title="Use Voice">
               <Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} />
               <span className="sr-only">{isListening ? 'Stop Listening' : 'Start Listening'}</span>
             </Button>
@@ -154,7 +222,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             disabled={isLoading || isProcessingFile}
             className="flex-1"
           />
-          <Button type="submit" size="icon" disabled={isLoading || isProcessingFile || (!inputValue.trim() && !imageData && !pdfContent)}>
+          <Button type="submit" size="icon" disabled={isLoading || isProcessingFile || (!inputValue.trim() && !imageData && !pdfContent && !audioData && !videoData)}>
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             <span className="sr-only">Send Message</span>
           </Button>

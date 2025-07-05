@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { generateQuizAction } from '@/lib/actions';
 import type { TestSettings, QuizQuestion as TestQuestionType, GenerateQuizQuestionsOutput } from '@/lib/types';
-import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon, FileText } from 'lucide-react';
+import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon, FileText, AudioLines, Video } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ReactMarkdown from 'react-markdown';
@@ -41,7 +41,9 @@ const formSchema = z.object({
   sourceType: z.enum(['topic', 'notes', 'recent']).default('topic'),
   topics: z.string().optional(),
   notes: z.string().optional(),
-  notesImage: z.string().optional(), // For the data URI of the image with notes
+  notesImage: z.string().optional(),
+  notesAudio: z.string().optional(),
+  notesVideo: z.string().optional(),
   selectedRecentTopics: z.array(z.string()).optional(),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
   numQuestions: z.coerce.number().min(1, 'Min 1 question').max(50, 'Max 50 questions').default(5),
@@ -83,8 +85,12 @@ export default function CustomTestPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [recentTopics, setRecentTopics] = useState<string[]>([]);
   const [recentTopicsSelectionDone, setRecentTopicsSelectionDone] = useState(false);
+  
   const [notesImagePreview, setNotesImagePreview] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
+  const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [videoFileName, setVideoFileName] = useState<string | null>(null);
+
   const notesFileRef = useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
@@ -102,7 +108,8 @@ export default function CustomTestPage() {
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sourceType: 'topic', difficulty: 'medium', numQuestions: 5, timer: 0, perQuestionTimer: 0, selectedRecentTopics: [], notesImage: undefined
+      sourceType: 'topic', difficulty: 'medium', numQuestions: 5, timer: 0, perQuestionTimer: 0, selectedRecentTopics: [], 
+      notesImage: undefined, notesAudio: undefined, notesVideo: undefined
     }
   });
 
@@ -293,7 +300,9 @@ export default function CustomTestPage() {
         topic: topicForAI,
         numQuestions: settings.numQuestions,
         difficulty: settings.difficulty,
-        image: data.sourceType === 'notes' ? data.notesImage : undefined
+        image: data.sourceType === 'notes' ? data.notesImage : undefined,
+        audio: data.sourceType === 'notes' ? data.notesAudio : undefined,
+        video: data.sourceType === 'notes' ? data.notesVideo : undefined,
       });
 
       if (result.questions && result.questions.length > 0) {
@@ -381,7 +390,11 @@ export default function CustomTestPage() {
     pageTitleSpokenRef.current = false; resultAnnouncementSpokenRef.current = false;
     setValue('topics', ''); setValue('notes', ''); setValue('selectedRecentTopics', []);
     setValue('difficulty', 'medium'); setValue('numQuestions', 5); setValue('timer', 0); setValue('perQuestionTimer', 0);
+    setValue('notesImage', undefined);
+    setValue('notesAudio', undefined);
+    setValue('notesVideo', undefined);
     setRecentTopicsSelectionDone(false);
+    handleRemoveFile(false);
   };
 
   const overallTimeLeft = testState?.timeLeft;
@@ -415,7 +428,7 @@ export default function CustomTestPage() {
     if (!file) return;
 
     playClickSound();
-    handleRemoveFile(false); // Clear previous file state without sound
+    handleRemoveFile(false);
 
     if (file.type.startsWith('image/')) {
         if (file.size > 2 * 1024 * 1024) { toast({ title: "Image Too Large", description: "Max 2MB.", variant: "destructive" }); return; }
@@ -433,8 +446,18 @@ export default function CustomTestPage() {
             toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
             setPdfFileName(null);
         }
+    } else if (file.type.startsWith('audio/')) {
+        if (file.size > 25 * 1024 * 1024) { toast({ title: "Audio Too Large", description: "Max 25MB.", variant: "destructive" }); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => { setAudioFileName(file.name); setValue('notesAudio', reader.result as string); };
+        reader.readAsDataURL(file);
+    } else if (file.type.startsWith('video/')) {
+        if (file.size > 25 * 1024 * 1024) { toast({ title: "Video Too Large", description: "Max 25MB.", variant: "destructive" }); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => { setVideoFileName(file.name); setValue('notesVideo', reader.result as string); };
+        reader.readAsDataURL(file);
     } else {
-        toast({ title: "Unsupported File", description: "Please upload an image or PDF.", variant: "default" });
+        toast({ title: "Unsupported File", description: "Please upload an image, PDF, audio, or video file.", variant: "default" });
     }
   };
 
@@ -443,6 +466,10 @@ export default function CustomTestPage() {
     setNotesImagePreview(null);
     setValue('notesImage', undefined);
     setPdfFileName(null);
+    setAudioFileName(null);
+    setValue('notesAudio', undefined);
+    setVideoFileName(null);
+    setValue('notesVideo', undefined);
     if (notesFileRef.current) {
       notesFileRef.current.value = "";
     }
@@ -494,11 +521,11 @@ export default function CustomTestPage() {
               )}
               {sourceType === 'notes' && (
                 <div className="space-y-2 animate-in fade-in-50">
-                  <Label htmlFor="notes" className="text-base">Your Notes</Label>
+                  <Label htmlFor="notes" className="text-base">Your Notes & Files</Label>
                    <div className="flex gap-2">
                     <Textarea id="notes" placeholder="Paste your study notes here (min 50 characters)..." {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
                     <div className="flex flex-col gap-2">
-                      <Button type="button" variant="outline" size="icon" onClick={() => notesFileRef.current?.click()} title="Attach Image or PDF">
+                      <Button type="button" variant="outline" size="icon" onClick={() => notesFileRef.current?.click()} title="Attach Image, PDF, Audio, or Video">
                         <ImageIcon className="w-5 h-5" />
                       </Button>
                       {browserSupportsSpeechRecognition && (
@@ -510,24 +537,38 @@ export default function CustomTestPage() {
                   </div>
                   {errors.notes && <p className="text-sm text-destructive mt-1">{errors.notes.message}</p>}
                   
-                  {notesImagePreview && (
-                    <div className="relative w-20 h-20 mt-2">
-                      <Image src={notesImagePreview} alt="Notes preview" layout="fill" objectFit="cover" className="rounded-md" />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
-                        <XCircle className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  )}
-                   {pdfFileName && (
-                    <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground truncate flex-1">{pdfFileName}</span>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
-                            <XCircle className="w-4 h-4 text-destructive/70" />
+                  <div className="flex flex-wrap gap-2">
+                    {notesImagePreview && (
+                      <div className="relative w-20 h-20 mt-2">
+                        <Image src={notesImagePreview} alt="Notes preview" layout="fill" objectFit="cover" className="rounded-md" />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
+                          <XCircle className="w-4 h-4" />
                         </Button>
-                    </div>
-                  )}
-                  <input type="file" ref={notesFileRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
+                      </div>
+                    )}
+                    {pdfFileName && (
+                      <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                          <FileText className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground truncate flex-1">{pdfFileName}</span>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                      </div>
+                    )}
+                    {audioFileName && (
+                      <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                          <AudioLines className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground truncate flex-1">{audioFileName}</span>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                      </div>
+                    )}
+                    {videoFileName && (
+                      <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                          <Video className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground truncate flex-1">{videoFileName}</span>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                      </div>
+                    )}
+                  </div>
+                  <input type="file" ref={notesFileRef} onChange={handleFileUpload} accept="image/*,application/pdf,audio/*,video/*" className="hidden" />
                   {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
                 </div>
               )}

@@ -2,7 +2,7 @@
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bot, User, Loader2, Wand2, FileText } from 'lucide-react';
+import { Bot, User, Loader2, Wand2, FileText, AudioLines, Video } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Image from 'next/image';
 
@@ -78,6 +78,22 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-muted-foreground/80"/>
                 <span className="text-sm font-medium text-muted-foreground/90 truncate">{message.pdfFileName}</span>
+              </div>
+            </div>
+          )}
+          {message.audioFileName && message.role === 'user' && (
+            <div className="mb-2 p-2 border border-muted-foreground/30 rounded-md bg-black/10">
+              <div className="flex items-center gap-2">
+                <AudioLines className="h-5 w-5 text-muted-foreground/80"/>
+                <span className="text-sm font-medium text-muted-foreground/90 truncate">{message.audioFileName}</span>
+              </div>
+            </div>
+          )}
+          {message.videoFileName && message.role === 'user' && (
+            <div className="mb-2 p-2 border border-muted-foreground/30 rounded-md bg-black/10">
+              <div className="flex items-center gap-2">
+                <Video className="h-5 w-5 text-muted-foreground/80"/>
+                <span className="text-sm font-medium text-muted-foreground/90 truncate">{message.videoFileName}</span>
               </div>
             </div>
           )}
