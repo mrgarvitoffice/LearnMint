@@ -39,21 +39,22 @@ export default function SignUpPage() {
     setIsLoadingEmail(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      // Create a new user document in Firestore
       const userRef = doc(db, 'users', userCredential.user.uid);
       await setDoc(userRef, {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
-        displayName: userCredential.user.email?.split('@')[0],
+        displayName: userCredential.user.email?.split('@')[0], // Default display name
         photoURL: '',
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      // The (auth) layout will handle the redirect once onAuthStateChanged fires.
+      // The (auth) layout will handle the redirect.
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
         title: "Sign Up Failed",
-        description: error.code === 'auth/email-already-in-use' 
+        description: error.code === 'auth/email-already-in-use'
           ? "This email is already in use. Please sign in instead."
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
@@ -66,7 +67,7 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    // The redirect will be handled by the logic on the sign-in page
+    // The redirect will be handled by the logic on the sign-in page.
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
@@ -82,12 +83,12 @@ export default function SignUpPage() {
         <CardDescription>Join LearnMint to start your AI-powered learning journey.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        
+
         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isAnyLoading}>
           {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
           Sign Up with Google
         </Button>
-        
+
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <Separator />

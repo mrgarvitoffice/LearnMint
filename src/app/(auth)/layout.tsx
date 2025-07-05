@@ -11,16 +11,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If the initial auth check is done AND a user exists (and is not a guest), 
-    // redirect them away from the auth pages (sign-in, sign-up) to the main dashboard.
+    // If the initial auth check is done AND a non-guest user exists,
+    // redirect them away from the auth pages (sign-in, sign-up) to the dashboard.
     if (!loading && user && !user.isAnonymous) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
-  // While the initial authentication state is loading OR if a non-guest user exists and is being redirected,
-  // display a full-page spinner. This is crucial to prevent a flash of the login page
-  // for an already-logged-in user.
+  // While the initial authentication state is loading, display a spinner.
+  // This is crucial to prevent a flash of the login page for an already-logged-in user.
   if (loading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -29,7 +28,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  
+
   // If loading is complete and there's no user (or the user is a guest), render the sign-in/sign-up page.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"

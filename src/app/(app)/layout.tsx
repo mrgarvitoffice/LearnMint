@@ -12,18 +12,14 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Wait until the authentication check is complete.
-    if (loading) {
-      return; 
-    }
-    // If the check is done and there is no user, redirect to the sign-in page.
-    if (!user) {
+    // Only perform redirects after the loading state is resolved.
+    if (!loading && !user) {
       router.replace('/sign-in');
     }
   }, [user, loading, router]);
 
   // While the authentication state is loading, display a full-page spinner.
-  // This is crucial to prevent a flash of content or a premature redirect.
+  // This is the CRUCIAL step to prevent the redirect loop.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -34,6 +30,7 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   }
 
   // If loading is complete and a user object exists, render the main application layout.
+  // The useEffect above will have already initiated a redirect if user is null.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
