@@ -23,6 +23,9 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { signInWithEmail, signInAnonymously, loading } = useAuth();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
 
   const handleEmailSignIn = async (data: FormData) => {
     await signInWithEmail(data.email, data.password);
