@@ -42,7 +42,7 @@ export interface NavItem {
 // This array defines the structure and content of the primary navigation menu.
 // Titles are now keys for translation (e.g., 'sidebar.dashboard').
 export const NAV_ITEMS: NavItem[] = [
-  { title: 'sidebar.dashboard', href: '/', icon: LayoutDashboard },
+  { title: 'sidebar.dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'sidebar.aiChat', href: '/chatbot', icon: Bot, label: 'AI' },
   { title: 'sidebar.generateNotes', href: '/notes', icon: FileText, label: 'AI' },
   { title: 'sidebar.customTest', href: '/custom-test', icon: TestTubeDiagonal },
@@ -65,7 +65,7 @@ export const TOP_NAV_ITEMS: NavItem[] = [
 
 // --- Mobile Bottom Navigation ---
 export const BOTTOM_NAV_ITEMS: NavItem[] = [
-  { title: 'bottombar.home', href: '/', icon: Home },
+  { title: 'bottombar.home', href: '/dashboard', icon: Home },
   { title: 'bottombar.generate', href: '/notes', icon: NotebookText },
   { title: 'bottombar.test', href: '/custom-test', icon: TestTubeDiagonal },
   { title: 'sidebar.library', href: '/library', icon: BookMarked },

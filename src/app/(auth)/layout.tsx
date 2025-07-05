@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     // If auth state is determined and a user exists, they should be on the main app,
     // not the auth pages. This handles both guests and permanent users.
     if (!loading && user) {
-      router.replace('/');
+      router.replace('/dashboard');
     }
   }, [user, loading, router]);
 

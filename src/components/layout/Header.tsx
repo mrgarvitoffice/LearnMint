@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -22,6 +23,7 @@ import { APP_LANGUAGES } from '@/lib/constants';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '../ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import InstallPWAButton from '../features/pwa/InstallPWAButton';
 
 export function Header() {
   const { t } = useTranslation();
@@ -53,6 +55,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6">
        <div className="flex items-center gap-2">
+            <InstallPWAButton />
           {user && (
             <Link href="/profile" className="flex items-center">
               <Avatar className="h-9 w-9">
