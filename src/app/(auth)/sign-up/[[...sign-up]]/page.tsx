@@ -2,14 +2,14 @@
 "use client";
 
 import Link from 'next/link';
-import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
 import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Logo } from '@/components/icons/Logo';
 
 function GoogleIcon() {
@@ -22,12 +22,8 @@ function GoogleIcon() {
 
 export default function SignUpPage() {
   const { toast } = useToast();
-
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // This function creates a user document in Firestore if they don't exist.
-  // It no longer handles navigation.
   const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
@@ -43,50 +39,34 @@ export default function SignUpPage() {
     }
   }, []);
 
-  // This effect runs once on mount to handle the redirect result from Google.
-  useEffect(() => {
-    const processRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
-          await handleUserCreation(result.user);
-        }
-      } catch (error: any) {
-        console.error("Error processing redirect result on sign-up:", error);
-        let description = "Could not process sign-up from Google. Please try again.";
-        if (error.code === 'auth/unauthorized-domain') {
-            description = "This app's domain is not authorized for sign-in. Please check your Firebase project configuration.";
-        }
-        toast({ title: "Sign-Up Failed", description, variant: "destructive" });
-      } finally {
-        setIsProcessingRedirect(false);
-      }
-    };
-    processRedirect();
-  }, [handleUserCreation, toast]);
-
   const handleGoogleSignUp = async () => {
     setIsSubmitting(true);
     try {
-      await signInWithRedirect(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
+      await handleUserCreation(result.user);
+      // Navigation is handled by the AuthLayout
     } catch (error: any) {
-      console.error("Error initiating Google sign-up redirect:", error);
-      toast({ title: "Sign-Up Error", description: error.message, variant: "destructive" });
+      console.error("Error during Google sign-up:", error);
+      let title = "Sign-up Failed";
+      let description = "An unexpected error occurred. Please try again.";
+
+      if (error.code === 'auth/popup-closed-by-user') {
+        title = "Sign-up Cancelled";
+        description = "The sign-up window was closed. Please try again.";
+      } else if (error.code === 'auth/unauthorized-domain') {
+        title = "Domain Not Authorized";
+        description = `The domain ${window.location.hostname} is not authorized for sign-in. Please add it to the authorized domains list in your Firebase project settings.`;
+      } else if (error.code === 'auth/popup-blocked') {
+        title = "Popup Blocked";
+        description = "Your browser blocked the sign-up popup. Please allow popups for this site and try again.";
+      }
+
+      toast({ title, description, variant: "destructive" });
+    } finally {
       setIsSubmitting(false);
     }
   };
-
-  // While processing the redirect, show a loader.
-  if (isProcessingRedirect) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <h1 className="text-xl font-semibold">Verifying sign-up...</h1>
-        <p className="text-muted-foreground">Please wait a moment.</p>
-      </div>
-    );
-  }
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">

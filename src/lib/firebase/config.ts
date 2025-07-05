@@ -45,10 +45,10 @@ const logConfigVerification = () => {
     if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
       console.log(`✅ Project ID: ${firebaseConfig.projectId}`);
       console.log(`✅ Auth Domain: ${firebaseConfig.authDomain}`);
-      console.log("-> Please ensure BOTH domains below are in your Firebase project's 'Authorized domains' list:");
-      console.log(`   1. The Auth Domain itself: ${firebaseConfig.authDomain}`);
+      console.log("%c-> CRITICAL: Ensure BOTH domains below are in your Firebase project's 'Authorized domains' list for Google Sign-In to work:", "color: yellow; font-weight: bold;");
+      console.log(`   1. The Auth Domain itself: %c${firebaseConfig.authDomain}`, "color: lightblue;");
       if (typeof window !== 'undefined') {
-        console.log(`   2. Your app's current domain: ${window.location.hostname}`);
+        console.log(`   2. Your app's current domain: %c${window.location.hostname}`, "color: lightblue;");
       }
     } else {
       console.error("❌ CRITICAL: Firebase config is MISSING from your .env file!");

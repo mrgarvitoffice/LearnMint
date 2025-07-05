@@ -1,3 +1,4 @@
+
 # 🌱 LearnMint: Your AI-Powered Study Revolution! 🚀
 ## Made by **MrGarvit**!
 
@@ -48,7 +49,7 @@ LearnMint is built on the principles of efficiency, engagement, and elegance, a 
 
 **MrGarvit** has packed LearnMint with a suite of powerful, AI-driven tools:
 
-*   **Firebase Authentication**: Robust and secure user authentication using **Google Sign-In (Redirect Flow)** and a **Guest Mode**.
+*   **Firebase Authentication**: Robust and secure user authentication using **Google Sign-In (Popup Flow)** and a **Guest Mode**.
 *   **AI Content Generation Suite**:
     *   **Unified Material Generation**: Enter a topic for AI-generated:
         *   📝 **Comprehensive Notes**: Markdown formatted, emojis, and embedded AI-generated images.
@@ -103,7 +104,7 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
 
-To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
+To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in popup closes immediately), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`).
