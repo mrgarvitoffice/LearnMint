@@ -61,7 +61,8 @@ export default function SignUpPage() {
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
       });
-      setIsLoadingEmail(false);
+    } finally {
+        setIsLoadingEmail(false);
     }
   };
 
