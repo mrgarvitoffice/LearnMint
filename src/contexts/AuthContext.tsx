@@ -53,6 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: serverTimestamp(),
             });
           }
+          // After processing, redirect to the main app page.
+          router.replace('/');
         }
       } catch (error) {
         console.error("Google Redirect Result Error:", error);
@@ -71,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     handleAuthChanges();
-  }, [toast]);
+  }, [toast, router]);
 
 
   const signInWithGoogle = async () => {
