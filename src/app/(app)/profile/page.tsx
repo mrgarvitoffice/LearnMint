@@ -67,7 +67,7 @@ export default function ProfilePage() {
                    {user.isAnonymous ? (
                      <p className="italic text-muted-foreground/80">Sign up to add an email.</p>
                    ) : (
-                     <p className="font-semibold truncate">{user.email}</p>
+                     <p className="font-semibold break-all">{user.email}</p>
                    )}
                  </div>
                </div>
