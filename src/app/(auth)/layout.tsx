@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -12,16 +11,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If the initial auth check is done AND a user exists, redirect them away
-    // from the auth pages (sign-in, sign-up) to the main dashboard.
-    if (!loading && user) {
+    // If the initial auth check is done AND a user exists (and is not a guest), 
+    // redirect them away from the auth pages (sign-in, sign-up) to the main dashboard.
+    if (!loading && user && !user.isAnonymous) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
-  // While the initial authentication state is loading, display a full-page spinner.
-  // This is crucial to prevent a flash of the login page for an already-logged-in user.
-  if (loading || user) {
+  // While the initial authentication state is loading OR if a non-guest user exists and is being redirected,
+  // display a full-page spinner. This is crucial to prevent a flash of the login page
+  // for an already-logged-in user.
+  if (loading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
   
-  // If loading is complete and there's no user, render the sign-in/sign-up page.
+  // If loading is complete and there's no user (or the user is a guest), render the sign-in/sign-up page.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
         style={{

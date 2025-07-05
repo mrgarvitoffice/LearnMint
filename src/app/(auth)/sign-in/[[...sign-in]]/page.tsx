@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -35,8 +34,9 @@ export default function SignInPage() {
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
-  
-  const isAnyLoading = isLoadingEmail || isLoadingGoogle || isLoadingGuest;
+  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true); // Start true to handle initial check
+
+  const isAnyLoading = isLoadingEmail || isLoadingGoogle || isLoadingGuest || isProcessingRedirect;
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -45,7 +45,6 @@ export default function SignInPage() {
   // Handle the result of a Google Sign-In redirect
   useEffect(() => {
     const processRedirectResult = async () => {
-        setIsLoadingGoogle(true);
         try {
             const result = await getRedirectResult(auth);
             if (result?.user) {
@@ -65,9 +64,12 @@ export default function SignInPage() {
             }
         } catch (error: any) {
             console.error("Google Redirect Error:", error);
-            toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
+            // Don't show toast on initial load if there's no redirect result error
+            if (error.code !== 'auth/redirect-cancelled-by-user' && error.code !== 'auth/web-storage-unsupported') {
+               toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
+            }
         } finally {
-            setIsLoadingGoogle(false);
+            setIsProcessingRedirect(false); // Finished checking for redirect result
         }
     };
     processRedirectResult();
@@ -128,7 +130,7 @@ export default function SignInPage() {
         
         <div className="space-y-2">
            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isAnyLoading}>
-              {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+              {isLoadingGoogle || isProcessingRedirect ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
               Sign In with Google
             </Button>
             <Button variant="secondary" className="w-full" onClick={handleGuestSignIn} disabled={isAnyLoading}>

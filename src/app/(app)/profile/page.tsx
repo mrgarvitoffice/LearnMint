@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from 'react';
@@ -41,7 +40,7 @@ export default function ProfilePage() {
     if (user?.isAnonymous) {
       router.replace('/sign-in');
     }
-    // If the check is done and there's no user at all, the main app layout will redirect.
+    // If there is no user at all, the main app layout will handle the redirect.
   }, [user, loading, router]);
 
   // Show a loading screen while auth is resolving or if the user is a guest being redirected.
