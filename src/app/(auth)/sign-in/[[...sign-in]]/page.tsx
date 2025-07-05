@@ -1,20 +1,19 @@
-
 "use client";
 
 import Link from 'next/link';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, db, googleProvider } from '@/lib/firebase/config';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
-import { useGuestUsage } from '@/contexts/GuestUsageContext';
 
 function GoogleIcon() {
   return (
@@ -24,73 +23,55 @@ function GoogleIcon() {
   );
 }
 
+const formSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInAsGuest } = useAuth();
-  const { resetUsage } = useGuestUsage();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signInWithGoogleRedirect, signInWithEmail, signInAsGuest } = useAuth();
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
   const [isGuestSubmitting, setIsGuestSubmitting] = useState(false);
 
-  const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
-    const userRef = doc(db, 'users', user.uid);
-    const docSnap = await getDoc(userRef);
-    if (!docSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email?.split('@')[0],
-        photoURL: user.photoURL,
-        createdAt: serverTimestamp(),
-      });
-      console.log("New user document created in Firestore for:", user.uid);
-    }
-    resetUsage();
-  }, [resetUsage]);
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
 
   const handleGoogleSignIn = async () => {
-    setIsSubmitting(true);
+    setIsGoogleSubmitting(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      toast({ title: "Sign-in Successful!", description: "Welcome back! Redirecting you..." });
-      await handleUserCreation(result.user);
-      // Navigation is handled by the AuthLayout which detects the user state change
+      await signInWithGoogleRedirect();
+      // Redirect is handled by Firebase, and the result is caught by the AuthProvider
     } catch (error: any) {
-      console.error("Error during Google sign-in:", error);
-      let title = "Sign-in Failed";
-      let description = "An unexpected error occurred. Please try again.";
-
-      switch (error.code) {
-        case 'auth/popup-closed-by-user':
-          title = "Sign-in Cancelled";
-          description = "The sign-in window was closed. This can also happen if the domain is not authorized in your Firebase project settings. Please check the console logs and README.";
-          break;
-        case 'auth/unauthorized-domain':
-          title = "Domain Not Authorized";
-          description = `The domain '${window.location.hostname}' is not authorized for sign-in. Please add it to the authorized domains list in your Firebase project settings under Authentication > Settings.`;
-          break;
-        case 'auth/popup-blocked':
-          title = "Popup Blocked";
-          description = "Your browser blocked the sign-in popup. Please allow popups for this site and try again.";
-          break;
-        case 'auth/cancelled-popup-request':
-          title = "Sign-in Cancelled";
-          description = "Multiple sign-in windows were opened. Please try again.";
-          break;
-        default:
-          description = error.message;
-      }
-
-      toast({ title, description, variant: "destructive", duration: 10000 });
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error initiating Google sign-in redirect:", error);
+      toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
+      setIsGoogleSubmitting(false);
     }
   };
 
+  const handleEmailSignIn = async (data: FormData) => {
+    setIsEmailSubmitting(true);
+    try {
+      await signInWithEmail(data.email, data.password);
+      toast({ title: "Sign-in Successful!", description: "Welcome back! Redirecting you..." });
+      // Navigation is handled by the AuthLayout detecting the user state change
+    } catch (error: any) {
+      console.error("Error signing in with email:", error);
+      toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsEmailSubmitting(false);
+    }
+  };
+  
   const handleGuestSignIn = async () => {
     setIsGuestSubmitting(true);
     try {
       await signInAsGuest();
-      // Navigation handled by layout
+      // Navigation is handled by AuthLayout
     } catch (error: any) {
       console.error("Error signing in as guest:", error);
       toast({ title: "Guest Sign-In Failed", description: error.message, variant: "destructive" });
@@ -98,6 +79,8 @@ export default function SignInPage() {
       setIsGuestSubmitting(false);
     }
   };
+
+  const isAnyLoading = isGoogleSubmitting || isEmailSubmitting || isGuestSubmitting;
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -107,18 +90,38 @@ export default function SignInPage() {
         <CardDescription>Sign in to access your LearnMint dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isSubmitting || isGuestSubmitting}>
-          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
-          Sign In with Google
-        </Button>
+        <form onSubmit={handleSubmit(handleEmailSignIn)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={isAnyLoading} />
+            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" {...register('password')} disabled={isAnyLoading} />
+            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+          </div>
+          <Button type="submit" className="w-full" disabled={isAnyLoading}>
+            {isEmailSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign In with Email
+          </Button>
+        </form>
+
         <div className="relative">
           <Separator className="my-1" />
           <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
             OR
           </p>
         </div>
-        <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isSubmitting || isGuestSubmitting}>
-          {isGuestSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Continue as Guest
+
+        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
+          {isGoogleSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+          Sign In with Google
+        </Button>
+        
+        <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isAnyLoading}>
+          {isGuestSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Continue as Guest
         </Button>
       </CardContent>
       <CardFooter className="justify-center text-sm">

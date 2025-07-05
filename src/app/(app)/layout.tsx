@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -21,7 +20,7 @@ function NotAuthenticatedScreen() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-6 text-muted-foreground">
-                        Please sign in to your account to continue.
+                        Please sign in or continue as a guest to access LearnMint.
                     </p>
                     <Button asChild size="lg">
                         <Link href="/sign-in">
@@ -37,8 +36,6 @@ function NotAuthenticatedScreen() {
 export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
-  // While the authentication state is loading, display a full-page spinner.
-  // This is the most critical part of the fix to prevent the redirect loop.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -48,11 +45,11 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If loading is complete and a user object exists, render the main application layout.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // If loading is complete and there is no user, show the "not authenticated" screen with a button.
+  // If not loading and no user, show the access denied screen.
+  // This is the gatekeeper for all pages inside the (app) group.
   return <NotAuthenticatedScreen />;
 }
