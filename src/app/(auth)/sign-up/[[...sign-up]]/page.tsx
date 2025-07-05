@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, UserPlus } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
@@ -44,7 +45,7 @@ export default function SignUpPage() {
         <CardDescription>Join LearnMint to unlock all features.</CardDescription>
       </CardHeader>
       <CardContent>
-        {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
+        {loading && <div className="absolute inset-0 bg-background/50 flex justify-center items-center z-10 rounded-lg"><Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" /></div>}
         <div className="space-y-2">
             <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
@@ -81,7 +82,7 @@ export default function SignUpPage() {
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
             Create Account
           </Button>
         </form>

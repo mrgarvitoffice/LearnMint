@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -8,14 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, LogIn } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(1, { message: "Password is required." }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -39,7 +40,7 @@ export default function SignInPage() {
         <CardDescription>Sign in to access your LearnMint dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
+        {loading && <div className="absolute inset-0 bg-background/50 flex justify-center items-center z-10 rounded-lg"><Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" /></div>}
         
         <div className="space-y-2">
             <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
@@ -67,7 +68,7 @@ export default function SignInPage() {
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
             Sign In
           </Button>
         </form>

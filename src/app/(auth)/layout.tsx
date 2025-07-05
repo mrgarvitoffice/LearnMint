@@ -12,8 +12,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If auth state is determined and *any* user exists (guest or permanent),
-    // they should be redirected from the auth pages to the dashboard.
+    // If auth state is determined and a user exists, they should be on the main app,
+    // not the auth pages. This handles both guests and permanent users.
     if (!loading && user) {
       router.replace('/');
     }

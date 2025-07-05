@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
@@ -8,6 +9,8 @@ import {
   createUserWithEmailAndPassword,
   signInAnonymously as firebaseSignInAnonymously,
   updateProfile,
+  linkWithCredential,
+  EmailAuthProvider,
   type User,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
@@ -74,14 +77,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
 
   const signOutUser = async () => {
+    setLoading(true);
     await signOut(auth);
     router.push('/sign-in');
+    setLoading(false);
   };
   
   const signInAnonymously = async () => {
     setLoading(true);
     try {
       await firebaseSignInAnonymously(auth);
+      toast({ title: "Welcome, Guest!", description: "You can now explore all features." });
+      router.push('/');
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
@@ -98,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
       
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
+      router.push('/');
     } catch (error: any) {
       let description = "An unknown error occurred.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -113,17 +121,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUpWithEmail = async (email: string, password: string, displayName: string) => {
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName });
-        await handleUserCreationInFirestore({ ...userCredential.user, displayName });
-        setUser({ ...userCredential.user, displayName });
-        toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
+      const currentUser = auth.currentUser;
+
+      // Handle upgrading a guest account to a permanent one
+      if (currentUser && currentUser.isAnonymous) {
+        const credential = EmailAuthProvider.credential(email, password);
+        const linkResult = await linkWithCredential(currentUser, credential);
+        const linkedUser = linkResult.user;
+        
+        await updateProfile(linkedUser, { displayName });
+        await handleUserCreationInFirestore({ ...linkedUser, displayName, email });
+        
+        setUser({ ...linkedUser, displayName, email, isAnonymous: false });
+        
+        toast({ title: `Welcome, ${displayName}!`, description: "Your account has been upgraded and saved." });
+        router.push('/');
+
+      } else {
+        // Handle standard new user sign-up
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (userCredential.user) {
+          await updateProfile(userCredential.user, { displayName });
+          await handleUserCreationInFirestore({ ...userCredential.user, displayName });
+          setUser({ ...userCredential.user, displayName });
+          toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
+          router.push('/');
+        }
       }
     } catch (error: any) {
       let description = "An unknown error occurred.";
        if (error.code === 'auth/email-already-in-use') {
         description = "This email is already associated with an account."
+      } else if (error.code === 'auth/credential-already-in-use') {
+        description = "This email is already linked to another account. Please use a different email.";
       } else {
         description = error.message;
       }
