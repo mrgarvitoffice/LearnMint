@@ -13,6 +13,7 @@ import { Header } from './Header'; // This now includes settings and the avatar.
 
 export function TopMobileNav() {
   const pathname = usePathname();
+  const { playSound } = useSound('/sounds/ting.mp3', 0.2);
   const { t } = useTranslation();
 
   return (
@@ -32,6 +33,33 @@ export function TopMobileNav() {
         {/* Header now includes the settings dropdown AND the user avatar */}
         <Header />
       </div>
+      
+      {/* Restored secondary navigation bar */}
+      <div className="flex h-16 items-center overflow-x-auto px-2 border-t border-border/50">
+        <nav className="flex w-full items-center justify-around text-sm font-medium">
+          {TOP_NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive = (item.href !== '/' && pathname.startsWith(item.href)) || pathname === item.href;
+            const title = t(item.title);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={playSound}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 p-1 w-16 text-muted-foreground transition-colors hover:text-primary group",
+                  isActive && "text-primary [text-shadow:0_0_8px_hsl(var(--primary))]"
+                )}
+              >
+                <Icon className="h-6 w-6 transition-transform duration-200 group-hover:scale-110" />
+                <span className="text-[10px] font-medium leading-tight text-center">{title}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
     </header>
   );
 }
