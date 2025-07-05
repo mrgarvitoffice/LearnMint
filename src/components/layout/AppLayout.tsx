@@ -1,5 +1,9 @@
 
 "use client";
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 
 import { type ReactNode, useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';

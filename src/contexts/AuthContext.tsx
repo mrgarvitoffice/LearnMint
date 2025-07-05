@@ -1,5 +1,9 @@
 
 "use client";
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import {
@@ -124,7 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const userDocRef = doc(db, 'users', userCredential.user.uid);
       const userDoc = await getDoc(userDocRef);
-      const displayName = userDoc.exists() ? userDoc.data().displayName : userCredential.user.email?.split('@')[0] || 'User';
+      // Robust display name handling
+      const displayName = (userDoc.exists() && userDoc.data().displayName) || userCredential.user.email?.split('@')[0] || 'User';
       
       toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
     } catch (error: any) {

@@ -1,5 +1,9 @@
 
 'use server';
+/**
+ * LearnMint: Your AI-Powered Learning Assistant
+ * @author MrGarvit
+ */
 // This file contains server actions, which are functions that can be called directly from client components.
 // They run on the server and are often used for database operations, AI model calls, or other server-side logic.
 
@@ -88,7 +92,7 @@ export async function generateNotesAction(input: GenerateStudyNotesInput): Promi
 
   // Notes generated successfully, now generate quiz and flashcards FROM THE NOTES.
   const quizInput: GenerateQuizFromNotesInput = { notesContent: notesResult.notes, numQuestions: 30 };
-  const flashcardsInput: GenerateFlashcardsFromNotesInput = { notesContent: notesResult.notes, numQuestions: 20 };
+  const flashcardsInput: GenerateFlashcardsFromNotesInput = { notesContent: notesResult.notes, numFlashcards: 20 };
 
   let quizData: GenerateQuizQuestionsOutput | undefined;
   let flashcardsData: GenerateFlashcardsOutput | undefined;
