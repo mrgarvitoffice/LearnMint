@@ -47,7 +47,7 @@ export default function ProfilePage() {
     return <GuestLock featureName="Profile" message="Please sign in or create an account to view your profile." />;
   }
 
-  // The main app layout handles the case where user is null, but we can add an extra guard.
+  // The main app layout handles the case where user is null, so this is an extra guard.
   if (!user) {
     return null; 
   }

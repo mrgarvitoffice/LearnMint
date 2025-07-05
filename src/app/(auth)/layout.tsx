@@ -21,7 +21,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   // While auth state is loading, or if the user is logged in and we are about to redirect, show a loader.
   if (loading || (user && !user.isAnonymous)) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-transparent">
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
         <p className="mt-3 text-lg">{loading ? 'Loading...' : 'Redirecting...'}</p>
       </div>

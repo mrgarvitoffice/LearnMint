@@ -46,7 +46,7 @@ export default function SignInPage() {
         if (result && result.user) {
           toast({ title: "Signed in with Google!", description: "Welcome back! Setting up your session..." });
 
-          // Ensure user document exists in Firestore
+          // Ensure user document exists in Firestore for new sign-ups via Google
           const userRef = doc(db, 'users', result.user.uid);
           const docSnap = await getDoc(userRef);
           if (!docSnap.exists()) {
@@ -58,7 +58,7 @@ export default function SignInPage() {
               createdAt: serverTimestamp(),
             });
           }
-          // The layout will handle the redirect once the auth state updates.
+          router.replace('/');
         }
       } catch (error: any) {
         console.error("Google Redirect Error:", error);
@@ -69,14 +69,14 @@ export default function SignInPage() {
     };
 
     handleRedirectResult();
-  }, [toast]);
+  }, [router, toast]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      // The auth layout will handle the redirect.
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -86,7 +86,6 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -96,7 +95,6 @@ export default function SignInPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithRedirect(auth, provider);
-      // The redirect result will be handled by the useEffect on page load.
     } catch (error) {
       console.error("Google Sign In Redirect Error:", error);
       toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
@@ -109,11 +107,10 @@ export default function SignInPage() {
     try {
       await signInAsGuest();
       toast({ title: "Signed in as guest", description: "Redirecting..." });
-      // The auth layout will handle the redirect.
+      router.replace('/');
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
-    } finally {
        setIsSubmitting(false);
     }
   }

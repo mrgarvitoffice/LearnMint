@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Chrome } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 
@@ -27,6 +28,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>({
@@ -47,7 +49,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      // The auth layout will handle the redirect.
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -57,7 +59,6 @@ export default function SignUpPage() {
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
