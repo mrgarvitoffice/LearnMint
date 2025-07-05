@@ -5,10 +5,11 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import {
   onAuthStateChanged,
   signOut,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInAnonymously as firebaseSignInAnonymously, // Aliased import to prevent name collision
+  signInAnonymously as firebaseSignInAnonymously,
   type User,
   GoogleAuthProvider
 } from 'firebase/auth';
@@ -62,20 +63,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
       if (firebaseUser) {
         await handleUserCreationInFirestore(firebaseUser);
-        setUser(firebaseUser);
-      } else {
-        setUser(null);
       }
       setLoading(false);
     });
 
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result) {
+          toast({ title: "Signed In", description: `Welcome back, ${result.user.displayName || 'user'}.` });
+          // The onAuthStateChanged listener will handle setting user and firestore creation.
+        }
+      })
+      .catch((error) => {
+        console.error("Auth Redirect Error:", error);
+        let description = "There was an issue with the sign-in redirect.";
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          description = "An account already exists with this email address. Please sign in with the original method."
+        }
+        toast({ title: "Sign-in Error", description, variant: "destructive" });
+        setLoading(false);
+      });
+
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleUserCreationInFirestore]);
 
   const signOutUser = async () => {
-    setLoading(true);
     await signOut(auth);
     router.push('/sign-in');
   };
@@ -83,59 +99,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the rest, including loading state and navigation
-    } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      
-      console.error("--- GOOGLE SIGN-IN FAILED: DOMAIN AUTHORIZATION CHECK ---");
-      console.error("To fix this, you MUST add the following two domains to your Firebase project's 'Authorized domains' list:");
-      if (typeof window !== 'undefined') {
-        console.error(`1. Your App's Domain: %c${window.location.hostname}`, 'font-weight: bold; color: yellow;');
-      }
-      if (auth.config.authDomain) {
-        console.error(`2. Your Firebase Auth Domain: %c${auth.config.authDomain}`, 'font-weight: bold; color: yellow;');
-      }
-      console.error("Please go to the Firebase Console > Authentication > Settings > Authorized domains and add these exact values.");
-      console.error("--- END DOMAIN CHECK ---");
-
-
-      let description = error.message;
-      if (error.code === 'auth/popup-closed-by-user') {
-        description = "The sign-in popup was closed before completion. This often happens if the application's domain is not authorized in the Firebase console. Please check the console logs for the exact domains to add.";
-      } else if (error.code === 'auth/unauthorized-domain') {
-        description = `This app's domain is not authorized for Google Sign-In. Please add '${window.location.hostname}' and '${auth.config.authDomain}' to the authorized domains in your Firebase console. See the README for a step-by-step guide.`;
-      } else if (error.code === 'auth/popup-blocked') {
-        description = "Popup blocked by browser. Please allow popups for this site and try again.";
-      }
-      toast({ title: "Google Sign-in Failed", description, variant: "destructive", duration: 10000 });
-      setLoading(false); // Reset loading state on error
-    }
+    // Use signInWithRedirect which is more robust than popups.
+    await signInWithRedirect(auth, provider);
   };
   
   const signInAnonymously = async () => {
     setLoading(true);
     try {
-      await firebaseSignInAnonymously(auth); // Use the aliased import
-      // onAuthStateChanged will handle navigation
+      await firebaseSignInAnonymously(auth);
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
       toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
-      setLoading(false);
+    } finally {
+      // setLoading(false) is handled by onAuthStateChanged
     }
   };
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
-    await signInWithEmailAndPassword(auth, email, password);
-    // onAuthStateChanged will handle navigation
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      let description = "An unknown error occurred.";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        description = "Invalid email or password. Please try again."
+      } else {
+        description = error.message;
+      }
+      toast({ title: "Sign-in Failed", description, variant: "destructive" });
+       setLoading(false);
+    }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     setLoading(true);
-    await createUserWithEmailAndPassword(auth, email, password);
-    // onAuthStateChanged will handle navigation
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      let description = "An unknown error occurred.";
+       if (error.code === 'auth/email-already-in-use') {
+        description = "This email is already associated with an account."
+      } else {
+        description = error.message;
+      }
+      toast({ title: "Sign-up Failed", description, variant: "destructive" });
+       setLoading(false);
+    }
   };
 
   const value = { user, loading, signOutUser, signInWithGoogle, signInWithEmail, signUpWithEmail, signInAnonymously };

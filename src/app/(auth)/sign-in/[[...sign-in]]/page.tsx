@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
 import { Loader2, User } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,7 +30,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
-  const { toast } = useToast();
   const { signInWithGoogle, signInWithEmail, signInAnonymously, loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -39,12 +37,7 @@ export default function SignInPage() {
   });
 
   const handleEmailSignIn = async (data: FormData) => {
-    try {
-      await signInWithEmail(data.email, data.password);
-    } catch (error: any) {
-      console.error("Error signing in with email:", error);
-      toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
-    }
+    await signInWithEmail(data.email, data.password);
   };
 
   return (
@@ -58,14 +51,13 @@ export default function SignInPage() {
         {loading && <div className="flex justify-center"><Loader2 className="mr-2 h-6 w-6 animate-spin" /></div>}
         
         <div className="space-y-2">
-            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
-              <GoogleIcon />
-              Sign In with Google
-            </Button>
-            
             <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
                 Continue as Guest
+            </Button>
+            <Button onClick={signInWithGoogle} variant="outline" className="w-full" disabled={loading}>
+              <GoogleIcon />
+              Sign In with Google
             </Button>
         </div>
 
