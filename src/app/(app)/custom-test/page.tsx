@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { generateQuizAction } from '@/lib/actions';
 import type { TestSettings, QuizQuestion as TestQuestionType, GenerateQuizQuestionsOutput } from '@/lib/types';
-import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon } from 'lucide-react';
+import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon, FileText } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ReactMarkdown from 'react-markdown';
@@ -29,6 +29,7 @@ import Image from 'next/image';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
+import { extractTextFromPdf } from '@/lib/utils';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
 const MAX_RECENT_TOPICS_SELECT = 3;
@@ -83,13 +84,14 @@ export default function CustomTestPage() {
   const [recentTopics, setRecentTopics] = useState<string[]>([]);
   const [recentTopicsSelectionDone, setRecentTopicsSelectionDone] = useState(false);
   const [notesImagePreview, setNotesImagePreview] = useState<string | null>(null);
+  const [pdfFileName, setPdfFileName] = useState<string | null>(null);
   const notesImageInputRef = useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
   const { playSound: playCorrectSound } = useSound('/sounds/correct-answer.mp3', { priority: 'essential' });
   const { playSound: playIncorrectSound } = useSound('/sounds/incorrect-answer.mp3', { priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
-  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
+  const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
 
   const { speak, setVoicePreference } = useTTS();
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition, error: voiceError } = useVoiceRecognition();
@@ -403,32 +405,12 @@ export default function CustomTestPage() {
     }
     setValue('selectedRecentTopics', newSelected, { shouldValidate: true });
   };
-
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    playClickSound();
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type.startsWith('image/')) {
-        if (file.size > 2 * 1024 * 1024) { // 2MB limit
-          toast({ title: "Image too large", description: "Please upload an image smaller than 2MB.", variant: "destructive" });
-          return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setNotesImagePreview(reader.result as string);
-          setValue('notesImage', reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        toast({ title: "Unsupported File", description: "This feature currently supports Image uploads.", variant: "default" });
-      }
-    }
-  };
-
-  const handleRemoveImage = () => {
+  
+  const handleRemoveFile = () => {
     playClickSound();
     setNotesImagePreview(null);
     setValue('notesImage', undefined);
+    setPdfFileName(null);
     if (notesImageInputRef.current) {
       notesImageInputRef.current.value = "";
     }
@@ -484,7 +466,7 @@ export default function CustomTestPage() {
                    <div className="flex gap-2">
                     <Textarea id="notes" placeholder="Paste your study notes here (min 50 characters)..." {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
                     <div className="flex flex-col gap-2">
-                      <Button type="button" variant="outline" size="icon" onClick={() => notesImageInputRef.current?.click()} title="Attach Image">
+                      <Button type="button" variant="outline" size="icon" onClick={() => notesImageInputRef.current?.click()} title="Attach Image or PDF">
                         <ImageIcon className="w-5 h-5" />
                       </Button>
                       {browserSupportsSpeechRecognition && (
@@ -497,14 +479,23 @@ export default function CustomTestPage() {
                   {errors.notes && <p className="text-sm text-destructive mt-1">{errors.notes.message}</p>}
                   
                   {notesImagePreview && (
-                    <div className="relative w-20 h-20">
+                    <div className="relative w-20 h-20 mt-2">
                       <Image src={notesImagePreview} alt="Notes preview" layout="fill" objectFit="cover" className="rounded-md" />
-                      <Button type="button" variant="ghost" size="icon" onClick={handleRemoveImage} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
+                      <Button type="button" variant="ghost" size="icon" onClick={handleRemoveFile} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
                         <XCircle className="w-4 h-4" />
                       </Button>
                     </div>
                   )}
-                  <input type="file" ref={notesImageInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+                   {pdfFileName && (
+                    <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground truncate flex-1">{pdfFileName}</span>
+                        <Button type="button" variant="ghost" size="icon" onClick={handleRemoveFile} className="h-6 w-6 rounded-full">
+                            <XCircle className="w-4 h-4 text-destructive/70" />
+                        </Button>
+                    </div>
+                  )}
+                  <input type="file" ref={notesImageInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
                   {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
                 </div>
               )}
