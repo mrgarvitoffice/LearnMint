@@ -19,19 +19,19 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, router]);
 
-  // Show a loader for fully authenticated users who land here, before they are redirected.
-  // Do NOT show a loader for guests, as they need to see the sign-in page.
-  if (loading || (user && !user.isAnonymous)) {
+  // The loading screen should ONLY show during the initial authentication check.
+  // Once `loading` is false, we should render the children and let the useEffect handle any necessary redirects.
+  if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{loading ? 'Verifying session...' : 'Redirecting to dashboard...'}</p>
+        <p className="mt-3 text-lg">Verifying session...</p>
       </div>
     );
   }
   
-  // Only render the sign-in/sign-up forms if loading is false and no user is found,
-  // or if the current user is a guest.
+  // If not loading, render the content. The useEffect above will handle redirecting
+  // logged-in users away from this page. This prevents the "update during render" error.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
          style={{
