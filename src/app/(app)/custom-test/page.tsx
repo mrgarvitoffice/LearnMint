@@ -192,7 +192,7 @@ export default function CustomTestPage() {
     return () => clearTimeout(timer);
   }, [speak, testState, isLoading]);
 
-  useEffect(() => { if (isLoading) speak("Creating custom test. Please wait.", { priority: 'essential' }); }, [isLoading, speak]);
+  useEffect(() => { if (isLoading) speak("Creating custom test. Please wait.", { priority: 'optional' }); }, [isLoading, speak]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -267,7 +267,7 @@ export default function CustomTestPage() {
     setIsLoading(true); setTestState(null);
     resultAnnouncementSpokenRef.current = false;
     pageTitleSpokenRef.current = true; 
-    speak("Creating custom test. Please wait.", { priority: 'essential' });
+    speak("Creating custom test. Please wait.", { priority: 'optional' });
 
     let topicForAI = ""; let topicsForSettings: string[] = []; let notesForAI = "";
     if (data.sourceType === 'topic' && data.topics) {
@@ -359,7 +359,7 @@ export default function CustomTestPage() {
     resultAnnouncementSpokenRef.current = false;
     pageTitleSpokenRef.current = true;
 
-    speak("Recreating test. Please wait.", { priority: 'essential' });
+    speak("Recreating test. Please wait.", { priority: 'optional' });
     let topicForAI = "";
     if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) topicForAI = originalSettings.topics.join(', ');
     else if (originalSettings.sourceType === 'notes' && originalSettings.notes) topicForAI = `questions based on the following notes: ${originalSettings.notes}`;

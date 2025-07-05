@@ -174,7 +174,7 @@ export default function GenerateNotesPage() {
     setIsLoadingAll(true);
     pageTitleSpokenRef.current = true; 
 
-    speak("Generating all study materials. This may take a moment.", { priority: 'essential' });
+    speak("Generating all study materials. This may take a moment.", { priority: 'optional' });
 
     const trimmedTopic = topic.trim();
     try {
