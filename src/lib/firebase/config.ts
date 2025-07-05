@@ -1,9 +1,10 @@
+
 // This file configures and initializes the Firebase application instance.
 // It reads the configuration from environment variables and exports the initialized auth and firestore services.
 // NOTE: This setup ensures Firebase is initialized only once, preventing common errors.
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration, sourced from environment variables.
@@ -30,6 +31,10 @@ export const auth = getAuth(app);
 
 // Export the Firestore database service.
 export const db = getFirestore(app);
+
+// Export a provider instance for Google Sign-In.
+export const googleProvider = new GoogleAuthProvider();
+
 
 // --- Startup Verification Log ---
 // This log helps confirm that the Firebase config is being loaded correctly.

@@ -49,7 +49,7 @@ LearnMint is built on the principles of efficiency, engagement, and elegance, a 
 
 **MrGarvit** has packed LearnMint with a suite of powerful, AI-driven tools:
 
-*   **Firebase Authentication**: Robust and secure user authentication using **Passwordless Email Link**.
+*   **Firebase Authentication**: Robust and secure user authentication using **Google Sign-In (Redirect Flow)** and a **Guest Mode**.
 *   **AI Content Generation Suite**:
     *   **Unified Material Generation**: Enter a topic for AI-generated:
         *   📝 **Comprehensive Notes**: Markdown formatted, emojis, and embedded AI-generated images.
@@ -82,7 +82,7 @@ LearnMint leverages a modern, robust tech stack, carefully selected by **MrGarvi
 *   TypeScript
 *   Tailwind CSS
 *   ShadCN UI Components
-*   **Firebase Authentication** (Passwordless Email Link)
+*   **Firebase Authentication** (Google Sign-In, Anonymous)
 *   Genkit (Google Gemini for AI text & image generation)
 *   Lucide Icons
 *   `@tanstack/react-query`
@@ -104,22 +104,23 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
 
-To prevent sign-in errors like `auth/unauthorized-domain`, you **MUST** enable the correct sign-in method and add your development domain to Firebase's authorized list.
+To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
-2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`). This is a critical step.
+2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`).
 3.  Navigate to **Authentication** (in the Build section on the left sidebar).
 4.  Go to the **Sign-in method** tab.
-5.  Click **Add new provider** and select **Email/Password**.
-6.  Enable the **Email/Password** provider (the top switch).
-7.  **CRITICAL**: Enable the **Email link (passwordless sign-in)** switch right below it. Click **Save**.
-8.  Now, go to the **Settings** tab within Authentication.
-9.  Select the **Authorized domains** section.
-10. Click **Add domain**.
-11. **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
-12. Click **Add**. Your sign-in should now work correctly.
+5.  Click **Add new provider** and select **Google**.
+6.  **Enable** the Google provider and set a project public-facing email. Click **Save**.
+7.  While still in Authentication, go to the **Settings** tab.
+8.  Select the **Authorized domains** section.
+9.  Click **Add domain**.
+10. **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+11. Click **Add domain** again.
+12. **Add your Firebase auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
+13. Click **Add**. Your Google sign-in should now work correctly on your deployed environment.
 
-If sign-in still fails, double-check that you have entered the domain exactly as shown in your URL bar, without any typos.
+If sign-in still fails, double-check that you have entered the domains exactly as shown in your URL bar and `.env` file, without any typos.
 
 ### 3. CRITICAL: Set up Environment Variables using a `.env` file
 
@@ -135,8 +136,8 @@ Create `.env` in the **project root**. Populate with your API keys. **This is es
 # === Firebase Authentication ===
 # These keys are required for user sign-in and sign-up.
 # Get them from your Firebase project settings.
-# CRITICAL: Ensure your dev domain (e.g., cluster-....cloudworkstations.dev) is added 
-# to the "Authorized domains" list in Firebase Auth settings.
+# CRITICAL: Ensure the Auth Domain (e.g., learnflow-go3hi.firebaseapp.com) and your dev domain
+# (e.g., cluster-....cloudworkstations.dev) are added to the "Authorized domains" list.
 NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCNcktsyCTevZebTrc4aBnG4b0pRbYx4tk
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=learnflow-go3hi.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=learnflow-go3hi
