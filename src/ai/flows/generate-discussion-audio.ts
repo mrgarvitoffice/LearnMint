@@ -40,7 +40,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 }
 
 // Prompt to generate the dialogue script
-const dialoguePrompt = ai.definePrompt({ // Using main `ai` client for robustness
+const dialoguePrompt = aiForTTS.definePrompt({ // Use the same client as the flow
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: z.object({ content: z.string() }) },
