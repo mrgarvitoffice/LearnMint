@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInAnonymously,
+  signInAnonymously as firebaseSignInAnonymously, // Aliased import to prevent name collision
   type User,
   GoogleAuthProvider
 } from 'firebase/auth';
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInAnonymously = async () => {
     setLoading(true);
     try {
-      await signInAnonymously(auth);
+      await firebaseSignInAnonymously(auth); // Use the aliased import
       // onAuthStateChanged will handle navigation
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
