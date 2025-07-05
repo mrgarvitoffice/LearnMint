@@ -1,10 +1,9 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { getRedirectResult } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
@@ -15,16 +14,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
   // This hook handles the result from a Google Sign-In redirect.
-  // It runs only once on mount.
   useEffect(() => {
     getRedirectResult(auth)
       .then(async (result) => {
         if (result?.user) {
           // If we get a result, it means the user just came back from Google.
-          // The `onAuthStateChanged` in AuthContext will handle setting the user state.
-          // We just need to create the user doc in Firestore if it's their first time.
           const userRef = doc(db, 'users', result.user.uid);
           const docSnap = await getDoc(userRef);
 
@@ -40,41 +37,46 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           } else {
             toast({ title: "Welcome back!", description: "You have successfully signed in." });
           }
-          // After processing, the main layout will handle the redirect because the user state will be updated.
-          // No need to push the router here, as it can cause race conditions.
+          // After processing, navigate to the dashboard.
+          // This ensures that after the Google redirect is handled, the user is moved.
+          router.replace('/');
+        } else {
+            // No redirect result, we can stop the processing loader.
+            setIsProcessingRedirect(false);
         }
       })
       .catch((error) => {
         console.error("Google Redirect Result Error:", error);
         toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in. Please try again.", variant: "destructive" });
+        setIsProcessingRedirect(false);
       });
+  // The empty dependency array is correct here, we only want this to run once on mount.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // This hook handles redirecting users who are ALREADY logged in.
+  // This hook handles redirecting users who are ALREADY logged in and not coming from a Google redirect.
   useEffect(() => {
-    // Wait until the initial auth check is done.
-    if (!loading) {
+    // Wait until the initial auth check AND the redirect check are done.
+    if (!loading && !isProcessingRedirect) {
       // If a user exists (and isn't a guest), they shouldn't be on an auth page.
       if (user && !user.isAnonymous) {
         router.replace('/');
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, isProcessingRedirect]);
 
 
-  // Show a loading screen while the initial auth check is running.
-  if (loading) {
+  // Show a loading screen while the initial auth check or the redirect processing is running.
+  if (loading || isProcessingRedirect) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Loading Session...</p>
+        <p className="mt-3 text-lg">Verifying Authentication...</p>
       </div>
     );
   }
 
   // If not loading and no user (or a guest), render the auth page content.
-  // The useEffect above handles redirecting away if a full user exists.
   return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
           style={{

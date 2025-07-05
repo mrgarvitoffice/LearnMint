@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -17,6 +16,7 @@ import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 
 const signInSchema = z.object({
@@ -29,6 +29,7 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
+  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
@@ -43,8 +44,8 @@ export default function SignInPage() {
     setIsLoadingEmail(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      // No navigation here. The layout's onAuthStateChanged will trigger the redirect.
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -54,15 +55,13 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-      setIsLoadingEmail(false); // Only set loading to false on error
+      setIsLoadingEmail(false);
     } 
-    // On success, the page will be unmounted by the layout redirect, so no need to set loading false.
   };
 
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    // The auth layout will handle the result when the user is redirected back.
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
@@ -74,7 +73,8 @@ export default function SignInPage() {
     setIsLoadingGuest(true);
     try {
       await signInAsGuest();
-      // No navigation here. The layout's onAuthStateChanged will trigger the redirect.
+      toast({ title: "Signed in as guest", description: "Redirecting..." });
+      router.replace('/');
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });

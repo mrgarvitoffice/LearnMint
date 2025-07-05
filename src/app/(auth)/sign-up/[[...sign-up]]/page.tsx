@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -17,6 +16,7 @@ import { Loader2, UserPlus, Chrome } from 'lucide-react';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
+import { useRouter } from 'next/navigation';
 
 const signUpSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -27,6 +27,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -48,8 +49,8 @@ export default function SignUpPage() {
         photoURL: '',
         createdAt: serverTimestamp(),
       });
-      // No navigation here. The layout's onAuthStateChanged will trigger the redirect.
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
