@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Chrome, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,31 +30,27 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
+  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true); // Start true to handle initial check
+  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
-  // Any loading state on this page disables all buttons
   const isAnyLoading = isLoadingEmail || isLoadingGoogle || isLoadingGuest || isProcessingRedirect;
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
 
-  // This useEffect handles the result of a Google Sign-In redirect.
-  // It runs once on component mount.
   useEffect(() => {
     const processRedirectResult = async () => {
         try {
             const result = await getRedirectResult(auth);
             if (result?.user) {
-                // User signed in via redirect.
                 toast({ title: "Signed in with Google!", description: "Finalizing your setup..." });
                 const userRef = doc(db, 'users', result.user.uid);
                 const docSnap = await getDoc(userRef);
                 if (!docSnap.exists()) {
-                    // Create a new user document in Firestore if one doesn't exist
                     await setDoc(userRef, {
                         uid: result.user.uid,
                         email: result.user.email,
@@ -62,29 +59,26 @@ export default function SignInPage() {
                         createdAt: serverTimestamp(),
                     });
                 }
-                // The (auth) layout will handle the redirect to the dashboard
-                // once onAuthStateChanged fires with the new user.
+                router.replace('/');
             }
         } catch (error: any) {
             console.error("Google Redirect Error:", error);
-            // Avoid showing an error on initial page load if there's no redirect action
             if (error.code !== 'auth/redirect-cancelled-by-user' && error.code !== 'auth/web-storage-unsupported') {
                toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
             }
         } finally {
-            // Finished checking for a redirect result.
             setIsProcessingRedirect(false);
         }
     };
     processRedirectResult();
-  }, [toast]);
+  }, [toast, router]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsLoadingEmail(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      // The (auth) layout will handle the redirect.
+      router.replace('/');
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -94,7 +88,6 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-    } finally {
       setIsLoadingEmail(false);
     }
   };
@@ -102,7 +95,6 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    // Start the redirect flow. The result is handled by the useEffect above.
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
@@ -115,12 +107,11 @@ export default function SignInPage() {
     try {
       await signInAsGuest();
       toast({ title: "Signed in as guest", description: "Redirecting..." });
-      // The (app) layout will handle the rendering of guest-accessible content.
+      router.replace('/');
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
-    } finally {
-      setIsLoadingGuest(false);
+       setIsLoadingGuest(false);
     }
   }
 

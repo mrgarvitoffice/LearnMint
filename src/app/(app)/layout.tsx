@@ -37,6 +37,7 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   // While the authentication state is loading, display a full-page spinner.
+  // This is the most critical part of the fix to prevent the redirect loop.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -51,6 +52,6 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // If not loading and there is no user, show the not authenticated screen instead of redirecting.
+  // If loading is complete and there is no user, show the "not authenticated" screen with a button.
   return <NotAuthenticatedScreen />;
 }
