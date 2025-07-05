@@ -37,9 +37,8 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const { signUpWithEmail, signInWithGoogleRedirect } = useAuth();
+  const { signUpWithEmail, signInWithGoogleRedirect, loading } = useAuth();
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
-  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -49,29 +48,25 @@ export default function SignUpPage() {
     setIsEmailSubmitting(true);
     try {
       await signUpWithEmail(data.email, data.password);
-      toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
       // Navigation is handled by the AuthLayout
-    } catch (error: any) {
+    } catch (error: any) => {
       console.error("Error signing up with email:", error);
       toast({ title: "Sign-up Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsEmailSubmitting(false);
+      setIsEmailSubmitting(false); // Only stop on error
     }
   };
 
   const handleGoogleSignUp = async () => {
-    setIsGoogleSubmitting(true);
     try {
       await signInWithGoogleRedirect();
       // Redirect result is handled by the AuthContext
     } catch (error: any) {
       console.error("Error initiating Google sign-up:", error);
       toast({ title: "Sign-up Error", description: error.message, variant: "destructive" });
-      setIsGoogleSubmitting(false);
     }
   };
   
-  const isAnyLoading = isEmailSubmitting || isGoogleSubmitting;
+  const isAnyLoading = loading || isEmailSubmitting;
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -111,7 +106,7 @@ export default function SignUpPage() {
         </div>
 
         <Button onClick={handleGoogleSignUp} variant="outline" className="w-full" disabled={isAnyLoading}>
-          {isGoogleSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
+          {loading && !isEmailSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
           Sign Up with Google
         </Button>
       </CardContent>

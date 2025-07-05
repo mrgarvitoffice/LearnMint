@@ -33,8 +33,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInWithGoogleRedirect, signInWithEmail, signInAsGuest } = useAuth();
-  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+  const { signInWithGoogleRedirect, signInWithEmail, signInAsGuest, loading } = useAuth();
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
   const [isGuestSubmitting, setIsGuestSubmitting] = useState(false);
 
@@ -43,14 +42,13 @@ export default function SignInPage() {
   });
 
   const handleGoogleSignIn = async () => {
-    setIsGoogleSubmitting(true);
+    // isLoading is handled globally by the context now
     try {
       await signInWithGoogleRedirect();
       // The result is caught by the AuthProvider and navigation handled by layouts
     } catch (error: any) {
       console.error("Error initiating Google sign-in redirect:", error);
       toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
-      setIsGoogleSubmitting(false);
     }
   };
 
@@ -58,13 +56,11 @@ export default function SignInPage() {
     setIsEmailSubmitting(true);
     try {
       await signInWithEmail(data.email, data.password);
-      toast({ title: "Sign-in Successful!", description: "Welcome back! Redirecting you..." });
-      // Navigation is handled by the AuthLayout detecting the user state change
+      // Success navigation is handled by the AuthLayout
     } catch (error: any) {
       console.error("Error signing in with email:", error);
       toast({ title: "Sign-in Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsEmailSubmitting(false);
+      setIsEmailSubmitting(false); // Only stop loading on error
     }
   };
   
@@ -76,12 +72,11 @@ export default function SignInPage() {
     } catch (error: any) {
       console.error("Error signing in as guest:", error);
       toast({ title: "Guest Sign-In Failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsGuestSubmitting(false);
+      setIsGuestSubmitting(false); // Only stop loading on error
     }
   };
 
-  const isAnyLoading = isGoogleSubmitting || isEmailSubmitting || isGuestSubmitting;
+  const isAnyLoading = loading || isEmailSubmitting || isGuestSubmitting;
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -116,7 +111,7 @@ export default function SignInPage() {
         </div>
 
         <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isAnyLoading}>
-          {isGoogleSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+          {loading && !isEmailSubmitting && !isGuestSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
           Sign In with Google
         </Button>
         

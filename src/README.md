@@ -104,7 +104,7 @@ Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
 
 ### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
 
-To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign-in redirect fails silently and loops back to the sign-in page), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
+To prevent Google Sign-In redirect errors (where the sign-in seems to fail or loop endlessly), you **MUST** enable the Google provider and add your domains to Firebase's authorized list.
 
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`).
@@ -115,12 +115,13 @@ To prevent Google Sign-In errors like `auth/unauthorized-domain` (where the sign
 7.  While still in Authentication, go to the **Settings** tab.
 8.  Select the **Authorized domains** section.
 9.  Click **Add domain**.
-10. **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+10. **Add your Firebase auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
 11. Click **Add domain** again.
-12. **Add your Firebase auth domain**: This is the value of `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from your `.env` file (e.g., `learnflow-go3hi.firebaseapp.com`).
-13. Click **Add**. Your Google sign-in should now work correctly on your deployed environment.
+12. **Add `localhost`**: This is for local development. Simply type `localhost` and click Add.
+13. Click **Add domain** again.
+14. **Add your cloud development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
 
-If sign-in still fails, double-check that you have entered the domains exactly as shown in your URL bar and `.env` file, without any typos.
+Your Google sign-in should now work correctly on your deployed environment. If it still fails, double-check that you have entered the domains exactly as shown, without any typos.
 
 ### 3. CRITICAL: Set up Environment Variables using a `.env` file
 

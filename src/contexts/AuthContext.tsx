@@ -31,12 +31,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Start as true
   const { toast } = useToast();
   const router = useRouter();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
-    // This function only runs for non-anonymous users
     if (user.isAnonymous) return;
     
     const userRef = doc(db, 'users', user.uid);
@@ -57,62 +56,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // This is the main effect for handling authentication state.
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Handle user creation here as well to catch all login methods
-        await handleUserCreationInFirestore(firebaseUser);
-      }
-      setUser(firebaseUser);
-      setLoading(false);
-    });
-
-    // This handles the result of a sign-in redirect.
-    // It runs when the app loads after being redirected back from Google.
+    // Process the redirect result from Google as soon as the app loads.
     getRedirectResult(auth)
       .then((result) => {
+        // If the sign-in was successful, `result.user` will exist.
+        // `onAuthStateChanged` will handle the actual state update,
+        // but we can show a success toast here.
         if (result?.user) {
-          toast({ title: "Sign-in Successful!", description: "Welcome! You will be redirected shortly." });
-          // User creation is handled by onAuthStateChanged now.
-          // The redirect to dashboard is handled by the (auth)/layout.
+          toast({ title: "Sign-in Successful!", description: "Welcome! Redirecting you..." });
         }
       })
       .catch((error) => {
-        // Only show error toast if there's a significant error, not just no-redirect.
-        if (error.code !== 'auth/no-redirect-result') {
-          console.error("Error handling redirect result:", error);
-          toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
+        // Handle specific errors from the redirect flow.
+        console.error("Error from getRedirectResult:", error);
+        // This error often means the domain isn't authorized in the Firebase console.
+        if (error.code === 'auth/unauthorized-domain' && typeof window !== 'undefined') {
+             toast({ title: "Sign-in Error: Unauthorized Domain", description: `Please add '${window.location.hostname}' to the authorized domains in your Firebase console.`, variant: "destructive", duration: 10000 });
+        } else if (error.code !== 'auth/no-redirect-result') { // Ignore the benign "no result" error
+            toast({ title: "Sign-in Error", description: error.message, variant: "destructive" });
         }
-      })
-      .finally(() => {
-        // This ensures the initial loading state is eventually turned off even if there's no redirect.
-        setLoading(false);
       });
+
+    // onAuthStateChanged is the single source of truth for the user's state.
+    // It will fire after getRedirectResult completes successfully.
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // If a user is logged in, create their Firestore doc if it doesn't exist.
+        await handleUserCreationInFirestore(firebaseUser);
+      }
+      // Set the user state (it could be the user object or null).
+      setUser(firebaseUser);
+      // We are now certain of the user's login status, so we can stop loading.
+      setLoading(false);
+    });
       
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [handleUserCreationInFirestore, toast]);
 
   const signInAsGuest = async () => {
+    setLoading(true);
     await signInAnonymously(auth);
+    // setLoading(false) is handled by onAuthStateChanged
   };
   
   const signOutUser = async () => {
+    setLoading(true);
     await signOut(auth);
     router.push('/sign-in');
+    // setLoading(false) is handled by onAuthStateChanged
   };
 
   const signInWithGoogleRedirect = async () => {
-    setLoading(true);
+    setLoading(true); // Show loader immediately before redirecting away
     await signInWithRedirect(auth, googleProvider);
   };
 
   const signInWithEmail = async (email: string, password: string) => {
+    setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
+    // setLoading(false) is handled by onAuthStateChanged
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
+    setLoading(true);
     await createUserWithEmailAndPassword(auth, email, password);
-    // User creation in Firestore is handled by the onAuthStateChanged listener
+    // setLoading(false) is handled by onAuthStateChanged
   };
 
   const value = { user, loading, signInAsGuest, signOutUser, signInWithGoogleRedirect, signInWithEmail, signUpWithEmail };
