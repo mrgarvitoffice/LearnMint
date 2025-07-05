@@ -1,11 +1,10 @@
-
 "use client";
 
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -15,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Chrome, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
@@ -33,43 +32,10 @@ export default function SignInPage() {
   const { signInAsGuest } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
-
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          toast({ title: "Signed in with Google!", description: "Welcome back! Setting up your session..." });
-
-          // Ensure user document exists in Firestore for new sign-ups via Google
-          const userRef = doc(db, 'users', result.user.uid);
-          const docSnap = await getDoc(userRef);
-          if (!docSnap.exists()) {
-            await setDoc(userRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              displayName: result.user.displayName,
-              photoURL: result.user.photoURL,
-              createdAt: serverTimestamp(),
-            });
-          }
-          router.replace('/');
-        }
-      } catch (error: any) {
-        console.error("Google Redirect Error:", error);
-        toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
-      } finally {
-        setIsProcessingRedirect(false);
-      }
-    };
-
-    handleRedirectResult();
-  }, [router, toast]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsSubmitting(true);
@@ -86,7 +52,8 @@ export default function SignInPage() {
           : "An unexpected error occurred during sign-in.",
         variant: "destructive",
       });
-      setIsSubmitting(false);
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -94,10 +61,33 @@ export default function SignInPage() {
     setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
-    } catch (error) {
-      console.error("Google Sign In Redirect Error:", error);
-      toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
+      const result = await signInWithPopup(auth, provider);
+      
+      const userRef = doc(db, 'users', result.user.uid);
+      const docSnap = await getDoc(userRef);
+      if (!docSnap.exists()) {
+        await setDoc(userRef, {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          createdAt: serverTimestamp(),
+        });
+      }
+      
+      toast({ title: "Signed in with Google!", description: "Welcome back! Setting up your session..." });
+      router.replace('/');
+
+    } catch (error: any) {
+      console.error("Google Popup Sign In Error:", error);
+      let description = "An unexpected error occurred.";
+      if (error.code === 'auth/popup-closed-by-user') {
+        description = "Sign-in window was closed before completion.";
+      } else if (error.code === 'auth/popup-blocked') {
+        description = "Popup was blocked by the browser. Please allow popups for this site.";
+      }
+      toast({ title: "Google Sign-in failed", description, variant: "destructive" });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -111,17 +101,9 @@ export default function SignInPage() {
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
+    } finally {
        setIsSubmitting(false);
     }
-  }
-
-  if (isProcessingRedirect) {
-    return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-transparent">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Processing sign-in...</p>
-      </div>
-    );
   }
 
   return (

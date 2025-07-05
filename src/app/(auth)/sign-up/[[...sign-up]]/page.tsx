@@ -1,13 +1,12 @@
-
 "use client";
 
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,7 +58,8 @@ export default function SignUpPage() {
           : "An unexpected error occurred during sign-up.",
         variant: "destructive",
       });
-      setIsSubmitting(false);
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -67,12 +67,36 @@ export default function SignUpPage() {
     setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
     try {
-        // The redirect will be handled by the logic on the sign-in page.
-        await signInWithRedirect(auth, provider);
-    } catch(error) {
-        console.error("Google Sign In Redirect Error:", error);
-        toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });
-        setIsSubmitting(false);
+      const result = await signInWithPopup(auth, provider);
+      
+      const userRef = doc(db, 'users', result.user.uid);
+      const docSnap = await getDoc(userRef);
+      if (!docSnap.exists()) {
+        await setDoc(userRef, {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          createdAt: serverTimestamp(),
+        });
+        toast({ title: "Account created with Google!", description: "Welcome! Redirecting..." });
+      } else {
+        toast({ title: "Signed in with Google!", description: "Welcome back! Redirecting..." });
+      }
+
+      router.replace('/');
+
+    } catch (error: any) {
+        console.error("Google Popup Sign In Error:", error);
+        let description = "An unexpected error occurred.";
+        if (error.code === 'auth/popup-closed-by-user') {
+            description = "Sign-in window was closed before completion.";
+        } else if (error.code === 'auth/popup-blocked') {
+            description = "Popup was blocked by the browser. Please allow popups for this site.";
+        }
+        toast({ title: "Google Sign-in failed", description, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
