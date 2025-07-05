@@ -33,20 +33,30 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Wait until auth state is resolved before redirecting.
-    if (!loading && (!user || user.isAnonymous)) {
+    // Wait until auth state is resolved.
+    if (loading) {
+      return;
+    }
+    // If the check is done and the user is a guest, redirect them.
+    if (user?.isAnonymous) {
       router.replace('/sign-in');
     }
+    // If the check is done and there's no user at all, the main app layout will redirect.
   }, [user, loading, router]);
 
-  // Show a loading screen while auth is resolving or if the user is a guest about to be redirected.
-  if (loading || !user || user.isAnonymous) {
+  // Show a loading screen while auth is resolving or if the user is a guest being redirected.
+  if (loading || (user && user.isAnonymous)) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Loading Profile...</p>
+        <p className="mt-3 text-lg">{loading ? "Loading Profile..." : "Redirecting..."}</p>
       </div>
     );
+  }
+
+  // The main app layout already protects against a null user, but this is an extra guard.
+  if (!user) {
+    return null;
   }
 
   const userDisplayName = user.displayName || user.email?.split('@')[0] || "User";

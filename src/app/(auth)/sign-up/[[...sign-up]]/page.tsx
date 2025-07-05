@@ -15,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, UserPlus, Chrome } from 'lucide-react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 
@@ -28,7 +27,6 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -51,7 +49,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      router.replace('/'); // Direct navigation
+      // Navigation is handled by the auth layout
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -69,7 +67,7 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     const provider = new GoogleAuthProvider();
-    // This will redirect away, and the logic on the sign-in page will handle the result.
+    // The redirect will be handled by the logic in the (auth)/layout.tsx
     await signInWithRedirect(auth, provider).catch((error) => {
         console.error("Google Sign In Redirect Error:", error);
         toast({ title: "Could not start Google Sign-In", description: "Please try again.", variant: "destructive" });

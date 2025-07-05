@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,8 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Chrome, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,7 +29,6 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
@@ -42,47 +39,12 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   });
 
-  // Effect to handle the result of a Google Sign-In redirect
-  useEffect(() => {
-    setIsLoadingGoogle(true);
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          toast({ title: "Signed in with Google!", description: "Redirecting..." });
-          const userRef = doc(db, 'users', result.user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (!docSnap.exists()) {
-            await setDoc(userRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              displayName: result.user.displayName,
-              photoURL: result.user.photoURL,
-              createdAt: serverTimestamp(),
-            });
-            toast({ title: "Welcome to LearnMint!", description: "Your account has been created." });
-          }
-          router.replace('/'); // Direct navigation
-        }
-      })
-      .catch((error) => {
-        console.error("Google Redirect Error:", error);
-        toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in.", variant: "destructive" });
-      })
-      .finally(() => {
-        setIsLoadingGoogle(false);
-      });
-  // We only want this to run once on component mount to check for a redirect result.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsLoadingEmail(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      router.replace('/'); // Direct navigation
+      // Navigation is handled by the auth layout
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -112,11 +74,12 @@ export default function SignInPage() {
     try {
       await signInAsGuest();
       toast({ title: "Signed in as guest", description: "Redirecting..." });
-      router.replace('/'); // Direct navigation
+      // Navigation is handled by the auth layout
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
-       setIsLoadingGuest(false);
+    } finally {
+      setIsLoadingGuest(false);
     }
   }
 

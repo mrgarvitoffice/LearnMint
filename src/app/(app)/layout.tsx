@@ -13,16 +13,18 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Don't do anything until loading is false
-    if (loading) return; 
-
-    // If loading is done and there's no user, redirect to sign-in
+    // Wait until the authentication check is complete.
+    if (loading) {
+      return; 
+    }
+    // If the check is done and there is no user, redirect to the sign-in page.
     if (!user) {
       router.replace('/sign-in');
     }
   }, [user, loading, router]);
 
-  // While loading, show a spinner. This prevents the redirect logic from firing prematurely.
+  // While the authentication state is loading, display a full-page spinner.
+  // This is crucial to prevent a flash of content or a premature redirect.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -32,14 +34,13 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If loading is done and we have a user, render the app layout.
-  // The useEffect above ensures !user is handled, so this check is safe.
+  // If loading is complete and a user object exists, render the main application layout.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // If loading is done and there's no user, the redirect is in-flight. 
-  // Return a loader to avoid a flash of content.
+  // If loading is complete and there is no user, the redirect is in flight.
+  // Return a loader to provide a smooth transition instead of a blank page.
   return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
