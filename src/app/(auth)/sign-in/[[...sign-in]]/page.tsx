@@ -83,9 +83,9 @@ export default function SignInPage() {
       console.error("Google Popup Sign In Error:", error);
       let description = "An unexpected error occurred.";
       if (error.code === 'auth/unauthorized-domain') {
-        description = `This domain (${window.location.hostname}) is not authorized for Google Sign-In. Please go to your Firebase project's Authentication settings and add this domain to the 'Authorized domains' list.`;
+        description = `This domain (${window.location.hostname}) is not authorized. CRITICAL: Go to your Firebase project > Authentication > Settings > Authorized domains and ADD THIS EXACT DOMAIN.`;
       } else if (error.code === 'auth/popup-closed-by-user') {
-        description = "The sign-in window was closed. This can happen if the domain is not authorized in your Firebase project or due to browser settings. Please double-check your Firebase project configuration.";
+        description = "The sign-in window was closed. This can happen if the domain is not authorized in your Firebase project or due to browser settings. Please double-check your Firebase 'Authorized domains' list.";
       } else if (error.code === 'auth/popup-blocked') {
         description = "Popup was blocked by the browser. Please allow popups for this site.";
       }
