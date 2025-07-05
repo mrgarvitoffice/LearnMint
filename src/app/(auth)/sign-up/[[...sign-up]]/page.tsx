@@ -1,7 +1,6 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,7 +26,6 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -50,7 +48,7 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Account created!", description: "Redirecting to your dashboard..." });
-      router.replace('/'); // Navigate to dashboard on success
+      // The (auth) layout will handle the redirect once onAuthStateChanged fires.
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({

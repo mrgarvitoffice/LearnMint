@@ -1,7 +1,6 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,7 +29,6 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const { signInAsGuest } = useAuth();
-  const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
@@ -60,7 +58,7 @@ export default function SignInPage() {
                         createdAt: serverTimestamp(),
                     });
                 }
-                router.replace('/'); // Navigate to dashboard on success
+                // The (auth) layout will handle the redirect once onAuthStateChanged fires.
             }
         } catch (error: any) {
             console.error("Google Redirect Error:", error);
@@ -73,14 +71,14 @@ export default function SignInPage() {
         }
     };
     processRedirectResult();
-  }, [router, toast]);
+  }, [toast]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsLoadingEmail(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      router.replace('/'); // Navigate to dashboard on success
+      // The (auth) layout will handle the redirect once onAuthStateChanged fires.
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -110,7 +108,7 @@ export default function SignInPage() {
     try {
       await signInAsGuest();
       toast({ title: "Signed in as guest", description: "Redirecting..." });
-      router.replace('/'); // Navigate to dashboard on success
+      // The (auth) layout will handle the redirect once onAuthStateChanged fires for the guest user.
     } catch (error: any) {
        console.error("Guest Sign In Error:", error);
        toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
