@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
+import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -14,118 +14,130 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Chrome, User } from 'lucide-react';
+import { Loader2, MailCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/icons/Logo';
-import { useAuth } from '@/contexts/AuthContext';
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
+const EMAIL_FOR_SIGN_IN_KEY = 'learnmint-emailForSignIn';
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const { signInAsGuest } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
+  const [emailSent, setEmailSent] = useState(false);
+  const [isProcessingLink, setIsProcessingLink] = useState(true);
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
 
-  // This useEffect hook handles the result from a Google Sign-In redirect.
+  // Effect to handle the magic link when the user returns to the page
   useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          // User has successfully signed in via redirect.
-          toast({ title: "Google Sign-In Successful", description: "Finalizing your session..." });
+    const processSignInLink = async () => {
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem(EMAIL_FOR_SIGN_IN_KEY);
+        if (!email) {
+          // This can happen if the user opens the link on a different browser.
+          // We can prompt them for their email again.
+          email = window.prompt('Please provide your email to complete the sign-in');
+          if (!email) {
+            toast({ title: "Sign-in Cancelled", description: "Email is required to complete the sign-in process.", variant: "destructive" });
+            setIsProcessingLink(false);
+            return;
+          }
+        }
+
+        try {
+          const result = await signInWithEmailLink(auth, email, window.location.href);
+          window.localStorage.removeItem(EMAIL_FOR_SIGN_IN_KEY);
           
-          // Check if user exists in Firestore, create if not.
-          const userRef = doc(db, 'users', result.user.uid);
-          const docSnap = await getDoc(userRef);
-          if (!docSnap.exists()) {
-            await setDoc(userRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              displayName: result.user.displayName,
-              photoURL: result.user.photoURL,
-              createdAt: serverTimestamp(),
-            });
+          if (result.user) {
+            const userRef = doc(db, 'users', result.user.uid);
+            const docSnap = await getDoc(userRef);
+            if (!docSnap.exists()) {
+              await setDoc(userRef, {
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.email?.split('@')[0],
+                photoURL: result.user.photoURL,
+                createdAt: serverTimestamp(),
+              });
+            }
           }
           
-          // Redirect to dashboard. The AuthProvider will handle the user state.
-          router.replace('/'); 
-        } else {
-          // No redirect result, probably a normal page load.
-          setIsProcessingRedirect(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting redirect result:", error);
-        toast({ 
-            title: "Sign-In Error", 
-            description: `Could not process the sign-in redirect. Error: ${error.code}. Please ensure your domain is authorized in Firebase.`, 
-            variant: "destructive",
-            duration: 8000
-        });
-        setIsProcessingRedirect(false);
-      });
-  }, [router, toast]);
+          toast({ title: "Sign-in Successful!", description: "You are now logged in." });
+          router.replace('/');
 
+        } catch (error: any) {
+          console.error("Error signing in with email link:", error);
+          toast({ title: "Sign-In Failed", description: "The sign-in link is invalid, expired, or has already been used.", variant: "destructive" });
+          setIsProcessingLink(false);
+        }
+      } else {
+        setIsProcessingLink(false);
+      }
+    };
+    processSignInLink();
+  }, [router, toast]);
 
   const onEmailSubmit = async (data: SignInFormData) => {
     setIsSubmitting(true);
+    setEmailSent(false);
+
+    const actionCodeSettings = {
+      url: window.location.href, // This URL will be used to complete the sign-in.
+      handleCodeInApp: true,
+    };
+
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
-      toast({ title: "Sign-in successful!", description: "Redirecting..." });
-      router.replace('/');
-    } catch (error: any) {
-      console.error("Sign in error:", error);
+      await sendSignInLinkToEmail(auth, data.email, actionCodeSettings);
+      window.localStorage.setItem(EMAIL_FOR_SIGN_IN_KEY, data.email);
       toast({
-        title: "Sign In Failed",
-        description: error.code === 'auth/invalid-credential'
-          ? "Invalid email or password. Please try again."
-          : "An unexpected error occurred during sign-in.",
+        title: "Magic Link Sent!",
+        description: `A sign-in link has been sent to ${data.email}. Please check your inbox.`,
+      });
+      setEmailSent(true);
+    } catch (error: any) {
+      console.error("Error sending sign in link:", error);
+      toast({
+        title: "Failed to Send Link",
+        description: "Could not send sign-in link. Please check the email address and try again.",
         variant: "destructive",
       });
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
-
-  const handleGoogleSignIn = () => {
-    setIsSubmitting(true);
-    const provider = new GoogleAuthProvider();
-    signInWithRedirect(auth, provider);
-  };
-
-  const handleGuestSignIn = async () => {
-    setIsSubmitting(true);
-    try {
-      await signInAsGuest();
-      toast({ title: "Signed in as guest", description: "Redirecting..." });
-      router.replace('/');
-    } catch (error: any) {
-       console.error("Guest Sign In Error:", error);
-       toast({ title: "Could not sign in as guest", description: "Please try again.", variant: "destructive" });
-    } finally {
-       setIsSubmitting(false);
-    }
-  }
-
-  if (isProcessingRedirect) {
+  
+  if (isProcessingLink) {
     return (
         <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="mt-3 text-lg">Processing sign-in...</p>
+            <p className="mt-3 text-lg">Checking for sign-in link...</p>
         </div>
+    );
+  }
+
+  if (emailSent) {
+    return (
+       <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
+        <CardHeader className="text-center">
+          <MailCheck className="mx-auto h-12 w-12 text-green-500" />
+          <CardTitle className="text-2xl mt-4">Check Your Inbox</CardTitle>
+          <CardDescription>A magic sign-in link has been sent to your email address. Click the link to log in.</CardDescription>
+        </CardHeader>
+        <CardContent>
+           <Button variant="outline" className="w-full" onClick={() => setEmailSent(false)}>
+            Use a different email
+           </Button>
+        </CardContent>
+       </Card>
     );
   }
 
@@ -134,53 +146,24 @@ export default function SignInPage() {
       <CardHeader className="text-center">
         <Logo size={48} className="mx-auto mb-2" />
         <CardTitle className="text-2xl mt-2">Welcome to LearnMint</CardTitle>
-        <CardDescription>Sign in to access your dashboard.</CardDescription>
+        <CardDescription>Enter your email to get a magic sign-in link.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-
-        <div className="space-y-2">
-           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
-              Sign In with Google
-            </Button>
-            <Button variant="secondary" className="w-full" onClick={handleGuestSignIn} disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
-              Continue as Guest
-            </Button>
-        </div>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <Separator />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or with Email</span>
-          </div>
-        </div>
-
+      <CardContent>
         <form onSubmit={handleSubmit(onEmailSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="you@example.com" {...register('email')} disabled={isSubmitting} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isSubmitting} />
-            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-          </div>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign In
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MailCheck className="mr-2 h-4 w-4" />}
+            Send Magic Link
           </Button>
         </form>
       </CardContent>
       <CardFooter className="justify-center text-sm">
         <p>
-          Don't have an account?{' '}
-          <Link href="/sign-up" className="font-semibold text-primary hover:underline">
-            Sign Up
-          </Link>
+          This is a passwordless sign-in. No password required.
         </p>
       </CardFooter>
     </Card>

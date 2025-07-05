@@ -1,0 +1,255 @@
+
+# 🌱 LearnMint: Your AI-Powered Study Revolution! 🚀
+## Made by **MrGarvit**!
+
+<p align="center">
+  <img src="https://placehold.co/600x300.png?text=LearnMint+by+MrGarvit&font=raleway&bg=220_30_10&fc=190_80_85" alt="LearnMint Banner by MrGarvit" data-ai-hint="modern abstract">
+</p>
+
+**Welcome to LearnMint!** The ultimate Next.js application meticulously engineered by **MrGarvit** to transform your study sessions into a dynamic, productive, and engaging experience. Wave goodbye to tedious material preparation and say hello to AI-driven learning that's tailored, insightful, and lightning-fast.
+
+With **LearnMint**, you're not just studying; you're minting knowledge with cutting-edge AI, all under the creative genius of **MrGarvit**.
+
+---
+
+## 🌟 Table of Contents
+
+*   [Core Philosophy & Design](#-core-philosophy--design-)
+*   [🔥 Igniting Your Learning: Key Features](#-igniting-your-learning-key-features-)
+*   [🛠️ Tech Stack Powerhouse](#️-tech-stack-powerhouse-)
+*   [🚀 Getting Started with LearnMint](#-getting-started-with-learnmint-)
+    *   [Prerequisites](#1-prerequisites)
+    *   [CRITICAL: Enable Firebase Auth & Authorize Domain](#2-critical-enable-firebase-auth--authorize-domain)
+    *   [CRITICAL: Set up Environment Variables (.env)](#3-critical-set-up-environment-variables-using-a-env-file)
+    *   [Install Dependencies](#4-install-dependencies)
+    *   [CRITICAL: Restart Development Server](#5-critical-restart-your-development-server)
+    *   [CRITICAL: Add Required Static Assets](#6-critical-add-required-static-assets)
+    *   [Run Development Server](#7-run-the-development-server)
+    *   [Run Genkit Dev Server](#8-run-genkit-dev-server-optional-but-recommended)
+*   [☁️ Deployment to Firebase Hosting](#️-deployment-to-firebase-hosting)
+*   [🎨 Customization](#-customization-)
+*   [💖 Creator's Note](#️-creators-note)
+
+---
+
+## ✨ Core Philosophy & Design ✨
+
+LearnMint is built on the principles of efficiency, engagement, and elegance, a testament to **MrGarvit's** design philosophy:
+
+*   **Sleek & Modern UI**: Beautiful dark theme (with light mode toggle via `next-themes`) for comfortable study sessions.
+*   **Vibrant Color Scheme**: Sophisticated dark teal primary and an electric lime accent, crafted with HSL CSS variables (`src/app/globals.css`).
+*   **Typography Excellence**: `GeistSans` for crisp readability and `GeistMono` for clean, technical text.
+*   **Iconography**: Consistent and modern visual language using `lucide-react` icons.
+*   **Built with the Best**: Tailwind CSS and ShadCN UI components for a polished, professional feel.
+*   **Responsive & Accessible**: Designed for all devices with accessibility in the  mind.
+
+---
+
+## 🔥 Igniting Your Learning: Key Features 🔥
+
+**MrGarvit** has packed LearnMint with a suite of powerful, AI-driven tools:
+
+*   **Firebase Authentication**: Robust and secure user authentication using **Passwordless Email Link**.
+*   **AI Content Generation Suite**:
+    *   **Unified Material Generation**: Enter a topic for AI-generated:
+        *   📝 **Comprehensive Notes**: Markdown formatted, emojis, and embedded AI-generated images.
+        *   🎯 **30-Question Interactive Quiz**: Multiple-choice & short-answer questions with explanations.
+        *   📚 **20 Engaging Flashcards**: For rapid review.
+    *   **Dedicated Quiz Creator**: Instantly create separate quizzes.
+    *   **Dedicated Flashcard Factory**: Quickly produce standalone flashcard sets.
+*   **Custom Test Creation Lab**: Build tailored tests (single/multiple topics, recent studies, difficulty, question count, custom notes, timers).
+*   **Interactive AI Chatbot - "Kazuma"**: Witty, helpful AI companion. Supports voice input & user image uploads. Conceptualized by **MrGarvit**.
+*   **Precision Toolkit - Calculator & Converter**: Scientific calculator and comprehensive unit converter (Length, Temp, Weight/Mass, Volume, Area, Speed) with history.
+*   **Daily News Digest**: Latest global news, filterable by location and category (Newsdata.io). Supports voice search.
+*   **Resource Library**:
+    *   Curated OpenStax textbook links.
+    *   Google Books & YouTube search (voice input supported).
+    *   "Math Fact of the Day".
+*   **LearnMint Arcade**:
+    *   **Definition Challenge**: Guess terms from definitions.
+    *   Links to classics like **Dino Runner** and **Chess.com**.
+*   **Theme Toggle**: Switch between light and dark modes.
+*   **Auditory Feedback**: Click sounds and optional vocal announcements.
+
+---
+
+## 🛠️ Tech Stack Powerhouse 🛠️
+
+LearnMint leverages a modern, robust tech stack, carefully selected by **MrGarvit**:
+
+*   Next.js 15+ (App Router)
+*   React 18+
+*   TypeScript
+*   Tailwind CSS
+*   ShadCN UI Components
+*   **Firebase Authentication** (Passwordless Email Link)
+*   Genkit (Google Gemini for AI text & image generation)
+*   Lucide Icons
+*   `@tanstack/react-query`
+*   Newsdata.io (News - **requires user API key**)
+*   `date-fns` (Date formatting)
+*   `next-themes` (Theme switching)
+*   `framer-motion` (Animations)
+
+---
+
+## 🚀 Getting Started with LearnMint 🚀
+
+Embark on your AI-enhanced learning adventure, crafted by **MrGarvit**!
+
+### 1. Prerequisites
+
+*   Node.js (LTS version recommended)
+*   `npm` or `yarn`
+
+### 2. CRITICAL: Enable Firebase Auth & Authorize Domain
+
+To prevent sign-in errors like `auth/unauthorized-domain`, you **MUST** enable the correct sign-in method and add your development domain to Firebase's authorized list.
+
+1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file (e.g., `learnflow-go3hi`). This is a critical step.
+3.  Navigate to **Authentication** (in the Build section on the left sidebar).
+4.  Go to the **Sign-in method** tab.
+5.  Click **Add new provider** and select **Email/Password**.
+6.  Enable the **Email/Password** provider (the top switch).
+7.  **CRITICAL**: Enable the **Email link (passwordless sign-in)** switch right below it. Click **Save**.
+8.  Now, go to the **Settings** tab within Authentication.
+9.  Select the **Authorized domains** section.
+10. Click **Add domain**.
+11. **Add your development domain**: This is the domain from your development URL (e.g., `cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev`). **Do not include `https://` or port numbers.**
+12. Click **Add**. Your sign-in should now work correctly.
+
+If sign-in still fails, double-check that you have entered the domain exactly as shown in your URL bar, without any typos.
+
+### 3. CRITICAL: Set up Environment Variables using a `.env` file
+
+<details>
+<summary><strong>⚠️ Click here for DETAILED `.env` Configuration Guide ⚠️</strong></summary>
+
+Create `.env` in the **project root**. Populate with your API keys. **This is essential.**
+
+**MrGarvit has provided Gemini API keys. Distribute as suggested or preferred.**
+**Key `AIzaSyAYMVP1amZ6fow3WMJ2XspN_8CfkJXpohc` is CRITICAL for image generation.**
+
+```env
+# === Firebase Authentication ===
+# These keys are required for user sign-in and sign-up.
+# Get them from your Firebase project settings.
+# CRITICAL: Ensure your dev domain (e.g., cluster-....cloudworkstations.dev) is added 
+# to the "Authorized domains" list in Firebase Auth settings.
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCNcktsyCTevZebTrc4aBnG4b0pRbYx4tk
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=learnflow-go3hi.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=learnflow-go3hi
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=learnflow-go3hi.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=245611903044
+NEXT_PUBLIC_FIREBASE_APP_ID=1:245611903044:web:007b0b6b76181d06c1a411
+
+
+# === Genkit AI Features (Notes, Quizzes, Flashcards, Chatbot AI, Image Generation) ===
+# Get keys from Google AI Studio: https://aistudio.google.com/app/apikey
+# Ensure "Generative Language API" (or Vertex AI) is enabled & billing configured for the Google Cloud project.
+
+# Main/Default Gemini API Key
+# Suggestion from MrGarvit: AIzaSyC9acF8uyEJssqF9ZaMOMvJNLag8EffJlo
+GOOGLE_API_KEY=AIzaSyC9acF8uyEJssqF9ZaMOMvJNLag8EffJlo
+
+# Optional: Key for Study Notes (Text) & Derived Content (Quiz/Flashcards from Notes)
+# Uses GOOGLE_API_KEY if blank.
+# Suggestion from MrGarvit: AIzaSyDEbQvjLG_Lb_OtDK-ka3CdcrU19dl72OY
+GOOGLE_API_KEY_NOTES=AIzaSyDEbQvjLG_Lb_OtDK-ka3CdcrU19dl72OY
+
+# Optional: Key for AI Chatbot (Kazuma)
+# Uses GOOGLE_API_KEY if blank.
+# Suggestion from MrGarvit: AIzaSyC3ZI8F99RYeMxkE5OYewSsE0o5GLHvMRs
+GOOGLE_API_KEY_CHATBOT=AIzaSyC3ZI8F99RYeMxkE5OYewSsE0o5GLHvMRs
+
+# CRITICAL: Key for Image Generation in Notes (Gemini 2.0 Flash or equivalent)
+# Falls back to GOOGLE_API_KEY_NOTES, then GOOGLE_API_KEY if blank. Recommended: Use dedicated key.
+# Suggestion from MrGarvit: AIzaSyAYMVP1amZ6fow3WMJ2XspN_8CfkJXpohc
+GOOGLE_API_KEY_IMAGES=AIzaSyAYMVP1amZ6fow3WMJ2XspN_8CfkJXpohc
+
+# CRITICAL: Key for Text-to-Speech (TTS) voice generation
+# Uses GOOGLE_API_KEY if blank.
+# Use this key: AIzaSyD_8o9PtlwoqUbuV8Z2IZfe2m9B9UfckuE
+GOOGLE_API_KEY_TTS=AIzaSyD_8o9PtlwoqUbuV8Z2IZfe2m9B9UfckuE
+
+# === Other Service API Keys ===
+
+# Daily News Digest (Newsdata.io - get free key)
+NEWSDATA_API_KEY=pub_YOUR_NEWSDATA_API_KEY
+
+# YouTube Search (Google Cloud Console - YouTube Data API v3)
+YOUTUBE_API_KEY=AIzaSyYOUR_YOUTUBE_API_KEY
+
+# Google Books Search (Google Cloud Console - Google Books API)
+GOOGLE_BOOKS_API_KEY=AIzaSyYOUR_GOOGLE_BOOKS_API_KEY
+```
+
+**Important `.env` Notes:**
+*   🛑 **Valid API Keys are Mandatory!** Use provided keys or your own.
+*   ✅ No extra spaces/quotes around variable names/values.
+*   🖼️ **CRITICAL for Image Gen:** Key for `GOOGLE_API_KEY_IMAGES` needs "Generative Language API" (Gemini API) enabled in its Google Cloud Project, billing enabled, and permissions for image models (e.g., `gemini-2.0-flash-exp`).
+
+</details>
+
+### 4. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 5. CRITICAL: Restart Your Development Server
+
+After creating/modifying `.env`, **STOP AND RESTART** your Next.js server:
+```bash
+# Stop (Ctrl+C) then restart:
+npm run dev -- --port 9002
+# or
+yarn dev --port 9002
+```
+
+### 6. CRITICAL: Add Required Static Assets
+
+*   **PWA Icons**: `public/icons/icon-192x192.png` & `public/icons/icon-512x512.png`.
+*   **Sound Effects**: `public/sounds/` (add `ting.mp3`, `custom-sound-2.mp3`, `correct-answer.mp3`, `incorrect-answer.mp3`).
+*   **Chatbot Avatar**: `public/images/kazuma-dp.jpg` (and `public/images/megumin-dp.jpg`).
+
+### 7. Run the Development Server
+
+```bash
+npm run dev -- --port 9002
+# or
+yarn dev --port 9002
+```
+Access LearnMint at `http://localhost:9002`.
+
+### 8. Run Genkit Dev Server (Optional but Recommended)
+
+For debugging AI flows:
+```bash
+npm run genkit:dev
+# or
+npm run genkit:watch
+```
+Access Genkit UI at `http://localhost:4000`.
+
+---
+
+## 🎨 Customization 🎨
+
+*   **Styling**: Modify `src/app/globals.css` and `tailwind.config.ts`.
+*   **AI Prompts**: Tweak prompts in `src/ai/flows/`.
+*   **Sound Effects**: Replace files in `public/sounds/`.
+
+---
+
+## 💖 Creator's Note 💖
+
+**LearnMint**, by **MrGarvit**, demonstrates cutting-edge AI in education and modern web development. !!!
+
+Enjoy the LearnMint-Ai !!
+
+---
+Made by **MrGarvit**!
