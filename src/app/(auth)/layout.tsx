@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -6,21 +5,52 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { getRedirectResult } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase/config';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // This effect handles redirection for fully authenticated (non-guest) users.
-    // It will only run when loading is complete and a non-anonymous user is found.
-    if (!loading && user && !user.isAnonymous) {
+    // This effect runs on mount to handle the redirect result from Google.
+    // We only need to process this once when the auth page loads.
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result) {
+          // User has successfully signed in with Google and is redirected back.
+          toast({ title: "Sign-in successful!", description: "Welcome to LearnMint." });
+          const userRef = doc(db, 'users', result.user.uid);
+          const docSnap = await getDoc(userRef);
+          if (!docSnap.exists()) {
+            await setDoc(userRef, {
+              uid: result.user.uid,
+              email: result.user.email,
+              displayName: result.user.displayName,
+              photoURL: result.user.photoURL,
+              createdAt: serverTimestamp(),
+            });
+          }
+          // The onAuthStateChanged listener in AuthContext will now have the user,
+          // and the effect below will handle the redirect.
+        }
+      })
+      .catch((error) => {
+        console.error("Google Redirect Result Error:", error);
+        toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in. Please try again.", variant: "destructive" });
+      });
+  }, [toast]); // We don't need router in dependency array as it's stable.
+
+  useEffect(() => {
+    // This effect handles redirecting users who are already logged in.
+    if (!loading && user) {
       router.replace('/');
     }
   }, [user, loading, router]);
 
-  // The loading screen should ONLY show during the initial authentication check.
-  // Once `loading` is false, we should render the children and let the useEffect handle any necessary redirects.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -29,9 +59,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  
-  // If not loading, render the content. The useEffect above will handle redirecting
-  // logged-in users away from this page. This prevents the "update during render" error.
+
+  // If not loading and there's no user, show the sign-in/sign-up page.
+  // If a user exists, the effect above will redirect away.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
          style={{
@@ -44,7 +74,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             backgroundAttachment: 'fixed',
          }}
     >
-      {children}
+      {/* Don't render children if user exists to avoid flash of content before redirect */}
+      {!user && children}
     </div>
   );
 }
