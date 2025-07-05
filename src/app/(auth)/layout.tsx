@@ -12,21 +12,22 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
 
+  // This effect runs once on mount to handle the result from Google Sign-In.
   useEffect(() => {
-    // This effect runs only once on mount to handle the redirect result from Google.
     getRedirectResult(auth)
       .then(async (result) => {
-        if (result) {
-          // User has successfully signed in with Google and is redirected back.
+        if (result?.user) {
+          // User has successfully signed in with Google.
           toast({ title: "Sign-in successful!", description: "Welcome to LearnMint." });
           const userRef = doc(db, 'users', result.user.uid);
           const docSnap = await getDoc(userRef);
           if (!docSnap.exists()) {
+            // Create user document in Firestore if it's a new user.
             await setDoc(userRef, {
               uid: result.user.uid,
               email: result.user.email,
@@ -35,8 +36,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               createdAt: serverTimestamp(),
             });
           }
-          // The onAuthStateChanged listener in AuthContext will update the user state.
-          // The effect below will handle the redirect once the user state is confirmed.
+          // The onAuthStateChanged listener will update the global user state.
+          // The effect below will handle the final redirect to the main app.
         }
       })
       .catch((error) => {
@@ -44,29 +45,32 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         toast({ title: "Google Sign-in failed", description: "There was an issue completing your sign-in. Please try again.", variant: "destructive" });
       })
       .finally(() => {
+        // We're done processing the potential redirect.
         setIsProcessingRedirect(false);
       });
-  }, [toast]); // Run only once
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on component mount.
 
+  // This effect handles redirecting logged-in users away from auth pages.
   useEffect(() => {
-    // This effect handles redirecting FULLY LOGGED-IN users away from auth pages.
-    // It waits for both the main auth check and the redirect processing to finish.
-    if (!authLoading && !isProcessingRedirect && user && !user.isAnonymous) {
+    // Wait for both the initial auth check and redirect processing to complete.
+    if (!loading && !isProcessingRedirect && user) {
+      // User is logged in, redirect them to the main app.
       router.replace('/');
     }
-  }, [user, authLoading, isProcessingRedirect, router]);
+  }, [user, loading, isProcessingRedirect, router]);
 
-  // If initial auth check or redirect processing is happening, show a spinner.
-  if (authLoading || isProcessingRedirect) {
+  // Show a spinner while the initial auth state and any redirect results are being processed.
+  if (loading || isProcessingRedirect) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying session...</p>
+        <p className="mt-3 text-lg">Loading...</p>
       </div>
     );
   }
   
-  // If we're not loading and the user is either null or a guest, render the auth pages.
+  // If not loading and no user, it's safe to render the sign-in/sign-up page.
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background/95 p-4"
          style={{

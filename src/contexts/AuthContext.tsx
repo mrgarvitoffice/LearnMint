@@ -26,12 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // This is the core listener. It's the single source of truth for auth state.
   useEffect(() => {
-    // onAuthStateChanged is the single source of truth for auth status.
-    // It runs on initial load and whenever the user's auth state changes.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      setLoading(false); // Set loading to false once we have a definitive answer.
+      setLoading(false); // Now we know the user's status for sure.
     });
 
     // Cleanup the listener on component unmount
@@ -40,12 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // Start the redirect process. The result will be handled by the AuthLayout.
+    // The redirect process result is handled by the (auth) layout
     await signInWithRedirect(auth, provider);
   };
 
   const signInAsGuest = async () => {
-    // The onAuthStateChanged listener will automatically update state.
+    // onAuthStateChanged will automatically update the user state.
     await signInAnonymously(auth);
   };
 
@@ -62,7 +61,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOutUser,
   };
 
-  // The provider makes user and loading state available to the whole app.
   return (
     <AuthContext.Provider value={contextValue}>
       {children}

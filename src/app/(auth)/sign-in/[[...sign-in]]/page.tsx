@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,6 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle, signInAsGuest } = useAuth();
@@ -41,9 +39,8 @@ export default function SignInPage() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      // On success, AuthContext will update and the main layout will redirect.
-      // A direct redirect can be faster and more reliable.
-      router.replace('/');
+      // On success, AuthContext's onAuthStateChanged will trigger the
+      // redirect logic in the (auth)/layout.tsx component.
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({
@@ -61,18 +58,20 @@ export default function SignInPage() {
     setIsLoading(true);
     try {
       await signInWithGoogle();
+      // The page will redirect to Google and then back. 
+      // The result is handled in the (auth)/layout.tsx file.
     } catch(error) {
       console.error("Google sign in initiation failed", error);
       toast({ title: "Could not start Google Sign-In", description: "Please check your internet connection and try again.", variant: "destructive"});
       setIsLoading(false);
     }
-    // No finally block to set loading false, as the page will redirect.
   };
   
   const handleGuestSignIn = async () => {
     setIsLoading(true);
     await signInAsGuest();
-    router.replace('/');
+    // On success, AuthContext's onAuthStateChanged will trigger the
+    // redirect logic in the (auth)/layout.tsx component.
   }
 
   return (

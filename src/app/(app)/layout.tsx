@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -12,13 +13,13 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    // This effect handles redirecting unauthenticated users.
+    // Wait until loading is false before making a decision.
     if (!loading && !user) {
       router.replace('/sign-in');
     }
   }, [user, loading, router]);
 
-  // While loading, show a spinner to prevent flicker or premature redirects.
+  // THIS IS THE CRUCIAL PART: Show a loader while auth state is being determined.
   if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
@@ -28,14 +29,12 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If loading is done and we have a user, render the main app layout.
-  // If no user, the useEffect above will have already started the redirect,
-  // so rendering null here prevents showing the app layout for a split second.
+  // If loading is done and we have a user, render the app.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
 
-  // Render a loader while the redirect is in flight.
+  // If not loading and no user, the redirect is in flight. Show a loader.
   return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />

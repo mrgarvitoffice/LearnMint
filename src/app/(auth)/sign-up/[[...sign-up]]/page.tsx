@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,6 @@ const signUpSchema = z.object({
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle } = useAuth();
@@ -41,9 +39,8 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
-      // On success, AuthContext will update and the main layout will redirect.
-      // A direct redirect is more reliable.
-      router.replace('/');
+      // On success, AuthContext's onAuthStateChanged will trigger the
+      // redirect logic in the (auth)/layout.tsx component.
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -61,12 +58,13 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await signInWithGoogle();
+       // The page will redirect to Google and then back. 
+      // The result is handled in the (auth)/layout.tsx file.
     } catch (error) {
       console.error("Google sign in initiation failed", error);
       toast({ title: "Could not start Google Sign-In", description: "Please check your internet connection and try again.", variant: "destructive"});
       setIsLoading(false);
     }
-    // No finally block to set loading false, as the page will redirect.
   };
 
   return (
