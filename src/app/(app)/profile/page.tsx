@@ -10,6 +10,7 @@ import { useQuests } from '@/contexts/QuestContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { GuestLock } from '@/components/features/auth/GuestLock';
 
 // A local component to display each quest item cleanly.
 const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: string }) => (
@@ -29,33 +30,25 @@ export default function ProfilePage() {
   const { user, loading, signOutUser } = useAuth();
   const { quests } = useQuests();
   const { t } = useTranslation();
-  const router = useRouter();
 
-  useEffect(() => {
-    // Wait until auth state is resolved.
-    if (loading) {
-      return;
-    }
-    // If the check is done and the user is a guest, redirect them.
-    if (user?.isAnonymous) {
-      router.replace('/sign-in');
-    }
-    // If there is no user at all, the main app layout will handle the redirect.
-  }, [user, loading, router]);
-
-  // Show a loading screen while auth is resolving or if the user is a guest being redirected.
-  if (loading || (user && user.isAnonymous)) {
+  // Show a loading screen while auth is resolving.
+  if (loading) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{loading ? "Loading Profile..." : "Redirecting..."}</p>
+        <p className="mt-3 text-lg">Loading Profile...</p>
       </div>
     );
   }
 
-  // The main app layout already protects against a null user, but this is an extra guard.
+  // Handle guest users specifically for the profile page by showing the GuestLock component.
+  if (user?.isAnonymous) {
+    return <GuestLock featureName="Profile" message="Please sign in or create an account to view your profile." />;
+  }
+
+  // The main app layout handles the case where user is null, but we can add an extra guard.
   if (!user) {
-    return null;
+    return null; 
   }
 
   const userDisplayName = user.displayName || user.email?.split('@')[0] || "User";
@@ -64,14 +57,12 @@ export default function ProfilePage() {
     <div className="container mx-auto max-w-2xl py-8">
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm text-center">
           <CardHeader>
-              {/* FEATURE: Display user's avatar */}
               <Avatar className="mx-auto h-24 w-24 text-primary/80 border-4 border-primary/30">
                 <AvatarImage src={user.photoURL || ''} alt={userDisplayName} />
                 <AvatarFallback className="text-4xl bg-secondary">
                     {userDisplayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {/* FEATURE: Dynamic greeting */}
               <CardTitle className="text-3xl font-bold text-primary mt-4">
                 Hi, {userDisplayName}!
               </CardTitle>
@@ -97,7 +88,6 @@ export default function ProfilePage() {
                </div>
             </div>
 
-            {/* FEATURE: Add Daily Quests section */}
             <Card className="bg-background/50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
