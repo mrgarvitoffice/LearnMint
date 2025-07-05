@@ -15,8 +15,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
-import { Sun, Moon, Volume2, Volume1, VolumeX, Languages, CaseSensitive, Settings, User } from 'lucide-react';
+import { Languages, Settings, User } from 'lucide-react';
 import { APP_LANGUAGES } from '@/lib/constants';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '../ui/button';
@@ -69,12 +73,21 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" sideOffset={8} className="w-56">
-                <DropdownMenuLabel>{t('header.appLanguage')}</DropdownMenuLabel>
-                <DropdownMenuRadioGroup value={appLanguage} onValueChange={handleLanguageChange}>
-                  {APP_LANGUAGES.map(lang => (
-                    <DropdownMenuRadioItem key={lang.value} value={lang.value}>{lang.label}</DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Languages className="mr-2 h-4 w-4" />
+                    <span>{t('header.appLanguage')}</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup value={appLanguage} onValueChange={handleLanguageChange}>
+                        {APP_LANGUAGES.map(lang => (
+                          <DropdownMenuRadioItem key={lang.value} value={lang.value}>{lang.label}</DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
 
                 <DropdownMenuSeparator />
 
