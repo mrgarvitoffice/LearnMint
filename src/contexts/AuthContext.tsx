@@ -11,8 +11,6 @@ import {
   updateProfile,
   linkWithCredential,
   EmailAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
   type User,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
@@ -27,7 +25,6 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signInAnonymously: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -113,22 +110,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    try {
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(auth, provider);
-      // The onAuthStateChanged listener will handle the Firestore document creation/update.
-      router.push('/dashboard');
-      toast({ title: `Welcome back, ${userCredential.user.displayName}!`, description: "You are now signed in." });
-    } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      toast({ title: "Google Sign-in Error", description: error.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     try {
@@ -174,7 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
         }
       }
-    } catch (error: any) {
+    } catch (error: any)
+       {
       let description = "An unknown error occurred.";
        if (error.code === 'auth/email-already-in-use') {
         description = "This email is already associated with an account."
@@ -189,7 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, loading, signOutUser, signInWithEmail, signUpWithEmail, signInAnonymously, signInWithGoogle };
+  const value = { user, loading, signOutUser, signInWithEmail, signUpWithEmail, signInAnonymously };
 
   return (
     <AuthContext.Provider value={value}>
