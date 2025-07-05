@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { getRedirectResult, signInWithRedirect } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
 import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,9 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
-import { useAuth } from '@/contexts/AuthContext';
 
 function GoogleIcon() {
   return (
@@ -24,12 +22,12 @@ function GoogleIcon() {
 
 export default function SignUpPage() {
   const { toast } = useToast();
-  const router = useRouter();
-  const { user: authUser, loading: authLoading } = useAuth();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // This function creates a user document in Firestore if they don't exist.
+  // It no longer handles navigation.
   const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
@@ -42,42 +40,31 @@ export default function SignUpPage() {
         createdAt: serverTimestamp(),
       });
       console.log("New user document created in Firestore for:", user.uid);
-      toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
-    } else {
-      toast({ title: "Sign-in Successful!", description: "Welcome back! Redirecting you..." });
     }
-    router.replace('/');
-  }, [router, toast]);
+  }, []);
 
+  // This effect runs once on mount to handle the redirect result from Google.
   useEffect(() => {
-    const processAuth = async () => {
+    const processRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
-          console.log("Redirect result processed on sign-up page. User found:", result.user.uid);
+          toast({ title: "Account Created!", description: "Welcome to LearnMint! Redirecting you..." });
           await handleUserCreation(result.user);
-          return;
         }
-
-        if (!authLoading && authUser && !authUser.isAnonymous) {
-          console.log("User is already logged in. Redirecting to dashboard.");
-          router.replace('/');
-          return;
-        }
-        
-        setIsProcessingRedirect(false);
-
       } catch (error: any) {
-        console.error("Error during auth processing on sign-up page:", error);
-        toast({ title: "Sign-Up Failed", description: "This may be due to a misconfiguration. Please ensure your domain is authorized in the Firebase Console.", variant: "destructive" });
+        console.error("Error processing redirect result on sign-up:", error);
+        let description = "Could not process sign-up from Google. Please try again.";
+        if (error.code === 'auth/unauthorized-domain') {
+            description = "This app's domain is not authorized for sign-in. Please check your Firebase project configuration.";
+        }
+        toast({ title: "Sign-Up Failed", description, variant: "destructive" });
+      } finally {
         setIsProcessingRedirect(false);
       }
     };
-    
-    if (!authLoading) {
-      processAuth();
-    }
-  }, [authLoading, authUser, handleUserCreation, router, toast]);
+    processRedirect();
+  }, [handleUserCreation, toast]);
 
   const handleGoogleSignUp = async () => {
     setIsSubmitting(true);
@@ -90,11 +77,13 @@ export default function SignUpPage() {
     }
   };
 
+  // While processing the redirect, show a loader.
   if (isProcessingRedirect) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying your session...</p>
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <h1 className="text-xl font-semibold">Verifying sign-up...</h1>
+        <p className="text-muted-foreground">Please wait a moment.</p>
       </div>
     );
   }

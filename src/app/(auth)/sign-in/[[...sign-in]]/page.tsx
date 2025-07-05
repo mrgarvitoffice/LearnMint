@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { getRedirectResult, signInWithRedirect } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, db, googleProvider } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
@@ -27,13 +26,15 @@ function GoogleIcon() {
 
 export default function SignInPage() {
   const { toast } = useToast();
-  const router = useRouter();
-  const { user: authUser, loading: authLoading, signInAsGuest } = useAuth();
+  const { signInAsGuest } = useAuth();
   const { resetUsage } = useGuestUsage();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // This state is only to show a loader on this page while processing the redirect.
   const [isProcessingRedirect, setIsProcessingRedirect] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // This function creates a user document in Firestore if they don't exist.
+  // It no longer handles navigation.
   const handleUserCreation = useCallback(async (user: import('firebase/auth').User) => {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
@@ -48,39 +49,35 @@ export default function SignInPage() {
       console.log("New user document created in Firestore for:", user.uid);
     }
     resetUsage();
-    toast({ title: "Sign-in Successful!", description: "Redirecting you to the dashboard..." });
-    router.replace('/');
-  }, [router, toast, resetUsage]);
+  }, [resetUsage]);
 
+  // This effect runs once on mount to handle the redirect result from Google.
   useEffect(() => {
-    const processAuth = async () => {
+    const processRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
-          console.log("Redirect result processed. User found:", result.user.uid);
+          // A user was returned from the redirect. Process their data.
+          // The layout will handle redirecting to the dashboard.
+          toast({ title: "Sign-in Successful!", description: "Redirecting you to the dashboard..." });
           await handleUserCreation(result.user);
-          return;
         }
-
-        if (!authLoading && authUser && !authUser.isAnonymous) {
-          console.log("User is already logged in. Redirecting to dashboard.");
-          router.replace('/');
-          return;
-        }
-        
-        setIsProcessingRedirect(false);
-
       } catch (error: any) {
-        console.error("Error during auth processing:", error);
-        toast({ title: "Sign-in Failed", description: "This may be due to a misconfiguration. Please ensure your domain is authorized in the Firebase Console.", variant: "destructive" });
+        console.error("Error processing redirect result:", error);
+        let description = "Could not process login from Google. Please try again.";
+        if (error.code === 'auth/unauthorized-domain') {
+            description = "This app's domain is not authorized for sign-in. Please check your Firebase project configuration.";
+        }
+        toast({ title: "Sign-in Failed", description, variant: "destructive" });
+      } finally {
+        // Whether there was a result or not, we are done processing.
+        // We can now show the sign-in buttons.
         setIsProcessingRedirect(false);
       }
     };
-    
-    if (!authLoading) {
-      processAuth();
-    }
-  }, [authLoading, authUser, handleUserCreation, router, toast]);
+
+    processRedirect();
+  }, [handleUserCreation, toast]);
 
   const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
@@ -97,21 +94,21 @@ export default function SignInPage() {
     setIsSubmitting(true);
     try {
       await signInAsGuest();
-      toast({ title: "Welcome, Guest!", description: "You are signed in as a guest." });
-      router.replace('/');
+      // The layout will handle the redirect to dashboard.
     } catch (error: any) {
       console.error("Error signing in as guest:", error);
       toast({ title: "Guest Sign-In Failed", description: error.message, variant: "destructive" });
-    } finally {
       setIsSubmitting(false);
     }
   };
 
+  // While processing the redirect, show a loader.
   if (isProcessingRedirect) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying your session...</p>
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <h1 className="text-xl font-semibold">Verifying sign-in...</h1>
+        <p className="text-muted-foreground">Please wait a moment.</p>
       </div>
     );
   }
@@ -135,7 +132,7 @@ export default function SignInPage() {
           </p>
         </div>
         <Button onClick={handleGuestSignIn} variant="secondary" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && !isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Continue as Guest
+          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Continue as Guest
         </Button>
       </CardContent>
       <CardFooter className="justify-center text-sm">
