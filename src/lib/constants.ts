@@ -20,6 +20,9 @@ import {
   BarChart,        // Icon for Progress
   Home,            // Icon for Home
   NotebookText,    // Icon for Generate
+  BookOpen,        // Icon for Wikidata resource
+  Lightbulb,       // Icon for CK-12 resource
+  Brain,           // Icon for Project Gutenberg resource
 } from 'lucide-react';
 
 /**
