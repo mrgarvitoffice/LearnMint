@@ -14,36 +14,42 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   useEffect(() => {
     let active = true;
     setIsReady(false);
+    setTranslations(null); // Reset translations on language change
 
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        if (active) {
+        if (active && module.default && Object.keys(module.default).length > 0) {
           setTranslations(module.default);
+          setIsReady(true); // Set ready only after successful load
+        } else {
+            throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
-          // Explicitly try to load English as a fallback
           const fallbackModule = await import(`@/locales/en.json`);
-          if (active) {
+          if (active && fallbackModule.default && Object.keys(fallbackModule.default).length > 0) {
             setTranslations(fallbackModule.default);
+            setIsReady(true); // Set ready after successful fallback load
+          } else {
+            console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
+            if (active) {
+                setTranslations({}); // Prevent crashes
+                setIsReady(true); // Still need to unblock the UI, even if translations are broken
+            }
           }
         } catch (fallbackError) {
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          // If even English fails, set to an empty object to prevent crashes
           if (active) {
-            setTranslations({});
+             setTranslations({});
+             setIsReady(true);
           }
-        }
-      } finally {
-        if (active) {
-          setIsReady(true);
         }
       }
     };
 
-    const langCode = appLanguage.split('-')[0];
+    const langCode = appLanguage.split('-')[0] || 'en';
     loadTranslations(langCode);
 
     return () => {
@@ -52,22 +58,32 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // If not ready, it's better to return an empty string than a broken key
+    // If translations are not ready, return an empty string. The UI components
+    // should be showing a loading skeleton based on the `isReady` flag.
     if (!isReady || !translations) {
       return "";
     }
     
-    let translation = translations[key] || key;
+    const translation = translations[key];
+
+    // If a specific key is missing from the loaded JSON file, it's a data error.
+    // Log a warning for debugging and return the key itself so it's visible in the UI.
+    if (translation === undefined) {
+        console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
+        return key; 
+    }
+
+    let finalTranslation = translation;
 
     if (options) {
       Object.keys(options).forEach(optionKey => {
         const regex = new RegExp(`{{${optionKey}}}`, 'g');
-        translation = translation.replace(regex, String(options[optionKey]));
+        finalTranslation = finalTranslation.replace(regex, String(options[optionKey]));
       });
     }
 
-    return translation;
-  }, [translations, isReady]);
+    return finalTranslation;
+  }, [translations, isReady, appLanguage]);
 
   return { t, isReady };
 }
