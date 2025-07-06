@@ -1,9 +1,3 @@
-import { redirect } from 'next/navigation';
-
-export default function AppRootPage() {
-  redirect('/dashboard');
-  
-  // This return is needed to satisfy the function signature, 
-  // but it will never be reached due to the redirect.
-  return null;
-}
+// This file is intentionally left empty to resolve a build conflict.
+// By not exporting a default component, Next.js will no longer treat this as a page,
+// which fixes the build error related to a missing client reference manifest.
