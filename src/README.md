@@ -14,7 +14,7 @@
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/MrGarvit/learnmint?style=for-the-badge">
 </p>
 
-**Welcome to LearnMint!** An advanced, AI-driven Next.js application engineered to transform your study sessions into a dynamic, productive, and engaging experience. Say goodbye to tedious material preparation and hello to intelligent learning that's tailored, insightful, and lightning-fast!
+**Welcome to LearnMint!** An advanced, AI-driven Next.js application engineered to transform your study sessions into a dynamic, productive, and engaging experience. Say goodbye to tedious material preparation and hello to intelligent learning that's tailored, insightful, and lightning-fast!!
 
 ---
 
