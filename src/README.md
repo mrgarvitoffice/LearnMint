@@ -231,6 +231,6 @@ This application is optimized for deployment on **Firebase Hosting**.
 
 LearnMint was created by **MrGarvit** as a demonstration of cutting-edge AI integration in modern web applications. It showcases the power of generative AI to create dynamic, personalized, and engaging educational experiences.
 
-Enjoy minting new knowledge!
+Enjoy minting new knowledge!!
 
     
