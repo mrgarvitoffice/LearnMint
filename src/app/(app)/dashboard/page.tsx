@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: "Your central hub for accessing all of LearnMint's AI-powered learning tools and features.",
-};
-
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
