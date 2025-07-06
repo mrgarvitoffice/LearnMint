@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,7 +10,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Mail, KeyRound, LogOut, CheckCircle, Brain, User } from 'lucide-react';
+import { Mail, KeyRound, LogOut, CheckCircle, Brain, User, MessageSquareText } from 'lucide-react';
 
 const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: string }) => (
     <div className={cn("flex items-center gap-3 p-3 bg-muted/50 rounded-md", isCompleted && "text-muted-foreground line-through")}>
@@ -102,10 +103,18 @@ export default function ProfilePage() {
                 </Card>
             )}
 
-             <Button onClick={signOutUser} variant="destructive" className="w-full mt-4">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-             </Button>
+             <div className="space-y-2 pt-6 border-t border-border/50">
+                <Button asChild variant="outline" className="w-full">
+                    <a href="mailto:feedback.learnmint@example.com?subject=LearnMint%20App%20Feedback">
+                        <MessageSquareText className="mr-2 h-4 w-4" />
+                        Send Feedback
+                    </a>
+                </Button>
+                <Button onClick={signOutUser} variant="destructive" className="w-full">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                </Button>
+             </div>
           </CardContent>
       </Card>
     </div>
