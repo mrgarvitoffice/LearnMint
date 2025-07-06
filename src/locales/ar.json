@@ -1,3 +1,4 @@
+
 {
   "dashboard.welcome": "مرحبًا بك في LearnMint!",
   "dashboard.description": "مساعدك التعليمي المدعوم بالذكاء الاصطناعي للملاحظات والاختبارات القصيرة والامتحانات والمزيد.",
@@ -286,7 +287,7 @@
   "auth.guestWelcomeDesc": "يمكنك الآن استكشاف جميع الميزات.",
   "auth.guestErrorTitle": "خطأ في تسجيل دخول الضيف",
   "auth.signInWelcome": "مرحبًا، {{name}}!",
-  "auth.signInWelcomeDesc": "لقد قمت بتسجيل الدخول الآن.",
+  "auth.signInWelcomeDesc": "لقد قمت الآن بتسجيل الدخول.",
   "auth.unknownError": "حدث خطأ غير معروف.",
   "auth.invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صالحة. يرجى المحاولة مرة أخرى.",
   "auth.signInErrorTitle": "فشل تسجيل الدخول",
