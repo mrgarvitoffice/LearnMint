@@ -2,13 +2,10 @@
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
  *
- * This file is intentionally a null component to resolve a Next.js build conflict.
- * The primary root page is handled by `/src/app/page.tsx` which redirects to `/dashboard`.
- * This file, located at `/src/app/(app)/page.tsx`, creates a necessary but empty
- * route within the (app) layout group to prevent build errors, but it is never shown to the user.
+ * This file is intentionally left without a default export.
+ * Its presence is necessary for some routing configurations, but exporting a component
+ * from it creates a build conflict with the root `app/page.tsx`.
+ *
+ * By not exporting a default component, we signal to Next.js that this is not a renderable page,
+ * which resolves the deployment error.
  */
-
-export default function AppRootPage() {
-  // This component renders nothing and exists solely to resolve a build conflict.
-  return null;
-}
