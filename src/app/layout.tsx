@@ -25,8 +25,35 @@ const orbitron = Orbitron({
 // --- Application Metadata ---
 // Defines metadata for SEO and Progressive Web App (PWA) features.
 export const metadata: Metadata = {
-  title: 'LearnMint - AI Powered Learning',
-  description: 'AI-powered learning assistant for notes, quizzes, flashcards, and more. A project by MrGarvit.',
+  title: {
+    default: "LearnMint – Smarter Way to Study",
+    template: "%s | LearnMint",
+  },
+  description: "LearnMint is a powerful, all-in-one learning platform with flashcards, quizzes, AI chatbot, notes, news, and more. Master concepts the smart way!",
+  keywords: ["LearnMint", "LearnMint AI", "study app", "flashcards", "quiz", "chatbot", "ai learning", "smart education platform", "learning tools"],
+  authors: [{ name: "MrGarvit" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "LearnMint – Smarter Way to Study",
+    description: "Smarter flashcards, quizzes, AI chatbot, notes, and news — all in one powerful learning app.",
+    images: [{
+      url: "https://learnmint-ai.vercel.app/preview.jpg",
+      width: 1200,
+      height: 630,
+      alt: "LearnMint Application Preview"
+    }],
+    url: "https://learnmint-ai.vercel.app",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LearnMint – Smarter Way to Study",
+    description: "Flashcards, AI chatbot, notes, quizzes, and more – all in one AI-powered learning app.",
+    images: ["https://learnmint-ai.vercel.app/preview.jpg"],
+  },
   manifest: '/manifest.json',
   icons: {
     icon: [
@@ -74,5 +101,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

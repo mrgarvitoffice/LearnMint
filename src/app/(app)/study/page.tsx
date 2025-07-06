@@ -1,4 +1,14 @@
 
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }): Promise<Metadata> {
+  const topic = searchParams.topic ? decodeURIComponent(searchParams.topic as string) : 'a new topic';
+  return {
+    title: `Study Hub: ${topic}`,
+    description: `In-depth study materials for ${topic}, including AI-generated notes, an interactive quiz, and flashcards.`,
+  };
+}
+
 "use client";
 
 import { Suspense } from 'react';

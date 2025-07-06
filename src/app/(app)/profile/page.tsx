@@ -1,4 +1,11 @@
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Your Profile',
+  description: 'Manage your LearnMint account settings and track your daily quest progress.',
+};
+
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';

@@ -1,4 +1,11 @@
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Feature Update',
+  description: 'The standalone Quiz Creator has been integrated into the "Generate Materials" and "Custom Test" pages for a more streamlined experience.',
+};
+
 "use client";
 
 import { Button } from "@/components/ui/button";

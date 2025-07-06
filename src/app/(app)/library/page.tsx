@@ -1,4 +1,11 @@
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Knowledge Hub',
+  description: 'Explore a vast library of external resources with integrated YouTube and Google Books search to supplement your learning.',
+};
+
 "use client";
 
 import { useState, useEffect, useRef, type FormEvent, useCallback } from 'react';

@@ -1,4 +1,15 @@
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Sign Up',
+  description: 'Create a new LearnMint account to unlock all AI-powered study tools and save your progress.',
+  robots: {
+    index: false,
+    follow: false,
+  }
+};
+
 "use client";
 
 import Link from 'next/link';

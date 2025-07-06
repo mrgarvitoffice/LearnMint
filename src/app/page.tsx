@@ -6,6 +6,13 @@
  * This component acts as the main entry point for the application's root URL ('/').
  * Its sole purpose is to immediately redirect the user to the main dashboard.
  */
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "LearnMint: Your AI-Powered Study Revolution",
+  description: "Redirecting you to the smartest way to study. LearnMint is a powerful, all-in-one learning platform with flashcards, quizzes, and more.",
+};
+
 "use client";
 
 import { useEffect } from 'react';
@@ -28,5 +35,3 @@ export default function RootPageRedirect() {
     </div>
   );
 }
-
-    
