@@ -15,6 +15,7 @@ import { db } from '@/lib/firebase/config';
  * Example rule for security: `match /users/{document=**} { allow list: if request.auth != null; }`
  * 
  * @returns {Promise<number>} A promise that resolves to the total number of users.
+ * @throws Will throw an error if the Firestore operation fails, e.g., due to permissions.
  */
 export async function getTotalUsers(): Promise<number> {
   try {
@@ -22,8 +23,9 @@ export async function getTotalUsers(): Promise<number> {
     const snapshot = await getCountFromServer(usersCollection);
     return snapshot.data().count;
   } catch (error) {
-    console.error("Error fetching total user count:", error);
-    // As a fallback, return a base number if the count fails due to permissions or other issues.
-    return 1384; 
+    console.error("Error fetching total user count from Firestore:", error);
+    // Re-throw the error to be handled by the calling component (e.g., with useQuery).
+    // This provides better error visibility on the frontend.
+    throw new Error("Failed to fetch user count. This may be a Firestore permissions issue. Ensure 'allow list' is enabled on the 'users' collection in your security rules.");
   }
 };
