@@ -20,27 +20,30 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         const module = await import(`@/locales/${lang}.json`);
         if (active) {
           setTranslations(module.default);
-          setIsReady(true);
         }
       } catch (error) {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
+          // Explicitly try to load English as a fallback
           const fallbackModule = await import(`@/locales/en.json`);
           if (active) {
             setTranslations(fallbackModule.default);
-            setIsReady(true);
           }
         } catch (fallbackError) {
-          console.error("Failed to load fallback English translations.", fallbackError);
+          console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
+          // If even English fails, set to an empty object to prevent crashes
           if (active) {
             setTranslations({});
-            setIsReady(true);
           }
+        }
+      } finally {
+        if (active) {
+          setIsReady(true);
         }
       }
     };
 
-    const langCode = appLanguage.split('-')[0]; // Use base language code like 'en', 'es', 'hi'
+    const langCode = appLanguage.split('-')[0];
     loadTranslations(langCode);
 
     return () => {
@@ -49,9 +52,11 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    if (!translations) {
-      return key; // Return key if translations are not loaded yet
+    // If not ready, it's better to return an empty string than a broken key
+    if (!isReady || !translations) {
+      return "";
     }
+    
     let translation = translations[key] || key;
 
     if (options) {
@@ -62,7 +67,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     }
 
     return translation;
-  }, [translations]);
+  }, [translations, isReady]);
 
   return { t, isReady };
 }
