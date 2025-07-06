@@ -430,8 +430,8 @@ export default function AudioFactoryPage() {
   if (user?.isAnonymous) {
     return (
       <GuestLock
-        featureName="Audio Factory"
-        featureDescription="Unlock advanced features like multi-speaker audio discussions and spoken summaries."
+        featureName="guestLock.features.audioFactory"
+        featureDescription="guestLock.features.audioFactoryDesc"
         Icon={AudioLines}
       />
     );

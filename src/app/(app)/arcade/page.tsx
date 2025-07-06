@@ -37,8 +37,8 @@ export default function ArcadePage() {
   if (user?.isAnonymous) {
     return (
       <GuestLock
-        featureName="LearnMint Arcade"
-        featureDescription="Play fun, educational games to sharpen your mind and test your knowledge."
+        featureName="guestLock.features.arcade"
+        featureDescription="guestLock.features.arcadeDesc"
         Icon={Gamepad2}
       />
     );

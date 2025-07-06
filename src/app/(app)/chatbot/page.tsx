@@ -205,8 +205,8 @@ export default function ChatbotPage() {
   if (user?.isAnonymous) {
     return (
       <GuestLock
-        featureName="AI Chatbot"
-        featureDescription="Engage in dynamic conversations with personalized AI characters."
+        featureName="guestLock.features.chatbot"
+        featureDescription="guestLock.features.chatbotDesc"
         Icon={Bot}
       />
     );

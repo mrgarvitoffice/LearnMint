@@ -466,8 +466,8 @@ export default function CustomTestPage() {
   if (user?.isAnonymous) {
     return (
       <GuestLock
-        featureName="Custom Test Creator"
-        featureDescription="Build tailored tests with specific topics, difficulty, timers, and more."
+        featureName="guestLock.features.customTest"
+        featureDescription="guestLock.features.customTestDesc"
         Icon={TestTubeDiagonal}
       />
     );

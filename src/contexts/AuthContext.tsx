@@ -23,6 +23,7 @@ import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AuthContextType {
   user: User | null;
@@ -41,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleUserCreationInFirestore = useCallback(async (user: User) => {
     if (!user || user.isAnonymous) return;
@@ -101,10 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       // The onAuthStateChanged listener will handle setting user to null and loading to false.
       // The main app layout will handle the redirect when `user` becomes null.
-      toast({ title: "Signed Out", description: "You have been successfully signed out." });
+      toast({ title: t('auth.signOutTitle'), description: t('auth.signOutDesc') });
     } catch (error: any) {
       console.error("Error signing out:", error);
-      toast({ title: "Sign Out Error", description: error.message, variant: "destructive" });
+      toast({ title: t('auth.signOutErrorTitle'), description: error.message, variant: "destructive" });
     }
   };
   
@@ -113,10 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await firebaseSignInAnonymously(auth);
       router.push('/dashboard');
-      toast({ title: "Welcome, Guest!", description: "You can now explore all features." });
+      toast({ title: t('auth.guestWelcome'), description: t('auth.guestWelcomeDesc') });
     } catch (error: any) {
       console.error("Error signing in anonymously:", error);
-      toast({ title: "Guest Sign-in Error", description: error.message, variant: "destructive" });
+      toast({ title: t('auth.guestErrorTitle'), description: error.message, variant: "destructive" });
     } finally {
         setLoading(false);
     }
@@ -131,15 +133,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Robust display name handling
       const displayName = (userDoc.exists() && userDoc.data().displayName) || userCredential.user.email?.split('@')[0] || 'User';
       
-      toast({ title: `Hi, ${displayName}!`, description: "You are now signed in." });
+      toast({ title: t('auth.signInWelcome', { name: displayName }), description: t('auth.signInWelcomeDesc') });
     } catch (error: any) {
-      let description = "An unknown error occurred.";
+      let description = t('auth.unknownError');
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        description = "Invalid email or password. Please try again."
+        description = t('auth.invalidCredentials');
       } else {
         description = error.message;
       }
-      toast({ title: "Sign-in Failed", description, variant: "destructive" });
+      toast({ title: t('auth.signInErrorTitle'), description, variant: "destructive" });
     } finally {
         setLoading(false);
     }
@@ -151,15 +153,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       // The onAuthStateChanged listener will handle the rest, including Firestore updates.
-      toast({ title: "Welcome!", description: "You are now signed in with Google." });
+      toast({ title: t('auth.googleWelcome'), description: t('auth.googleWelcomeDesc') });
     } catch (error: any) {
-      let description = "An unknown error occurred.";
+      let description = t('auth.unknownError');
       if (error.code === 'auth/account-exists-with-different-credential') {
-        description = "An account already exists with the same email address but different sign-in credentials.";
+        description = t('auth.accountExistsError');
       } else {
         description = error.message;
       }
-      toast({ title: "Google Sign-in Failed", description: description, variant: "destructive" });
+      toast({ title: t('auth.googleErrorTitle'), description: description, variant: "destructive" });
     } finally {
         setLoading(false);
     }
@@ -178,27 +180,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await updateProfile(linkedUser, { displayName });
         // The onAuthStateChanged listener will handle the Firestore update.
         
-        toast({ title: `Welcome, ${displayName}!`, description: "Your account has been upgraded and saved." });
+        toast({ title: t('auth.upgradeWelcome', { name: displayName }), description: t('auth.upgradeWelcomeDesc') });
 
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         if (userCredential.user) {
           await updateProfile(userCredential.user, { displayName });
           // The onAuthStateChanged listener will handle the Firestore update.
-          toast({ title: `Hi, ${displayName}!`, description: "Your account has been created successfully." });
+          toast({ title: t('auth.signUpWelcome', { name: displayName }), description: t('auth.signUpWelcomeDesc') });
         }
       }
     } catch (error: any)
        {
-      let description = "An unknown error occurred.";
+      let description = t('auth.unknownError');
        if (error.code === 'auth/email-already-in-use') {
-        description = "This email is already associated with an account."
+        description = t('auth.emailInUseError');
       } else if (error.code === 'auth/credential-already-in-use') {
-        description = "This email is already linked to another account. Please use a different email.";
+        description = t('auth.credentialInUseError');
       } else {
         description = error.message;
       }
-      toast({ title: "Sign-up Failed", description, variant: "destructive" });
+      toast({ title: t('auth.signUpErrorTitle'), description, variant: "destructive" });
     } finally {
         setLoading(false);
     }

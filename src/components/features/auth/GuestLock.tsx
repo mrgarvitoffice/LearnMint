@@ -5,14 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface GuestLockProps {
-  featureName: string;
-  featureDescription: string;
+  featureName: string; // This will now be a translation key
+  featureDescription: string; // This will also be a translation key
   Icon: LucideIcon;
 }
 
 export function GuestLock({ featureName, featureDescription, Icon }: GuestLockProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center h-full min-h-[calc(100vh-12rem)]">
         <Card className="w-full max-w-md text-center shadow-xl bg-card/90 backdrop-blur-sm">
@@ -20,22 +23,22 @@ export function GuestLock({ featureName, featureDescription, Icon }: GuestLockPr
             <div className="flex items-center justify-center mb-4">
                 <Icon className="h-12 w-12 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-bold text-primary">Unlock {featureName}</CardTitle>
+            <CardTitle className="text-2xl font-bold text-primary">{t('guestLock.unlockFeature', { featureName: t(featureName) })}</CardTitle>
             <CardDescription className="text-muted-foreground">
-            {featureDescription}
+              {t(featureDescription)}
             </CardDescription>
         </CardHeader>
         <CardContent>
             <p className="text-sm text-muted-foreground">
-            To access this feature and save your progress, please create a free account or sign in.
+              {t('guestLock.description')}
             </p>
         </CardContent>
         <CardContent className="flex flex-col sm:flex-row gap-2 justify-center">
             <Button asChild className="w-full sm:w-auto">
-                <Link href="/sign-up">Create an Account</Link>
+                <Link href="/sign-up">{t('guestLock.createAccount')}</Link>
             </Button>
             <Button asChild variant="outline" className="w-full sm:w-auto">
-                <Link href="/sign-in">Sign In</Link>
+                <Link href="/sign-in">{t('guestLock.signIn')}</Link>
             </Button>
         </CardContent>
         </Card>

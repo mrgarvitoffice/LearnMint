@@ -49,12 +49,12 @@ export default function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
               <CardTitle className="text-3xl font-bold text-primary mt-4">
-                Hi, {user.isAnonymous ? 'Guest' : userDisplayName}!
+                {user.isAnonymous ? t('profile.guestGreeting') : t('header.profile.greeting', { name: userDisplayName })}
               </CardTitle>
               <CardDescription className="text-base text-muted-foreground mt-1">
                   {user.isAnonymous 
-                    ? "You are browsing as a guest. Sign up to save your progress!" 
-                    : "Manage your account and track your daily progress."
+                    ? t('profile.guestDescription')
+                    : t('profile.userDescription')
                   }
               </CardDescription>
           </CardHeader>
@@ -63,9 +63,9 @@ export default function ProfilePage() {
                <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
                  <Mail className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
-                   <p className="text-xs text-muted-foreground">Email</p>
+                   <p className="text-xs text-muted-foreground">{t('profile.emailLabel')}</p>
                    {user.isAnonymous ? (
-                     <p className="italic text-muted-foreground/80">Sign up to add an email.</p>
+                     <p className="italic text-muted-foreground/80">{t('profile.guestAddEmail')}</p>
                    ) : (
                      <p className="font-semibold break-all">{user.email}</p>
                    )}
@@ -74,7 +74,7 @@ export default function ProfilePage() {
                <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
                  <KeyRound className="h-5 w-5 text-muted-foreground shrink-0" />
                  <div>
-                   <p className="text-xs text-muted-foreground">User ID</p>
+                   <p className="text-xs text-muted-foreground">{t('profile.userIdLabel')}</p>
                    <p className="font-mono text-xs break-all">{user.uid}</p>
                  </div>
                </div>
@@ -83,7 +83,7 @@ export default function ProfilePage() {
             <Card className="bg-background/50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
-                        <Brain className="text-primary"/> Daily Quests
+                        <Brain className="text-primary"/> {t('dashboard.dailyQuests.title')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -95,10 +95,10 @@ export default function ProfilePage() {
 
             {user.isAnonymous && (
                 <Card className="mt-4 border-primary/30 bg-primary/10 text-center p-4">
-                    <CardTitle className="text-lg text-primary">Unlock Full Potential!</CardTitle>
-                    <CardDescription className="text-primary/80 mt-1">Sign up to save your progress permanently.</CardDescription>
+                    <CardTitle className="text-lg text-primary">{t('profile.guestUnlockTitle')}</CardTitle>
+                    <CardDescription className="text-primary/80 mt-1">{t('profile.guestUnlockDesc')}</CardDescription>
                     <Button asChild className="mt-3">
-                        <Link href="/sign-up">Sign Up Now</Link>
+                        <Link href="/sign-up">{t('profile.guestSignUpButton')}</Link>
                     </Button>
                 </Card>
             )}
@@ -107,12 +107,12 @@ export default function ProfilePage() {
                 <Button asChild variant="outline" className="w-full">
                     <a href="mailto:learnmint.ai@gmail.com?subject=LearnMint%20App%20Feedback">
                         <MessageSquareText className="mr-2 h-4 w-4" />
-                        Send Feedback
+                        {t('profile.sendFeedback')}
                     </a>
                 </Button>
                 <Button onClick={signOutUser} variant="destructive" className="w-full">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
+                    {t('header.profile.signOut')}
                 </Button>
              </div>
           </CardContent>
