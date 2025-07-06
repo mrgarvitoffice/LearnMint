@@ -20,7 +20,7 @@ import {
   type User,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -65,16 +65,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             console.log("Firestore user document created for:", user.uid);
+
+            // Atomically increment the total learners count for a new user.
+            const statsRef = doc(db, 'metadata', 'userStats');
+            await runTransaction(db, async (transaction) => {
+                const statsDoc = await transaction.get(statsRef);
+                if (!statsDoc.exists()) {
+                    // If the document doesn't exist, initialize it with the starting count.
+                    transaction.set(statsRef, { count: 21 });
+                } else {
+                    // Otherwise, increment the existing count.
+                    const newCount = statsDoc.data().count + 1;
+                    transaction.update(statsRef, { count: newCount });
+                }
+            });
+            console.log("Total learners count incremented.");
+
         } else {
             // Existing user: merge new info to update photoURL, displayName, etc.
             await setDoc(userRef, userData, { merge: true });
             console.log("Firestore user document updated for:", user.uid);
         }
     } catch (error: any) {
-        console.error("Firestore user creation/update error:", error);
+        console.error("Firestore user creation/update/counter error:", error);
         toast({
             title: "Profile Error",
-            description: "Could not save your profile data. You may have restrictive security rules in Firestore.",
+            description: "Could not save your profile data or update stats. You may have restrictive security rules in Firestore.",
             variant: "destructive",
         });
     }

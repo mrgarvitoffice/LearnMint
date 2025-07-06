@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
@@ -20,9 +21,8 @@ import { fetchMathFact } from '@/lib/math-fact-api';
 import type { MathFact } from '@/lib/types';
 import { MATH_FACTS_FALLBACK } from '@/lib/constants';
 import { useAuth } from '@/contexts/AuthContext';
-
-const RECENT_TOPICS_LS_KEY = 'learnmint-recent-topics';
-const MAX_RECENT_TOPICS_DISPLAY = 5;
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 const ActionCard = ({ titleKey, descriptionKey, buttonTextKey, href, icon: Icon }: { titleKey: string, descriptionKey: string, buttonTextKey: string, href: string, icon: React.ElementType }) => {
     const { t } = useTranslation();
@@ -86,7 +86,7 @@ export default function DashboardPage() {
     const { user } = useAuth();
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
-    const [totalLearners, setTotalLearners] = useState(137); // Fake fluctuating count
+    const [totalLearners, setTotalLearners] = useState<number | null>(null);
     const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
     const pageTitleSpokenRef = useRef(false);
 
@@ -98,21 +98,26 @@ export default function DashboardPage() {
         refetchOnWindowFocus: false,
     });
     
-    // Fake fluctuating learner count effect
     useEffect(() => {
-        const interval = setInterval(() => {
-            setTotalLearners(prevCount => {
-                const fluctuation = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
-                let newCount = prevCount + fluctuation;
-                // Keep it within a believable range below 150
-                if (newCount > 148) newCount = 145;
-                if (newCount < 120) newCount = 123;
-                return newCount;
-            });
-        }, 3500); // Update every 3.5 seconds
+        const statsRef = doc(db, "metadata", "userStats");
+        const unsubscribe = onSnapshot(statsRef, (doc) => {
+            if (doc.exists()) {
+                setTotalLearners(doc.data().count);
+            } else {
+                // If the document doesn't exist yet, it will be created with a count of 21
+                // on the first user sign-up. We can show a loading state or a starting number.
+                setTotalLearners(21);
+            }
+        }, (error) => {
+            console.error("Error fetching real-time learner count:", error);
+            // Fallback to a static number if the listener fails
+            setTotalLearners(21);
+        });
 
-        return () => clearInterval(interval);
+        // Cleanup listener on component unmount
+        return () => unsubscribe();
     }, []);
+
 
     useEffect(() => {
         if (mathFact) {
@@ -131,13 +136,13 @@ export default function DashboardPage() {
     useEffect(() => {
         setVoicePreference('gojo');
         if (typeof window !== 'undefined') {
-            const storedTopics = localStorage.getItem(RECENT_TOPICS_LS_KEY);
+            const storedTopics = localStorage.getItem('learnmint-recent-topics');
             if (storedTopics) {
                 try {
-                    setRecentTopics(JSON.parse(storedTopics).slice(0, MAX_RECENT_TOPICS_DISPLAY));
+                    setRecentTopics(JSON.parse(storedTopics).slice(0, 5));
                 } catch (e) {
                     console.error("Failed to parse recent topics from localStorage", e);
-                    localStorage.removeItem(RECENT_TOPICS_LS_KEY);
+                    localStorage.removeItem('learnmint-recent-topics');
                 }
             }
         }
@@ -193,7 +198,7 @@ export default function DashboardPage() {
                                 <span className="text-sm text-muted-foreground italic">{t('dashboard.totalLearnersGuestMessage')}</span>
                             ) : (
                                 <span className="font-semibold text-primary group-hover:text-primary/90 transition-colors">
-                                    {t('dashboard.totalLearners')}: {totalLearners.toLocaleString()}
+                                    {t('dashboard.totalLearners')}: {totalLearners !== null ? totalLearners.toLocaleString() : <Loader2 className="inline-block h-4 w-4 animate-spin" />}
                                 </span>
                             )}
                          </div>
