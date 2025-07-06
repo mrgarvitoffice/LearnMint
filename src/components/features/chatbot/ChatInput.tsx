@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, type ChangeEvent, type FormEvent, useEffect } from 'react';
@@ -179,7 +180,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                   <FileText className="w-5 h-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground truncate flex-1" title={pdfContent.name}>{pdfContent.name}</span>
                   <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
-                      <X className="w-4 h-4 text-destructive/70" />
+                      <X className="w-4 w-4 text-destructive/70" />
                   </Button>
               </div>
           )}
@@ -188,7 +189,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                 <AudioLines className="w-5 h-5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground truncate flex-1" title={audioFileName}>{audioFileName}</span>
                 <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
-                    <X className="w-4 h-4 text-destructive/70" />
+                    <X className="w-4 w-4 text-destructive/70" />
                 </Button>
             </div>
           )}
@@ -197,7 +198,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                 <Video className="w-5 h-5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground truncate flex-1" title={videoFileName}>{videoFileName}</span>
                 <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full">
-                    <X className="w-4 h-4 text-destructive/70" />
+                    <X className="w-4 w-4 text-destructive/70" />
                 </Button>
             </div>
           )}
