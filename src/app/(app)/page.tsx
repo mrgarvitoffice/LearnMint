@@ -1,6 +1,12 @@
-// This file is intentionally kept to satisfy some build systems,
-// but it does not export a component to avoid routing conflicts with src/app/page.tsx.
-// A page.tsx cannot exist in a route group (app) if a page.tsx
-// already exists at the root level. By removing the default export,
-// Next.js will no longer treat this file as a page.
-export {};
+
+import { redirect } from 'next/navigation';
+
+/**
+ * This page is part of the '(app)' route group, which handles authenticated routes.
+ * A page at this level (e.g., /app/) would conflict with the root page.tsx.
+ * To resolve this, we use a server-side redirect to send the user to the dashboard,
+ * which is the intended behavior for the base authenticated route.
+ */
+export default function AppRootPage() {
+  redirect('/dashboard');
+}
