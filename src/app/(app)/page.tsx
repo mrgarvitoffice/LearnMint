@@ -2,11 +2,13 @@
 import { redirect } from 'next/navigation';
 
 /**
- * This page is part of the '(app)' route group, which handles authenticated routes.
- * A page at this level (e.g., /app/) would conflict with the root page.tsx.
- * To resolve this, we use a server-side redirect to send user to the dashboard,
- * which is the intended behavior for the base authenticated route.
+ * This file is being modified to resolve a build error.
+ * The default export is commented out so Next.js no longer treats this as a page,
+ * which solves the routing conflict with `src/app/page.tsx`.
+ * The root route '/' is correctly handled by the page at the top level of the `app` directory.
  */
+/*
 export default function AppRootPage() {
   redirect('/dashboard');
 }
+*/
