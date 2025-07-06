@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, type FormEvent } from 'react';
@@ -5,7 +6,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MATH_FACTS_FALLBACK } from '@/lib/constants';
+import { MATH_FACTS_FALLBACK, OTHER_RESOURCES } from '@/lib/constants';
 import { fetchMathFact } from '@/lib/math-fact-api';
 import type { MathFact, YoutubeVideoItem, GoogleBookItem, QueryError, YoutubeSearchInput, GoogleBooksSearchInput, YoutubeSearchOutput, GoogleBooksSearchOutput } from '@/lib/types';
 import { ResourceCard } from '@/components/features/library/ResourceCard';
@@ -168,12 +169,6 @@ export default function LibraryPage() {
     }
   };
 
-  const otherResources = [
-    { title: "Wikidata", description: t('library.resources.wikidataDesc'), link: "https://www.wikidata.org/", icon: BookOpen },
-    { title: "CK-12 Foundation", description: t('library.resources.ck12Desc'), link: "https://www.ck12.org/", icon: Lightbulb },
-    { title: "Project Gutenberg", description: t('library.resources.gutenbergDesc'), link: "https://www.gutenberg.org/", icon: Brain },
-  ];
-
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8 space-y-10">
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm">
@@ -325,7 +320,7 @@ export default function LibraryPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-4">{t('library.resources.title')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {otherResources.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText={t('library.resources.visitSite')}/>)}
+          {OTHER_RESOURCES.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText={'library.resources.visitSite'}/>)}
         </div>
       </section>
     </div>

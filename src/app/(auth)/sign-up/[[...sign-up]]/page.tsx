@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -12,6 +13,7 @@ import { Loader2, User, UserPlus } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const formSchema = z.object({
   displayName: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -27,6 +29,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
   const { signUpWithEmail, signInAnonymously, loading } = useAuth();
+  const { t } = useTranslation();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -39,58 +42,58 @@ export default function SignUpPage() {
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
       <CardHeader className="text-center">
         <Logo size={48} className="mx-auto mb-2" />
-        <CardTitle className="text-2xl mt-2">Create an Account</CardTitle>
-        <CardDescription>Join LearnMint to unlock all features.</CardDescription>
+        <CardTitle className="text-2xl mt-2">{t('auth.createAccountTitle')}</CardTitle>
+        <CardDescription>{t('auth.createAccountDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading && <div className="absolute inset-0 bg-background/50 flex justify-center items-center z-10 rounded-lg"><Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" /></div>}
         <div className="space-y-2">
             <Button onClick={signInAnonymously} variant="secondary" className="w-full" disabled={loading}>
                 <User className="mr-2 h-4 w-4" />
-                Continue as Guest
+                {t('auth.continueAsGuest')}
             </Button>
         </div>
 
         <div className="relative my-4">
           <Separator className="my-1" />
           <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-            OR SIGN UP WITH EMAIL
+            {t('auth.orSignUpWithEmail')}
           </p>
         </div>
         
         <form onSubmit={handleSubmit(handleEmailSignUp)} className="space-y-4">
            <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
-            <Input id="displayName" type="text" placeholder="Your Name" {...register('displayName')} disabled={loading} />
+            <Label htmlFor="displayName">{t('auth.displayNameLabel')}</Label>
+            <Input id="displayName" type="text" placeholder={t('auth.displayNamePlaceholder')} {...register('displayName')} disabled={loading} />
             {errors.displayName && <p className="text-sm text-destructive">{errors.displayName.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your@email.com" {...register('email')} disabled={loading} />
+            <Label htmlFor="email">{t('auth.emailLabel')}</Label>
+            <Input id="email" type="email" placeholder={t('auth.emailPlaceholder')} {...register('email')} disabled={loading} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
             <Input id="password" type="password" {...register('password')} disabled={loading} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword">{t('auth.confirmPasswordLabel')}</Label>
             <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={loading} />
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-            Create Account
+            {t('auth.createAccountButton')}
           </Button>
         </form>
 
       </CardContent>
       <CardFooter className="justify-center text-sm">
         <p>
-          Already have an account?{' '}
+          {t('auth.alreadyHaveAccountPrompt')}{' '}
           <Link href="/sign-in" className="font-semibold text-primary hover:underline">
-            Sign In
+            {t('auth.signInLink')}
           </Link>
         </p>
       </CardFooter>

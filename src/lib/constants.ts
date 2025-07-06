@@ -104,14 +104,12 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
 
 // --- OpenStax Textbooks Data (for Library page) ---
 // A curated list of sample OpenStax textbooks with links and subjects.
-export const OPENSTAX_BOOKS = [
-  { title: "College Physics 2e", url: "https://openstax.org/details/books/college-physics-2e", subject: "Physics", coverImage: "https://placehold.co/150x200.png?text=Physics+2e", dataAiHint: "textbook physics" },
-  { title: "University Physics Volume 1", url: "https://openstax.org/details/books/university-physics-volume-1", subject: "Physics", coverImage: "https://placehold.co/150x200.png?text=Univ+Physics+1", dataAiHint: "textbook physics" },
-  { title: "Biology 2e", url: "https://openstax.org/details/books/biology-2e", subject: "Biology", coverImage: "https://placehold.co/150x200.png?text=Biology+2e", dataAiHint: "textbook biology" },
-  { title: "Chemistry 2e", url: "https://openstax.org/details/books/chemistry-2e", subject: "Chemistry", coverImage: "https://placehold.co/150x200.png?text=Chemistry+2e", dataAiHint: "textbook chemistry" },
-  { title: "Calculus Volume 1", url: "https://openstax.org/details/books/calculus-volume-1", subject: "Mathematics", coverImage: "https://placehold.co/150x200.png?text=Calculus+Vol+1", dataAiHint: "textbook math" },
-  { title: "Algebra and Trigonometry 2e", url: "https://openstax.org/details/books/algebra-and-trigonometry-2e", subject: "Mathematics", coverImage: "https://placehold.co/150x200.png?text=Algebra+Trig", dataAiHint: "textbook math" },
+export const OTHER_RESOURCES = [
+  { title: "library.resources.wikidata", description: "library.resources.wikidataDesc", link: "https://www.wikidata.org/", icon: BookOpen },
+  { title: "library.resources.ck12", description: "library.resources.ck12Desc", link: "https://www.ck12.org/", icon: Lightbulb },
+  { title: "library.resources.gutenberg", description: "library.resources.gutenbergDesc", link: "https://www.gutenberg.org/", icon: Brain },
 ];
+
 
 // --- Math Facts Fallback Data (for Library page) ---
 // Used if the live Math Fact API fails.

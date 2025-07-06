@@ -1,8 +1,10 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import type { LucideIcon } from 'lucide-react';
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ResourceCardProps {
   title: string;
@@ -15,6 +17,8 @@ interface ResourceCardProps {
 }
 
 export function ResourceCard({ title, description, link, imageUrl, icon: Icon, linkText, dataAiHint }: ResourceCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       {imageUrl && (
@@ -32,15 +36,15 @@ export function ResourceCard({ title, description, link, imageUrl, icon: Icon, l
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           {Icon && <Icon className="w-5 h-5 text-primary" />}
-          {title}
+          {t(title)}
         </CardTitle>
-        <CardDescription className="text-xs pt-1">{description}</CardDescription>
+        <CardDescription className="text-xs pt-1">{t(description)}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow" /> {/* Spacer */}
       <CardFooter>
         <Button asChild variant="outline" size="sm" className="w-full">
           <a href={link} target="_blank" rel="noopener noreferrer">
-            {linkText} <ExternalLink className="w-4 h-4 ml-2" />
+            {t(linkText)} <ExternalLink className="w-4 h-4 ml-2" />
           </a>
         </Button>
       </CardFooter>

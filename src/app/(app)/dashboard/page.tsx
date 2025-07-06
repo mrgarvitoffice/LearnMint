@@ -85,6 +85,7 @@ export default function DashboardPage() {
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
     const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
+    const [learnerCount, setLearnerCount] = useState(21); // Starting count
     const pageTitleSpokenRef = useRef(false);
 
     const { data: mathFact, isLoading: isLoadingMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
@@ -94,6 +95,14 @@ export default function DashboardPage() {
         gcTime: 1000 * 60 * 65,
         refetchOnWindowFocus: false,
     });
+    
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setLearnerCount(prevCount => prevCount + 1);
+        }, 5000); // Increase count every 5 seconds
+
+        return () => clearInterval(intervalId); // Cleanup on component unmount
+    }, []);
     
     useEffect(() => {
         if (mathFact) {
@@ -168,6 +177,16 @@ export default function DashboardPage() {
                         <CardTitle className="text-4xl font-bold mt-4">{t('dashboard.welcome')}</CardTitle>
                         <CardDescription className="text-lg text-muted-foreground mt-1">{t('dashboard.description')}</CardDescription>
                     </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                            <Users className="h-5 w-5" />
+                            {user?.isAnonymous ? (
+                                <span className="font-semibold">{t('dashboard.totalLearnersGuestMessage')}</span>
+                            ) : (
+                                <span className="font-semibold">{t('dashboard.totalLearners')}: {learnerCount.toLocaleString()}</span>
+                            )}
+                        </div>
+                    </CardContent>
                 </Card>
             </motion.div>
 
@@ -203,18 +222,18 @@ export default function DashboardPage() {
                             <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500">{t('dashboard.dailyMotivation.title')}</CardTitle>
                         </div>
                         {isLoadingMathFact && !currentMathFact ? (
-                            <div className="flex items-center space-x-2 text-muted-foreground py-3 h-[4.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>Loading fact...</span></div>
+                            <div className="flex items-center space-x-2 text-muted-foreground py-3 h-[4.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
                         ) : currentMathFact ? (
                             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[4.5rem] flex items-center justify-center">
                             "{currentMathFact.text}"
                             </CardDescription>
                         ) : (
-                            <CardDescription className="text-lg text-muted-foreground py-3 h-[4.5rem] flex items-center justify-center">Could not load fact. Using a classic one!</CardDescription>
+                            <CardDescription className="text-lg text-muted-foreground py-3 h-[4.5rem] flex items-center justify-center">{t('library.mathFact.error')}</CardDescription>
                         )}
                     </CardHeader>
                     <CardFooter className="pt-2 pb-4">
                         <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-                            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />} New Fact
+                            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />} {t('library.mathFact.newButton')}
                         </Button>
                     </CardFooter>
                 </Card>
