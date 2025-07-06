@@ -31,7 +31,7 @@ export default function NewsPage() {
   const [filters, setFilters] = useState<NewsPageFilters>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<NewsPageFilters>(initialFilters);
   const pageTitleSpokenRef = useRef(false);
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
@@ -65,15 +65,14 @@ export default function NewsPage() {
   }, [setVoicePreference, cancelTTS]);
 
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
     const PAGE_TITLE = t('news.title');
     const timer = setTimeout(() => {
-        if (!pageTitleSpokenRef.current) {
-            speak(PAGE_TITLE, { priority: 'optional' });
-            pageTitleSpokenRef.current = true;
-        }
+        speak(PAGE_TITLE, { priority: 'optional' });
+        pageTitleSpokenRef.current = true;
     }, 500);
     return () => clearTimeout(timer);
-  }, [speak, t]);
+  }, [speak, t, isReady]);
 
   const articles = useMemo(() => {
     const allArticlesFlat = data?.pages.flatMap(page => page?.results ?? []) ?? [];
@@ -178,6 +177,14 @@ export default function NewsPage() {
   };
 
   const { text: playbackButtonText, icon: playbackButtonIcon } = getPlaybackButtonTextAndIcon();
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-8">

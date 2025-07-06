@@ -8,7 +8,7 @@ import { CalculatorButton } from '@/components/features/calculator/CalculatorBut
 import { UnitConverter } from '@/components/features/calculator/UnitConverter';
 import type { CalculatorButtonConfig } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Trash2, RotateCcw, Calculator as CalculatorIcon } from 'lucide-react';
+import { Trash2, RotateCcw, Calculator as CalculatorIcon, Loader2 } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -50,7 +50,7 @@ export default function CalculatorPage() {
 
   const { playSound } = useSound('/sounds/ting.mp3', 0.2);
   const { speak, setVoicePreference } = useTTS();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const pageTitleSpokenRef = useRef(false);
 
   useEffect(() => {
@@ -58,16 +58,16 @@ export default function CalculatorPage() {
   }, [setVoicePreference]);
 
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
+    
     const PAGE_TITLE = t('calculator.title');
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current) {
         speak(PAGE_TITLE, { priority: 'optional' });
         pageTitleSpokenRef.current = true;
-      }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, t]);
+  }, [speak, t, isReady]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -186,6 +186,14 @@ export default function CalculatorPage() {
   };
   const deleteHistoryItem = (index: number) => { playSound(); setCalculationHistory(p => p.filter((_, i) => i !== index)); };
   const clearAllHistory = () => { playSound(); setCalculationHistory([]); }
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8 space-y-6">

@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DefinitionChallenge } from '@/components/features/arcade/DefinitionChallenge';
-import { Gamepad2, Puzzle, Crown, ExternalLink } from 'lucide-react';
+import { Gamepad2, Puzzle, Crown, ExternalLink, Loader2 } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -18,23 +18,31 @@ export default function ArcadePage() {
   const { user } = useAuth();
   const { speak, setVoicePreference } = useTTS();
   const pageTitleSpokenRef = useRef(false);
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
 
   useEffect(() => {
     setVoicePreference('holo');
   }, [setVoicePreference]);
 
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
+
     const PAGE_TITLE = t('arcade.title');
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current) {
-        speak(PAGE_TITLE, { priority: 'optional' });
-        pageTitleSpokenRef.current = true;
-      }
+      speak(PAGE_TITLE, { priority: 'optional' });
+      pageTitleSpokenRef.current = true;
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, t]);
+  }, [speak, t, isReady]);
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (user?.isAnonymous) {
     return (

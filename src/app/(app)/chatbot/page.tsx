@@ -9,7 +9,7 @@ import { ChatInput } from '@/components/features/chatbot/ChatInput';
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { gojoChatbot, type GojoChatbotInput } from '@/ai/flows/ai-chatbot';
 import { holoChatbot, type HoloChatbotInput } from '@/ai/flows/holo-chatbot';
-import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2 } from 'lucide-react';
+import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
@@ -32,7 +32,7 @@ export default function ChatbotPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
 
   const {
     speak,
@@ -48,10 +48,10 @@ export default function ChatbotPage() {
 
   useEffect(() => {
     // This effect runs when the selected character or user status changes.
-    if (user?.isAnonymous) {
-      setMessages([]);
+    if (!isReady || user?.isAnonymous) {
+      if (user?.isAnonymous) setMessages([]);
       cancelTTS();
-      return; // Do not proceed for guests
+      return; // Do not proceed for guests or if translations are not ready
     }
 
     cancelTTS();
@@ -70,7 +70,7 @@ export default function ChatbotPage() {
     currentSpokenMessageRef.current = greetingText;
     speak(greetingText, { priority: 'essential' });
 
-  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak, t]);
+  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak, t, isReady]);
 
 
   useEffect(() => {
@@ -201,6 +201,14 @@ export default function ChatbotPage() {
   const getCurrentCharacterAIName = () => t(selectedCharacter === 'gojo' ? 'chatbot.gojo.name' : 'chatbot.holo.name');
   const getCurrentCharacterAIDescription = () => t(selectedCharacter === 'gojo' ? 'chatbot.gojo.description' : 'chatbot.holo.description');
   const getCurrentCharacterAvatarHint = () => selectedCharacter === 'gojo' ? 'Gojo Satoru' : 'Holo wise wolf';
+
+  if (!isReady) {
+     return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (user?.isAnonymous) {
     return (

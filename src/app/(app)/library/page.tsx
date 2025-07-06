@@ -38,7 +38,7 @@ export default function LibraryPage() {
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
 
   const { isListening, transcript, startListening, stopListening, error: voiceError, browserSupportsSpeechRecognition } = useVoiceRecognition();
   const [voiceSearchTarget, setVoiceSearchTarget] = useState<'youtube' | 'books' | null>(null);
@@ -48,16 +48,15 @@ export default function LibraryPage() {
   }, [setVoicePreference]);
 
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
     const PAGE_TITLE = t('library.title');
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current) {
         speak(PAGE_TITLE, { priority: 'optional' });
         pageTitleSpokenRef.current = true;
-      }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, t]);
+  }, [speak, t, isReady]);
 
   useEffect(() => {
     if (transcript && voiceSearchTarget) {
@@ -168,6 +167,14 @@ export default function LibraryPage() {
       toast({ title: t('library.books.toast.openingExternalTitle'), description: t('library.books.toast.openingExternalDesc') });
     }
   };
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8 space-y-10">
