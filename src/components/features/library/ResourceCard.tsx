@@ -11,10 +11,10 @@ interface ResourceCardProps {
   imageUrl?: string;
   dataAiHint?: string;
   icon?: LucideIcon;
-  linkText?: string;
+  linkText: string;
 }
 
-export function ResourceCard({ title, description, link, imageUrl, icon: Icon, linkText = "Learn More", dataAiHint }: ResourceCardProps) {
+export function ResourceCard({ title, description, link, imageUrl, icon: Icon, linkText, dataAiHint }: ResourceCardProps) {
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       {imageUrl && (

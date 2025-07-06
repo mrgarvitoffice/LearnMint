@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { YoutubeVideoItem } from '@/lib/types';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Image from 'next/image';
 import { PlayCircle, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface YoutubeVideoResultItemProps {
   video: YoutubeVideoItem;
@@ -13,6 +13,7 @@ interface YoutubeVideoResultItemProps {
 }
 
 export function YoutubeVideoResultItem({ video, onPlay }: YoutubeVideoResultItemProps) {
+  const { t } = useTranslation();
   // Using medium thumbnail (320x180) or high (480x360) if available
   const thumbnailUrl = video.thumbnailUrl; // Already prefer medium/high from the action
   const placeholderImage = `https://placehold.co/320x180.png?text=${encodeURIComponent(video.title.substring(0,15) + '...')}`;
@@ -27,12 +28,12 @@ export function YoutubeVideoResultItem({ video, onPlay }: YoutubeVideoResultItem
       <button
         onClick={() => onPlay(video)}
         className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg"
-        aria-label={`Play video: ${video.title}`}
+        aria-label={t('library.youtube.playAriaLabel', { title: video.title })}
       >
         <div className="relative w-full aspect-video bg-muted">
           <Image
             src={thumbnailUrl || placeholderImage}
-            alt={`Thumbnail for ${video.title}`}
+            alt={t('library.youtube.thumbnailAlt', { title: video.title })}
             fill={true}
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -65,7 +66,7 @@ export function YoutubeVideoResultItem({ video, onPlay }: YoutubeVideoResultItem
         </CardDescription>
       </CardHeader>
       <CardContent className="p-3 pt-1 text-xs text-muted-foreground line-clamp-2">
-        {video.description || "No description available."}
+        {video.description || t('library.youtube.noDescription')}
       </CardContent>
     </Card>
   );

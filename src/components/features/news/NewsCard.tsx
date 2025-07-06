@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { NewsArticle } from '@/lib/types';
@@ -7,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, CalendarDays, Globe, ImageOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface NewsCardProps {
   article: NewsArticle;
 }
 
 export function NewsCard({ article }: NewsCardProps) {
+  const { t } = useTranslation();
   const placeholderTextContent = article.title?.substring(0, 25) || article.category?.[0] || 'News';
   const placeholderImageBase = `https://placehold.co/600x400.png`;
   const placeholderImageWithText = `${placeholderImageBase}?text=${encodeURIComponent(placeholderTextContent)}`;
@@ -45,7 +46,7 @@ export function NewsCard({ article }: NewsCardProps) {
 
   const formattedDate = article.pubDate
     ? format(new Date(article.pubDate), "do MMM ''yy")
-    : 'Date not available';
+    : t('news.card.dateNotAvailable');
 
   const getDynamicDataAiHint = () => {
     if (imageLoadError || (!article.image_url && currentImageSrc === placeholderImageWithText)) {
@@ -62,7 +63,7 @@ export function NewsCard({ article }: NewsCardProps) {
         {imageLoadError ? (
           <div className="flex flex-col items-center justify-center text-muted-foreground p-2">
             <ImageOff className="w-10 h-10 mb-1" />
-            <span className="text-xs text-center">Image unavailable</span>
+            <span className="text-xs text-center">{t('news.card.imageUnavailable')}</span>
           </div>
         ) : (
           <img
@@ -89,13 +90,13 @@ export function NewsCard({ article }: NewsCardProps) {
       </CardHeader>
       <CardContent className="flex-grow pb-4">
         <p className="text-sm text-muted-foreground line-clamp-3">
-          {article.description || "No description available."}
+          {article.description || t('news.card.noDescription')}
         </p>
       </CardContent>
       <CardFooter>
         <Button asChild variant="outline" size="sm" className="w-full">
           <a href={article.link} target="_blank" rel="noopener noreferrer">
-            Read More <ExternalLink className="w-4 h-4 ml-2" />
+            {t('news.card.readMore')} <ExternalLink className="w-4 h-4 ml-2" />
           </a>
         </Button>
       </CardFooter>

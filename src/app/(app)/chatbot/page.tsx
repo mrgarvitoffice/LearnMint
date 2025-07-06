@@ -8,7 +8,7 @@ import { ChatInput } from '@/components/features/chatbot/ChatInput';
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { gojoChatbot, type GojoChatbotInput } from '@/ai/flows/ai-chatbot';
 import { holoChatbot, type HoloChatbotInput } from '@/ai/flows/holo-chatbot';
-import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2, FileText } from 'lucide-react';
+import { Bot, PlayCircle, PauseCircle, StopCircle, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
 const PDF_TRUNCATION_LIMIT = 5000; // Character limit for PDF content sent to AI
@@ -30,6 +31,7 @@ export default function ChatbotPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
+  const { t } = useTranslation();
 
   const {
     speak,
@@ -54,9 +56,7 @@ export default function ChatbotPage() {
     cancelTTS();
     setVoicePreference(selectedCharacter);
 
-    const greetingText = selectedCharacter === 'gojo'
-      ? "Yo! Took you long enough. Thought I’d have to go fight boredom without you."
-      : "Ah, the little one returns. Have you come to bask in my brilliance again?";
+    const greetingText = t(selectedCharacter === 'gojo' ? 'chatbot.gojo.greeting' : 'chatbot.holo.greeting');
 
     const initialGreetingMessage: ChatMessageType = {
       id: `${selectedCharacter}-initial-greeting-${Date.now()}`, role: 'assistant',
@@ -69,7 +69,7 @@ export default function ChatbotPage() {
     currentSpokenMessageRef.current = greetingText;
     speak(greetingText, { priority: 'essential' });
 
-  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak]);
+  }, [selectedCharacter, user, cancelTTS, setVoicePreference, speak, t]);
 
 
   useEffect(() => {
@@ -111,9 +111,8 @@ export default function ChatbotPage() {
       videoFileName,
       timestamp: new Date() 
     };
-    const typingIndicatorMessage = selectedCharacter === 'gojo'
-      ? "Gojo is contemplating..."
-      : "Holo is contemplating her wisdom...";
+
+    const typingIndicatorMessage = t(selectedCharacter === 'gojo' ? 'chatbot.gojo.typing' : 'chatbot.holo.typing');
     const typingIndicator: ChatMessageType = { id: TYPING_INDICATOR_ID, role: 'assistant', content: typingIndicatorMessage, timestamp: new Date(), type: 'typing_indicator' };
 
     setMessages(prev => [...prev, userMessage, typingIndicator]);
@@ -125,7 +124,7 @@ export default function ChatbotPage() {
         let truncatedPdfText = pdfContent.text;
         if (pdfContent.text.length > PDF_TRUNCATION_LIMIT) {
           truncatedPdfText = `${pdfContent.text.substring(0, PDF_TRUNCATION_LIMIT)}... (content truncated)`;
-          toast({ title: "PDF Content Truncated", description: "The provided PDF was long and has been truncated to ensure a timely response.", variant: 'default' });
+          toast({ title: t('chatbot.toast.pdfTruncatedTitle'), description: t('chatbot.toast.pdfTruncatedDesc'), variant: 'default' });
         }
         messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;
       }
@@ -151,9 +150,9 @@ export default function ChatbotPage() {
       
     } catch (error) {
       console.error('Error sending message to chatbot:', error);
-      const errorText = selectedCharacter === 'gojo' ? "Hoh? Something went wrong. Let's try that again." : "Hmph. My wisdom must have been too much for this device. Try again.";
-      toast({ title: "Chatbot Error", description: errorText, variant: "destructive" });
-      const errorMessageContent = selectedCharacter === 'gojo' ? "My technique must've fizzled. Ask again, I wasn't paying attention." : "My thoughts must have wandered to a distant harvest. Ask again.";
+      const errorToastDesc = t(selectedCharacter === 'gojo' ? 'chatbot.gojo.errorToast' : 'chatbot.holo.errorToast');
+      toast({ title: t('chatbot.toast.errorTitle'), description: errorToastDesc, variant: "destructive" });
+      const errorMessageContent = t(selectedCharacter === 'gojo' ? 'chatbot.gojo.errorMessage' : 'chatbot.holo.errorMessage');
       const errorMessage: ChatMessageType = { id: Date.now().toString() + '-error', role: 'system', content: errorMessageContent, timestamp: new Date() };
       setMessages(prev => prev.filter(msg => msg.id !== TYPING_INDICATOR_ID));
       setMessages(prev => [...prev, errorMessage]);
@@ -198,8 +197,8 @@ export default function ChatbotPage() {
     return "/images/holo-dp.jpg"; 
   };
   
-  const getCurrentCharacterAIName = () => selectedCharacter === 'gojo' ? 'Gojo AI' : 'Holo AI';
-  const getCurrentCharacterAIDescription = () => selectedCharacter === 'gojo' ? 'The Honored One is here to help.' : 'The Wise Wolf of Yoitsu.';
+  const getCurrentCharacterAIName = () => t(selectedCharacter === 'gojo' ? 'chatbot.gojo.name' : 'chatbot.holo.name');
+  const getCurrentCharacterAIDescription = () => t(selectedCharacter === 'gojo' ? 'chatbot.gojo.description' : 'chatbot.holo.description');
   const getCurrentCharacterAvatarHint = () => selectedCharacter === 'gojo' ? 'Gojo Satoru' : 'Holo wise wolf';
 
   if (user?.isAnonymous) {
@@ -249,10 +248,10 @@ export default function ChatbotPage() {
                 </Button>
               </div>
 
-              <Button onClick={handlePlaybackControl} variant="outline" size="icon" className="h-8 w-8" title={isSpeaking && !isPaused ? "Pause Speech" : isPaused ? "Resume Speech" : "Play Last Message"}>
+              <Button onClick={handlePlaybackControl} variant="outline" size="icon" className="h-8 w-8" title={t(isSpeaking && !isPaused ? 'chatbot.controls.pause' : isPaused ? 'chatbot.controls.resume' : 'chatbot.controls.play')}>
                 {isSpeaking && !isPaused ? <PauseCircle className="h-4 w-4" /> : <PlayCircle className="h-4 w-4" />}
               </Button>
-              <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-8 w-8" title="Stop Speech" disabled={!isSpeaking && !isPaused}>
+              <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-8 w-8" title={t('chatbot.controls.stop')} disabled={!isSpeaking && !isPaused}>
                 <StopCircle className="h-4 w-4" />
               </Button>
             </div>

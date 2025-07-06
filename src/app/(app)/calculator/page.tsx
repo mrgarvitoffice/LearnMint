@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Trash2, RotateCcw, Calculator as CalculatorIcon } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'learnmint-calculator-history';
-const PAGE_TITLE = "Precision Toolkit: Calculator & Converter";
 
 const calculatorButtonsConfig: CalculatorButtonConfig[] = [
   { value: 'AC', label: 'AC', type: 'action', action: 'clear', className: 'bg-destructive/80 hover:bg-destructive text-destructive-foreground' },
@@ -49,6 +49,7 @@ export default function CalculatorPage() {
 
   const { playSound } = useSound('/sounds/ting.mp3', 0.2);
   const { speak, setVoicePreference } = useTTS();
+  const { t } = useTranslation();
   const pageTitleSpokenRef = useRef(false);
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function CalculatorPage() {
   }, [setVoicePreference]);
 
   useEffect(() => {
+    const PAGE_TITLE = t('calculator.title');
     const timer = setTimeout(() => {
       if (!pageTitleSpokenRef.current) {
         speak(PAGE_TITLE, { priority: 'optional' });
@@ -64,7 +66,7 @@ export default function CalculatorPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak]);
+  }, [speak, t]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -189,13 +191,13 @@ export default function CalculatorPage() {
       <Card className="w-full shadow-xl bg-card/90 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4"><CalculatorIcon className="h-12 w-12 text-primary" /></div>
-          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{PAGE_TITLE}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{t('calculator.title')}</CardTitle>
         </CardHeader>
       </Card>
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         <Card className="w-full lg:max-w-sm flex-shrink-0 shadow-lg">
           <CardHeader className="border-b">
-            <CardTitle className="text-xl">Scientific Calculator</CardTitle>
+            <CardTitle className="text-xl">{t('calculator.scientific.title')}</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <CalculatorDisplay 
@@ -213,15 +215,15 @@ export default function CalculatorPage() {
             {calculationHistory.length > 0 && (
               <div className="mt-4 pt-3 border-t">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">History (Last 5)</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">{t('calculator.history.title')}</h3>
                   <Button variant="ghost" size="sm" onClick={clearAllHistory} className="text-xs text-destructive hover:text-destructive/80">
-                    <Trash2 className="h-3.5 w-3.5 mr-1" /> Clear All
+                    <Trash2 className="h-3.5 w-3.5 mr-1" /> {t('calculator.history.clear')}
                   </Button>
                 </div>
                 <ul className="space-y-1.5">
                   {calculationHistory.map((item, index) => (
                     <li key={index} className="flex justify-between items-center p-1.5 border rounded-md bg-muted/40 text-xs hover:bg-muted/60">
-                      <button onClick={() => useHistoryItem(item)} className="truncate text-left hover:text-primary flex-1" title={`Use: ${item.expression} = ${item.result}`}>
+                      <button onClick={() => useHistoryItem(item)} className="truncate text-left hover:text-primary flex-1" title={t('calculator.history.use', { expression: item.expression, result: item.result })}>
                         <span className="text-muted-foreground/80">{item.expression} = </span> 
                         <span className="font-semibold">{item.result}</span>
                       </button>

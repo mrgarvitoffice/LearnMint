@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { NEWS_CATEGORIES, NEWS_COUNTRIES, COUNTRY_SPECIFIC_REGIONS, APP_LANGUAGES } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
 import { RotateCcw } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const ANY_COUNTRY_VALUE = "_any_country_";
 const ANY_REGION_VALUE = "_any_region_";
@@ -27,6 +27,7 @@ interface NewsFiltersProps {
 }
 
 export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFilters, isLoading }: NewsFiltersProps) {
+  const { t } = useTranslation();
   const isSpecificCountrySelected = !!filters.country && filters.country !== ANY_COUNTRY_VALUE;
   const availableRegions = isSpecificCountrySelected && COUNTRY_SPECIFIC_REGIONS[filters.country] 
     ? COUNTRY_SPECIFIC_REGIONS[filters.country] 
@@ -36,10 +37,10 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
     <div className="space-y-6 p-4 border rounded-lg bg-card shadow-md">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 items-end">
         <div className="space-y-1.5">
-          <Label htmlFor="query">Search Keywords</Label>
+          <Label htmlFor="query">{t('news.filters.keywordsLabel')}</Label>
           <Input
             id="query"
-            placeholder="e.g., AI, economy..."
+            placeholder={t('news.filters.keywordsPlaceholder')}
             value={filters.query}
             onChange={(e) => onFilterChange('query', e.target.value)}
             disabled={isLoading}
@@ -48,14 +49,14 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="language-select">Language</Label>
+          <Label htmlFor="language-select">{t('news.filters.languageLabel')}</Label>
           <Select
             value={filters.language || "en"} // Default to English
             onValueChange={(value) => onFilterChange('language', value)}
             disabled={isLoading}
           >
             <SelectTrigger id="language-select" className="bg-input/50">
-              <SelectValue placeholder="Select language" />
+              <SelectValue placeholder={t('news.filters.languagePlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {APP_LANGUAGES.map(lang => (
@@ -66,18 +67,18 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
         </div>
         
         <div className="space-y-1.5">
-          <Label htmlFor="category-select">Category</Label>
+          <Label htmlFor="category-select">{t('news.filters.categoryLabel')}</Label>
           <Select
             value={filters.category || "top"} 
             onValueChange={(value) => onFilterChange('category', value)} 
             disabled={isLoading}
           >
             <SelectTrigger id="category-select" className="bg-input/50">
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder={t('news.filters.categoryPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {NEWS_CATEGORIES.map(cat => ( 
-                <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                <SelectItem key={cat.value} value={cat.value}>{t(`news.categories.${cat.value}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -85,17 +86,17 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
 
 
         <div className="space-y-1.5">
-          <Label htmlFor="country-select">Country</Label>
+          <Label htmlFor="country-select">{t('news.filters.countryLabel')}</Label>
           <Select
             value={filters.country || ANY_COUNTRY_VALUE}
             onValueChange={(value) => onFilterChange('country', value === ANY_COUNTRY_VALUE ? "" : value)}
             disabled={isLoading}
           >
             <SelectTrigger id="country-select" className="bg-input/50">
-              <SelectValue placeholder="Select country" />
+              <SelectValue placeholder={t('news.filters.countryPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ANY_COUNTRY_VALUE}>World / Any Country</SelectItem>
+              <SelectItem value={ANY_COUNTRY_VALUE}>{t('news.filters.anyCountry')}</SelectItem>
               {NEWS_COUNTRIES.map(country => (
                 <SelectItem key={country.value} value={country.value}>{country.label} ({country.value.toUpperCase()})</SelectItem>
               ))}
@@ -104,18 +105,18 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="stateOrRegion">{availableRegions ? "State/Region (Select)" : "State/Region (Type)"}</Label>
+          <Label htmlFor="stateOrRegion">{t(availableRegions ? 'news.filters.regionSelectLabel' : 'news.filters.regionTypeLabel')}</Label>
           {availableRegions ? (
             <Select
               value={filters.stateOrRegion || ANY_REGION_VALUE}
               onValueChange={(value) => onFilterChange('stateOrRegion', value === ANY_REGION_VALUE ? "" : value)}
               disabled={isLoading || !isSpecificCountrySelected}
             >
-              <SelectTrigger id="stateOrRegion-select" className="bg-input/50" title={!isSpecificCountrySelected ? "Select a country to enable State/Region filter" : "Select state/region"}>
-                <SelectValue placeholder={isSpecificCountrySelected ? "Any State/Region" : "Select Country First"} />
+              <SelectTrigger id="stateOrRegion-select" className="bg-input/50" title={!isSpecificCountrySelected ? t('news.filters.regionSelectDisabledTooltip') : t('news.filters.regionSelectTooltip')}>
+                <SelectValue placeholder={t(isSpecificCountrySelected ? 'news.filters.anyRegion' : 'news.filters.selectCountryFirst')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ANY_REGION_VALUE}>Any State/Region</SelectItem>
+                <SelectItem value={ANY_REGION_VALUE}>{t('news.filters.anyRegion')}</SelectItem>
                 {availableRegions.map(region => (
                   <SelectItem key={region.value} value={region.value}>{region.label}</SelectItem>
                 ))}
@@ -124,41 +125,39 @@ export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFi
           ) : (
             <Input
               id="stateOrRegion-input"
-              placeholder={isSpecificCountrySelected ? "e.g., California" : "Select Country First"}
+              placeholder={t(isSpecificCountrySelected ? 'news.filters.regionTypePlaceholder' : 'news.filters.selectCountryFirst')}
               value={filters.stateOrRegion}
               onChange={(e) => onFilterChange('stateOrRegion', e.target.value)}
               disabled={isLoading || !isSpecificCountrySelected}
-              title={!isSpecificCountrySelected ? "Select a country to enable State/Region keyword search" : "Enter state/region to refine search"}
+              title={!isSpecificCountrySelected ? t('news.filters.regionTypeDisabledTooltip') : t('news.filters.regionTypeTooltip')}
               className="bg-input/50 disabled:opacity-50"
             />
           )}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="city">City</Label>
+          <Label htmlFor="city">{t('news.filters.cityLabel')}</Label>
           <Input
             id="city"
-            placeholder={isSpecificCountrySelected ? "e.g., London" : "Select Country First"}
+            placeholder={t(isSpecificCountrySelected ? 'news.filters.cityPlaceholder' : 'news.filters.selectCountryFirst')}
             value={filters.city}
             onChange={(e) => onFilterChange('city', e.target.value)}
             disabled={isLoading || !isSpecificCountrySelected}
-            title={!isSpecificCountrySelected ? "Select a country to enable City keyword search" : "Enter city to refine search"}
+            title={!isSpecificCountrySelected ? t('news.filters.cityDisabledTooltip') : t('news.filters.cityTooltip')}
             className="bg-input/50 disabled:opacity-50"
           />
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-2 pt-2">
         <Button onClick={onApplyFilters} disabled={isLoading} className="flex-grow sm:flex-grow-0">
-          {isLoading ? "Loading..." : "Apply Filters"}
+          {isLoading ? t('news.filters.loadingButton') : t('news.filters.applyButton')}
         </Button>
         <Button onClick={onResetFilters} variant="outline" disabled={isLoading} className="flex-grow sm:flex-grow-0">
-          <RotateCcw className="w-4 h-4 mr-2" /> Reset Filters
+          <RotateCcw className="w-4 h-4 mr-2" /> {t('news.filters.resetButton')}
         </Button>
       </div>
       <p className="text-xs text-muted-foreground/80 mt-2">
-        <strong>Filter Behavior:</strong> "Top Headlines" is the default category.
-        If a specific country is chosen, State/Region may become a dropdown.
-        State/Region and City terms refine search within the selected country if provided. Language defaults to English.
+        {t('news.filters.behaviorNote')}
       </p>
     </div>
   );

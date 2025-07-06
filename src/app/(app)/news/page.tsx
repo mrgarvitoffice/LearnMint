@@ -13,8 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useSound } from '@/hooks/useSound';
 import { useToast } from '@/hooks/use-toast';
 import { useTTS } from '@/hooks/useTTS';
-
-const PAGE_TITLE = "Global News Terminal";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface NewsPageFilters {
   query: string;
@@ -31,6 +30,7 @@ export default function NewsPage() {
   const [filters, setFilters] = useState<NewsPageFilters>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<NewsPageFilters>(initialFilters);
   const pageTitleSpokenRef = useRef(false);
+  const { t } = useTranslation();
   
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
@@ -64,6 +64,7 @@ export default function NewsPage() {
   }, [setVoicePreference, cancelTTS]);
 
   useEffect(() => {
+    const PAGE_TITLE = t('news.title');
     const timer = setTimeout(() => {
         if (!pageTitleSpokenRef.current) {
             speak(PAGE_TITLE, { priority: 'optional' });
@@ -71,7 +72,7 @@ export default function NewsPage() {
         }
     }, 500);
     return () => clearTimeout(timer);
-  }, [speak]);
+  }, [speak, t]);
 
   const articles = useMemo(() => {
     const allArticlesFlat = data?.pages.flatMap(page => page?.results ?? []) ?? [];
@@ -145,9 +146,9 @@ export default function NewsPage() {
     if (headlines) {
         speak(headlines, { priority: 'manual', lang: appliedFilters.language });
     } else {
-        toast({ title: "No Headlines", description: "No news headlines available to read." });
+        toast({ title: t('news.toast.noHeadlinesTitle'), description: t('news.toast.noHeadlinesDesc') });
     }
-  }, [articles, speak, toast, appliedFilters.language]);
+  }, [articles, speak, toast, appliedFilters.language, t]);
 
   const handlePlaybackControl = () => {
     playClickSound();
@@ -157,7 +158,7 @@ export default function NewsPage() {
         resumeTTS();
     } else {
         if (articles.length === 0) {
-            toast({ title: "No Headlines", description: "No news headlines available to read." });
+            toast({ title: t('news.toast.noHeadlinesTitle'), description: t('news.toast.noHeadlinesDesc') });
             return;
         }
         readAllHeadlines();
@@ -170,9 +171,9 @@ export default function NewsPage() {
   };
 
   const getPlaybackButtonTextAndIcon = () => {
-    if (isSpeaking && !isPaused) return { text: "Pause", icon: <PauseCircle className="h-4 w-4 mr-2" /> };
-    if (isPaused) return { text: "Resume", icon: <PlayCircle className="h-4 w-4 mr-2" /> };
-    return { text: "Read Headlines", icon: <PlayCircle className="h-4 w-4 mr-2" /> };
+    if (isSpeaking && !isPaused) return { text: t('news.controls.pause'), icon: <PauseCircle className="h-4 w-4 mr-2" /> };
+    if (isPaused) return { text: t('news.controls.resume'), icon: <PlayCircle className="h-4 w-4 mr-2" /> };
+    return { text: t('news.controls.read'), icon: <PlayCircle className="h-4 w-4 mr-2" /> };
   };
 
   const { text: playbackButtonText, icon: playbackButtonIcon } = getPlaybackButtonTextAndIcon();
@@ -182,15 +183,15 @@ export default function NewsPage() {
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4"><Newspaper className="h-12 w-12 text-primary" /></div>
-          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{PAGE_TITLE}</CardTitle>
-          <CardDescription>Stay updated with the latest news. Filter by keywords, country, category, and more.</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{t('news.title')}</CardTitle>
+          <CardDescription>{t('news.description')}</CardDescription>
         </CardHeader>
         <CardContent className="pt-0 pb-4">
           <div className="mb-6 flex flex-col sm:flex-row justify-center items-center gap-2 border-t border-b py-3 border-border/50">
               <Button onClick={handlePlaybackControl} variant="outline" className="h-9 w-full sm:w-auto" title={playbackButtonText}>
                   {playbackButtonIcon} {playbackButtonText}
               </Button>
-              <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-9 w-9" title="Stop Reading" disabled={!isSpeaking && !isPaused}>
+              <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-9 w-9" title={t('news.controls.stop')} disabled={!isSpeaking && !isPaused}>
                 <StopCircle className="h-5 w-5" />
               </Button>
           </div>
@@ -203,25 +204,23 @@ export default function NewsPage() {
       {isLoading && (
         <div className="flex justify-center items-center py-10">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
-          <p className="ml-4 text-lg text-muted-foreground">Fetching latest news...</p>
+          <p className="ml-4 text-lg text-muted-foreground">{t('news.loading')}</p>
         </div>
       )}
       {isError && (
         <Alert variant="destructive" className="mt-6">
           <AlertTriangle className="h-5 w-5" />
-          <AlertTitle>News API Error</AlertTitle>
+          <AlertTitle>{t('news.error.title')}</AlertTitle>
           <AlertDescription>
-            Error fetching news: {error instanceof Error ? error.message : "An unknown error occurred."}
-            This could be due to an invalid or rate-limited API key for Newsdata.io, or a network issue.
-            Please check your NEWSDATA_API_KEY in your .env file and ensure it's set correctly if deployed.
+            {t('news.error.message', { error: error instanceof Error ? error.message : "An unknown error occurred."})}
           </AlertDescription>
         </Alert>
       )}
       {!isLoading && !isError && articles.length === 0 && (
         <div className="text-center py-10">
           <Newspaper className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-          <p className="text-xl text-muted-foreground">No news articles found.</p>
-          <p className="text-sm text-muted-foreground/80">Try adjusting your search or filters.</p>
+          <p className="text-xl text-muted-foreground">{t('news.noArticles.title')}</p>
+          <p className="text-sm text-muted-foreground/80">{t('news.noArticles.description')}</p>
         </div>
       )}
       {articles.length > 0 && (
@@ -232,7 +231,7 @@ export default function NewsPage() {
       {hasNextPage && (
         <div className="flex justify-center mt-8">
           <Button onClick={() => { playActionSound(); fetchNextPage(); }} disabled={isFetchingNextPage}>
-            {isFetchingNextPage && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Load More News
+            {isFetchingNextPage && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} {t('news.loadMore')}
           </Button>
         </div>
       )}

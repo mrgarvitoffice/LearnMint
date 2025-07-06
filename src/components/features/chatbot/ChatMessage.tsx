@@ -1,3 +1,4 @@
+"use client";
 
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -5,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bot, User, Loader2, Wand2, FileText, AudioLines, Video } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -12,6 +14,7 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
+  const { t } = useTranslation();
   const isUser = message.role === 'user';
   const alignment = isUser ? 'items-end' : 'items-start';
   const bubbleColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground';
@@ -27,8 +30,8 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
   };
   
   const getAvatarAlt = () => {
-    if (isUser) return "User Avatar";
-    return character === 'gojo' ? "Gojo AI Avatar" : "Holo AI Avatar";
+    if (isUser) return t('chatbot.avatar.userAlt');
+    return t(character === 'gojo' ? 'chatbot.avatar.gojoAlt' : 'chatbot.avatar.holoAlt');
   };
 
   const getAvatarDataAiHint = () => {
@@ -65,7 +68,7 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
             <div className="mb-2">
               <Image
                 src={message.image}
-                alt="User uploaded image"
+                alt={t('chatbot.file.image.userAlt')}
                 width={200}
                 height={200}
                 className="rounded-md object-cover"

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -9,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { UnitCategory, Unit, UnitConverterState } from '@/lib/types';
 import { ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const unitsConfig: Record<UnitCategory, Unit[]> = {
   Length: [
@@ -57,6 +57,7 @@ const unitsConfig: Record<UnitCategory, Unit[]> = {
 };
 
 export function UnitConverter() {
+  const { t } = useTranslation();
   const [state, setState] = useState<UnitConverterState>({
     category: 'Length',
     fromUnit: unitsConfig['Length'][0].symbol,
@@ -70,8 +71,8 @@ export function UnitConverter() {
   const handleConvert = useCallback(() => {
     const valueNum = parseFloat(inputValue);
     if (isNaN(valueNum)) {
-      if (outputValue !== 'Invalid input') {
-        setState(s => ({ ...s, outputValue: 'Invalid input' }));
+      if (outputValue !== t('calculator.converter.error.invalidInput')) {
+        setState(s => ({ ...s, outputValue: t('calculator.converter.error.invalidInput') }));
       }
       return;
     }
@@ -81,8 +82,8 @@ export function UnitConverter() {
     const toUnitConfig = currentUnitsInConfig.find(u => u.symbol === toUnit);
 
     if (!fromUnitConfig || !toUnitConfig) {
-      if (outputValue !== 'Error') {
-        setState(s => ({ ...s, outputValue: 'Error' }));
+      if (outputValue !== t('calculator.converter.error.general')) {
+        setState(s => ({ ...s, outputValue: t('calculator.converter.error.general') }));
       }
       return;
     }
@@ -112,7 +113,7 @@ export function UnitConverter() {
     if (newOutputValue !== outputValue) {
       setState(s => ({ ...s, outputValue: newOutputValue }));
     }
-  }, [category, fromUnit, toUnit, inputValue, outputValue]); // Add setState if ESLint complains, but it's stable
+  }, [category, fromUnit, toUnit, inputValue, outputValue, t]); 
   
   useEffect(() => {
     handleConvert();
@@ -135,8 +136,7 @@ export function UnitConverter() {
       ...s,
       fromUnit: s.toUnit,
       toUnit: s.fromUnit,
-      inputValue: s.outputValue === 'Invalid input' || s.outputValue === 'Error' ? '1' : s.outputValue,
-      // outputValue: s.inputValue, // if you want to swap output too
+      inputValue: s.outputValue.includes(t('calculator.converter.error.prefix')) ? '1' : s.outputValue,
     }));
   };
 
@@ -146,18 +146,18 @@ export function UnitConverter() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Unit Converter</CardTitle>
+        <CardTitle>{t('calculator.converter.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="category-select">Category</Label>
+          <Label htmlFor="category-select">{t('calculator.converter.category')}</Label>
           <Select value={state.category} onValueChange={(val) => handleCategoryChange(val as UnitCategory)}>
             <SelectTrigger id="category-select">
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder={t('calculator.converter.selectCategory')} />
             </SelectTrigger>
             <SelectContent>
               {Object.keys(unitsConfig).map(cat => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                <SelectItem key={cat} value={cat}>{t(`calculator.converter.categories.${cat.toLowerCase().replace('/','-')}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -165,7 +165,7 @@ export function UnitConverter() {
 
         <div className="flex items-end gap-2">
           <div className="flex-1 space-y-2">
-            <Label htmlFor="fromValue">From</Label>
+            <Label htmlFor="fromValue">{t('calculator.converter.from')}</Label>
             <Input
               id="fromValue"
               type="number"
@@ -176,7 +176,7 @@ export function UnitConverter() {
               <SelectTrigger id="fromUnit-select"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {currentUnits.map(unit => (
-                  <SelectItem key={unit.symbol} value={unit.symbol}>{unit.name} ({unit.symbol})</SelectItem>
+                  <SelectItem key={unit.symbol} value={unit.symbol}>{t(`calculator.converter.units.${unit.name.toLowerCase().replace(/\s/g, '-')}`)} ({unit.symbol})</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -187,13 +187,13 @@ export function UnitConverter() {
           </Button>
 
           <div className="flex-1 space-y-2">
-            <Label htmlFor="toValue">To</Label>
+            <Label htmlFor="toValue">{t('calculator.converter.to')}</Label>
             <Input id="toValue" type="text" value={state.outputValue} readOnly className="bg-muted/50" />
              <Select value={state.toUnit} onValueChange={(val) => setState(s => ({ ...s, toUnit: val }))}>
               <SelectTrigger id="toUnit-select"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {currentUnits.map(unit => (
-                  <SelectItem key={unit.symbol} value={unit.symbol}>{unit.name} ({unit.symbol})</SelectItem>
+                  <SelectItem key={unit.symbol} value={unit.symbol}>{t(`calculator.converter.units.${unit.name.toLowerCase().replace(/\s/g, '-')}`)} ({unit.symbol})</SelectItem>
                 ))}
               </SelectContent>
             </Select>

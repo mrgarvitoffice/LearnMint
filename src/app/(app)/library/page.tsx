@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, type FormEvent, useCallback } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { useSound } from '@/hooks/useSound';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
-
-const PAGE_TITLE = "LearnMint Knowledge Hub";
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function LibraryPage() {
   const [youtubeSearchTerm, setYoutubeSearchTerm] = useState('');
@@ -38,6 +37,7 @@ export default function LibraryPage() {
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
+  const { t } = useTranslation();
 
   const { isListening, transcript, startListening, stopListening, error: voiceError, browserSupportsSpeechRecognition } = useVoiceRecognition();
   const [voiceSearchTarget, setVoiceSearchTarget] = useState<'youtube' | 'books' | null>(null);
@@ -47,6 +47,7 @@ export default function LibraryPage() {
   }, [setVoicePreference]);
 
   useEffect(() => {
+    const PAGE_TITLE = t('library.title');
     const timer = setTimeout(() => {
       if (!pageTitleSpokenRef.current) {
         speak(PAGE_TITLE, { priority: 'optional' });
@@ -55,7 +56,7 @@ export default function LibraryPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak]);
+  }, [speak, t]);
 
   useEffect(() => {
     if (transcript && voiceSearchTarget) {
@@ -95,7 +96,7 @@ export default function LibraryPage() {
 
   const handleRefreshMathFact = () => {
     playClickSound(); refetchMathFact();
-    speak("Fetching new math fact.", { priority: 'optional' });
+    speak(t('library.mathFact.speak.fetching'), { priority: 'optional' });
   };
 
   const youtubeSearchMutation = useMutation<YoutubeSearchOutput, QueryError, YoutubeSearchInput>({
@@ -103,15 +104,15 @@ export default function LibraryPage() {
     onSuccess: (data) => {
       if (data.videos && data.videos.length > 0) {
         setYoutubeResults(data.videos);
-        toast({ title: "YouTube Search Complete", description: `${data.videos.length} videos found.` });
+        toast({ title: t('library.youtube.toast.successTitle'), description: t('library.youtube.toast.successDesc', { count: data.videos.length }) });
       } else {
         setYoutubeResults([]);
-        toast({ title: "No YouTube Videos Found", description: "Try a different search term. Ensure your YOUTUBE_API_KEY is valid and the YouTube Data API v3 is enabled in Google Cloud Console." });
+        toast({ title: t('library.youtube.toast.noResultsTitle'), description: t('library.youtube.toast.noResultsDesc') });
       }
     },
     onError: (error) => {
       console.error("YouTube search error:", error);
-      toast({ title: "YouTube Search Error", description: error.message || "Could not fetch videos. Ensure YOUTUBE_API_KEY is valid and YouTube Data API v3 is enabled.", variant: "destructive" });
+      toast({ title: t('library.youtube.toast.errorTitle'), description: error.message || t('library.youtube.toast.errorDesc'), variant: "destructive" });
       setYoutubeResults([]);
     }
   });
@@ -121,15 +122,15 @@ export default function LibraryPage() {
     onSuccess: (data) => {
       if (data.books && data.books.length > 0) {
         setGoogleBooksResults(data.books);
-        toast({ title: "Google Books Search Complete", description: `${data.books.length} books found.` });
+        toast({ title: t('library.books.toast.successTitle'), description: t('library.books.toast.successDesc', { count: data.books.length }) });
       } else {
         setGoogleBooksResults([]);
-        toast({ title: "No Books Found", description: "Try a different search term. Ensure your GOOGLE_BOOKS_API_KEY is valid and the Google Books API is enabled." });
+        toast({ title: t('library.books.toast.noResultsTitle'), description: t('library.books.toast.noResultsDesc') });
       }
     },
     onError: (error) => {
       console.error("Google Books search error:", error);
-      toast({ title: "Google Books Search Error", description: error.message || "Could not fetch books. Ensure GOOGLE_BOOKS_API_KEY is valid.", variant: "destructive" });
+      toast({ title: t('library.books.toast.errorTitle'), description: error.message || t('library.books.toast.errorDesc'), variant: "destructive" });
       setGoogleBooksResults([]);
     }
   });
@@ -138,7 +139,7 @@ export default function LibraryPage() {
     e.preventDefault();
     if (youtubeSearchTerm.trim()) {
       playActionSound();
-      speak(`Searching YouTube for ${youtubeSearchTerm.trim()}`, { priority: 'optional' });
+      speak(t('library.youtube.speak.searching', { term: youtubeSearchTerm.trim() }), { priority: 'optional' });
       setYoutubeResults([]); 
       youtubeSearchMutation.mutate({ query: youtubeSearchTerm.trim(), maxResults: 8 });
       if (isListening && voiceSearchTarget === 'youtube') stopListening();
@@ -150,7 +151,7 @@ export default function LibraryPage() {
     e.preventDefault();
     if (googleBooksSearchTerm.trim()) {
       playActionSound();
-      speak(`Searching Google Books for ${googleBooksSearchTerm.trim()}`, { priority: 'optional' });
+      speak(t('library.books.speak.searching', { term: googleBooksSearchTerm.trim() }), { priority: 'optional' });
       setGoogleBooksResults([]); 
       googleBooksSearchMutation.mutate({ query: googleBooksSearchTerm.trim(), maxResults: 9 });
       if (isListening && voiceSearchTarget === 'books') stopListening();
@@ -163,14 +164,14 @@ export default function LibraryPage() {
     if (book.embeddable) setSelectedBook(book);
     else {
       window.open(book.webReaderLink || book.infoLink || `https://books.google.com/books?id=${book.bookId}`, '_blank', 'noopener,noreferrer');
-      toast({ title: "Opening on Google Books", description: "This book will be opened on the Google Books website." });
+      toast({ title: t('library.books.toast.openingExternalTitle'), description: t('library.books.toast.openingExternalDesc') });
     }
   };
 
   const otherResources = [
-    { title: "Wikidata", description: "A free and open knowledge base that can be read and edited by humans and machines.", link: "https://www.wikidata.org/", icon: BookOpen },
-    { title: "CK-12 Foundation", description: "Free K-12 STEM resources.", link: "https://www.ck12.org/", icon: Lightbulb },
-    { title: "Project Gutenberg", description: "Over 70,000 free eBooks.", link: "https://www.gutenberg.org/", icon: Brain },
+    { title: "Wikidata", description: t('library.resources.wikidataDesc'), link: "https://www.wikidata.org/", icon: BookOpen },
+    { title: "CK-12 Foundation", description: t('library.resources.ck12Desc'), link: "https://www.ck12.org/", icon: Lightbulb },
+    { title: "Project Gutenberg", description: t('library.resources.gutenbergDesc'), link: "https://www.gutenberg.org/", icon: Brain },
   ];
 
   return (
@@ -178,8 +179,8 @@ export default function LibraryPage() {
       <Card className="shadow-xl bg-card/90 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4"><BookMarked className="h-12 w-12 text-primary" /></div>
-          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{PAGE_TITLE}</CardTitle>
-          <CardDescription>Explore a collection of educational resources and tools.</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-primary">{t('library.title')}</CardTitle>
+          <CardDescription>{t('library.description')}</CardDescription>
         </CardHeader>
       </Card>
 
@@ -187,50 +188,50 @@ export default function LibraryPage() {
         <CardHeader className="pb-2 pt-4">
           <div className="flex items-center gap-3 mb-2">
             <Quote className="h-7 w-7 text-orange-500/80 group-hover:text-orange-600 transition-colors" />
-            <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">Math Fact of the Day</CardTitle>
+            <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">{t('library.mathFact.title')}</CardTitle>
           </div>
           {isLoadingMathFact && !currentMathFact ? (
-            <div className="flex items-center space-x-2 text-muted-foreground py-3"><Loader2 className="h-5 w-5 animate-spin" /><span>Loading math fact...</span></div>
+            <div className="flex items-center space-x-2 text-muted-foreground py-3"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
             ) : currentMathFact ? (
             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3">
               "{currentMathFact.text}"
             </CardDescription>
             ) : (
-            <CardDescription className="text-lg text-muted-foreground py-3">Could not load math fact. Try refreshing!</CardDescription>
+            <CardDescription className="text-lg text-muted-foreground py-3">{t('library.mathFact.error')}</CardDescription>
             )
           }
         </CardHeader>
         <CardFooter className="pt-2 pb-4">
           <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />}New Fact
+            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />} {t('library.mathFact.newButton')}
           </Button>
         </CardFooter>
       </Card>
 
       <section>
         <Card>
-          <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Youtube className="w-7 h-7 text-red-500" />Search & Play YouTube Videos</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-xl flex items-center gap-2"><Youtube className="w-7 h-7 text-red-500" />{t('library.youtube.title')}</CardTitle></CardHeader>
           <form onSubmit={handleYoutubeSearchSubmit}>
             <CardContent className="flex gap-2 items-center">
-              <Input type="search" placeholder="Search for educational videos..." value={youtubeSearchTerm} onChange={(e) => setYoutubeSearchTerm(e.target.value)} disabled={youtubeSearchMutation.isPending}/>
+              <Input type="search" placeholder={t('library.youtube.placeholder')} value={youtubeSearchTerm} onChange={(e) => setYoutubeSearchTerm(e.target.value)} disabled={youtubeSearchMutation.isPending}/>
               {browserSupportsSpeechRecognition && (
                 <Button type="button" variant="ghost" size="icon" onClick={() => handleMicClick('youtube')} disabled={youtubeSearchMutation.isPending}>
                   <Mic className={`w-5 h-5 ${isListening && voiceSearchTarget === 'youtube' ? 'text-destructive animate-pulse' : ''}`} />
                 </Button>
               )}
               <Button type="submit" disabled={youtubeSearchMutation.isPending || !youtubeSearchTerm.trim()}>
-                {youtubeSearchMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Search
+                {youtubeSearchMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t('library.searchButton')}
               </Button>
             </CardContent>
           </form>
           {youtubeSearchMutation.isPending && youtubeResults.length === 0 && (
             <div className="px-6 pb-6 flex items-center justify-center space-x-2 text-muted-foreground h-40">
-                <Loader2 className="h-6 w-6 animate-spin" /><span>Searching YouTube...</span>
+                <Loader2 className="h-6 w-6 animate-spin" /><span>{t('library.youtube.searching')}</span>
             </div>
           )}
           {youtubeResults.length > 0 && (
             <div className="px-6 pb-6">
-              <h3 className="text-lg font-semibold mb-3 mt-4">Results:</h3>
+              <h3 className="text-lg font-semibold mb-3 mt-4">{t('library.resultsTitle')}:</h3>
               <ScrollArea className="h-[400px] w-full pr-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {youtubeResults.map(video => (
@@ -247,7 +248,7 @@ export default function LibraryPage() {
           {!youtubeSearchMutation.isPending && youtubeSearchMutation.isSuccess && youtubeResults.length === 0 && (
             <div className="px-6 pb-6 text-center text-muted-foreground h-40 flex flex-col justify-center items-center">
                 <Video className="w-10 h-10 mb-2 opacity-50" />
-                <p>No videos found for "{youtubeSearchTerm}". Try a different search.</p>
+                <p>{t('library.youtube.noResults', { term: youtubeSearchTerm })}</p>
             </div>
           )}
         </Card>
@@ -281,28 +282,28 @@ export default function LibraryPage() {
 
       <section>
         <Card>
-          <CardHeader><CardTitle className="text-xl flex items-center gap-2"><BookOpen className="w-7 h-7 text-blue-500" />Search & Read Google Books</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-xl flex items-center gap-2"><BookOpen className="w-7 h-7 text-blue-500" />{t('library.books.title')}</CardTitle></CardHeader>
           <form onSubmit={handleGoogleBooksSearchSubmit}>
             <CardContent className="flex gap-2 items-center">
-              <Input type="search" placeholder="Search for books and articles..." value={googleBooksSearchTerm} onChange={(e) => setGoogleBooksSearchTerm(e.target.value)} disabled={googleBooksSearchMutation.isPending}/>
+              <Input type="search" placeholder={t('library.books.placeholder')} value={googleBooksSearchTerm} onChange={(e) => setGoogleBooksSearchTerm(e.target.value)} disabled={googleBooksSearchMutation.isPending}/>
                {browserSupportsSpeechRecognition && (
                   <Button type="button" variant="ghost" size="icon" onClick={() => handleMicClick('books')} disabled={googleBooksSearchMutation.isPending}>
                     <Mic className={`w-5 h-5 ${isListening && voiceSearchTarget === 'books' ? 'text-destructive animate-pulse' : ''}`} />
                   </Button>
                )}
               <Button type="submit" disabled={googleBooksSearchMutation.isPending || !googleBooksSearchTerm.trim()}>
-                {googleBooksSearchMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Search
+                {googleBooksSearchMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t('library.searchButton')}
               </Button>
             </CardContent>
           </form>
           {googleBooksSearchMutation.isPending && googleBooksResults.length === 0 && (
             <div className="px-6 pb-6 flex items-center justify-center space-x-2 text-muted-foreground h-40">
-                <Loader2 className="h-6 w-6 animate-spin" /><span>Searching Google Books...</span>
+                <Loader2 className="h-6 w-6 animate-spin" /><span>{t('library.books.searching')}</span>
             </div>
           )}
           {googleBooksResults.length > 0 && (
             <div className="px-6 pb-6">
-              <h3 className="text-lg font-semibold mb-3 mt-4">Book Results:</h3>
+              <h3 className="text-lg font-semibold mb-3 mt-4">{t('library.resultsTitle')}:</h3>
               <ScrollArea className="h-[400px] w-full pr-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {googleBooksResults.map(book => (
@@ -315,16 +316,16 @@ export default function LibraryPage() {
           {!googleBooksSearchMutation.isPending && googleBooksSearchMutation.isSuccess && googleBooksResults.length === 0 && (
             <div className="px-6 pb-6 text-center text-muted-foreground h-40 flex flex-col justify-center items-center">
                 <BookOpen className="w-10 h-10 mb-2 opacity-50" />
-                <p>No books found for "{googleBooksSearchTerm}". Try a different search.</p>
+                <p>{t('library.books.noResults', { term: googleBooksSearchTerm })}</p>
             </div>
           )}
         </Card>
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Other Helpful Resources</h2>
+        <h2 className="text-2xl font-semibold mb-4">{t('library.resources.title')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {otherResources.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText="Visit Site"/>)}
+          {otherResources.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText={t('library.resources.visitSite')}/>)}
         </div>
       </section>
     </div>

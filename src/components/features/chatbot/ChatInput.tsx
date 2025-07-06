@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, type ChangeEvent, type FormEvent, useEffect } from 'react';
@@ -10,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useSound } from '@/hooks/useSound';
 import { extractTextFromPdf } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ChatInputProps {
   onSendMessage: (
@@ -37,6 +37,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
+  const { t } = useTranslation();
 
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition, error: voiceError } = useVoiceRecognition();
   
@@ -58,7 +59,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
       setIsProcessingFile(true);
       if (file.type.startsWith('image/')) {
         if (file.size > 4 * 1024 * 1024) { // 4MB limit
-          toast({ title: "Image too large", description: "Please upload an image smaller than 4MB.", variant: "destructive" });
+          toast({ title: t('chatbot.file.image.tooLargeTitle'), description: t('chatbot.file.image.tooLargeDesc'), variant: "destructive" });
           setIsProcessingFile(false);
           return;
         }
@@ -71,22 +72,22 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         reader.readAsDataURL(file);
       } else if (file.type === 'application/pdf') {
         if (file.size > 10 * 1024 * 1024) { // 10MB limit
-            toast({ title: "PDF too large", description: "Please upload a PDF smaller than 10MB.", variant: "destructive" });
+            toast({ title: t('chatbot.file.pdf.tooLargeTitle'), description: t('chatbot.file.pdf.tooLargeDesc'), variant: "destructive" });
             setIsProcessingFile(false);
             return;
         }
         try {
           const text = await extractTextFromPdf(file);
           setPdfContent({ name: file.name, text });
-          toast({ title: "PDF Attached", description: `${file.name} is ready to be sent with your message.` });
+          toast({ title: t('chatbot.file.pdf.successTitle'), description: t('chatbot.file.pdf.successDesc', { name: file.name }) });
         } catch(err) {
-          toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
+          toast({ title: t('chatbot.file.pdf.errorTitle'), description: t('chatbot.file.pdf.errorDesc'), variant: "destructive" });
         } finally {
           setIsProcessingFile(false);
         }
       } else if (file.type.startsWith('audio/')) {
         if (file.size > 25 * 1024 * 1024) { // 25MB limit
-          toast({ title: "Audio file too large", description: "Max 25MB.", variant: "destructive" });
+          toast({ title: t('chatbot.file.audio.tooLargeTitle'), description: t('chatbot.file.audio.tooLargeDesc'), variant: "destructive" });
           setIsProcessingFile(false); return;
         }
         const reader = new FileReader();
@@ -98,7 +99,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         reader.readAsDataURL(file);
       } else if (file.type.startsWith('video/')) {
         if (file.size > 25 * 1024 * 1024) { // 25MB limit
-          toast({ title: "Video file too large", description: "Max 25MB.", variant: "destructive" });
+          toast({ title: t('chatbot.file.video.tooLargeTitle'), description: t('chatbot.file.video.tooLargeDesc'), variant: "destructive" });
           setIsProcessingFile(false); return;
         }
         const reader = new FileReader();
@@ -109,7 +110,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         };
         reader.readAsDataURL(file);
       } else {
-        toast({ title: "Unsupported File", description: "Chat supports image, PDF, audio, and video uploads.", variant: "default" });
+        toast({ title: t('chatbot.file.unsupportedTitle'), description: t('chatbot.file.unsupportedDesc'), variant: "default" });
         setIsProcessingFile(false);
       }
     }
@@ -145,9 +146,9 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   
   useEffect(() => {
     if (voiceError) {
-      toast({ title: "Voice Input Error", description: voiceError, variant: "destructive" });
+      toast({ title: t('chatbot.voiceError.title'), description: voiceError, variant: "destructive" });
     }
-  }, [voiceError, toast]);
+  }, [voiceError, toast, t]);
 
   const handleRemoveFile = (withSound = true) => {
     if (withSound) playClickSound();
@@ -167,7 +168,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
         <div className="flex flex-wrap gap-2 mb-2">
           {imagePreview && (
             <div className="relative w-24 h-24">
-              <Image src={imagePreview} alt="Preview" layout="fill" objectFit="cover" className="rounded-md" data-ai-hint="image preview" />
+              <Image src={imagePreview} alt={t('chatbot.file.image.previewAlt')} layout="fill" objectFit="cover" className="rounded-md" data-ai-hint="image preview" />
               <Button type="button" variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6 bg-destructive/80 text-destructive-foreground rounded-full" onClick={() => handleRemoveFile()}>
                 <X className="h-4 w-4" />
               </Button>
@@ -202,21 +203,21 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isProcessingFile} title="Attach File">
+          <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isProcessingFile} title={t('chatbot.controls.attach')}>
              {isProcessingFile ? <Loader2 className="w-5 h-5 animate-spin"/> : <ImageIcon className="w-5 h-5" />}
           </Button>
           <input type="file" accept="image/*,application/pdf,audio/*,video/*" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
 
           {browserSupportsSpeechRecognition && (
-            <Button type="button" variant="ghost" size="icon" onClick={toggleListening} disabled={isLoading} title="Use Voice">
+            <Button type="button" variant="ghost" size="icon" onClick={toggleListening} disabled={isLoading} title={t('chatbot.controls.voice')}>
               <Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} />
-              <span className="sr-only">{isListening ? 'Stop Listening' : 'Start Listening'}</span>
+              <span className="sr-only">{t(isListening ? 'chatbot.controls.stopListening' : 'chatbot.controls.startListening')}</span>
             </Button>
           )}
 
           <Input
             type="text"
-            placeholder="Type your message or ask a question..."
+            placeholder={t('chatbot.placeholder')}
             value={inputValue}
             onChange={handleInputChange}
             disabled={isLoading || isProcessingFile}
@@ -224,7 +225,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
           />
           <Button type="submit" size="icon" disabled={isLoading || isProcessingFile || (!inputValue.trim() && !imageData && !pdfContent && !audioData && !videoData)}>
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-            <span className="sr-only">Send Message</span>
+            <span className="sr-only">{t('chatbot.controls.send')}</span>
           </Button>
         </div>
       </form>

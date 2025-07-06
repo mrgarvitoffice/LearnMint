@@ -1,4 +1,3 @@
-
 {
   "dashboard.welcome": "Bienvenue sur LearnMint !",
   "dashboard.description": "Votre assistant d'apprentissage IA pour les notes, quiz, tests, et plus encore.",
@@ -19,7 +18,7 @@
   "dashboard.dailyQuests.quest3": "Apprendre 5 nouvelles fiches.",
   "dashboard.exploreFeatures.title": "Explorer toutes les fonctionnalités",
   "dashboard.recentTopics.title": "Sujets récents",
-  "dashboard.recentTopics.description": "Revenez rapidement à vos sessions d'étude récentes.",
+  "dashboard.recentTopics.description": "Revenez rapidement à vos sessions d'étude recentes.",
   "dashboard.recentTopics.empty": "Aucun sujet récent. Générez du matériel d'étude pour les voir ici !",
   "dashboard.madeBy": "Créé par",
   "dashboard.totalLearnersGuestMessage": "Inscrivez-vous pour voir les statistiques de la communauté !",

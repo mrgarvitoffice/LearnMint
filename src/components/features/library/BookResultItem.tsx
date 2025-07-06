@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { GoogleBookItem } from '@/lib/types';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ExternalLink, BookText } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface BookResultItemProps {
   book: GoogleBookItem;
@@ -13,6 +13,7 @@ interface BookResultItemProps {
 }
 
 export function BookResultItem({ book, onPreviewRequest }: BookResultItemProps) {
+  const { t } = useTranslation();
   const placeholderImage = `https://placehold.co/300x450.png?text=${encodeURIComponent(book.title.substring(0, 10) + '...')}`;
   const dataAiHintKeywords = book.title.toLowerCase().split(' ').slice(0, 2).join(' ');
 
@@ -26,7 +27,7 @@ export function BookResultItem({ book, onPreviewRequest }: BookResultItemProps) 
         <div className="relative w-full aspect-[2/3] mb-2 rounded overflow-hidden bg-muted group-hover:opacity-90 transition-opacity">
           <Image
             src={book.thumbnailUrl || placeholderImage}
-            alt={`Cover of ${book.title}`}
+            alt={t('library.books.coverAlt', { title: book.title })}
             fill={true}
             sizes="(max-width: 639px) 90vw, (max-width: 1023px) 45vw, 30vw"
             style={{ objectFit: book.thumbnailUrl ? 'cover' : 'contain' }}
@@ -51,24 +52,24 @@ export function BookResultItem({ book, onPreviewRequest }: BookResultItemProps) 
         {book.authors && <CardDescription className="text-xs line-clamp-1 pt-0.5">{book.authors.join(', ')}</CardDescription>}
       </CardHeader>
       <CardContent className="p-3 pt-0 text-xs line-clamp-3 flex-grow text-muted-foreground cursor-pointer" onClick={handlePrimaryAction}>
-        {book.description || "No description available."}
+        {book.description || t('library.books.noDescription')}
       </CardContent>
       <CardFooter className="p-3 pt-1 flex-col items-stretch gap-1.5">
         {book.embeddable ? (
           <Button variant="default" size="sm" onClick={handlePrimaryAction} className="w-full text-xs">
-            <BookText className="mr-1.5 h-3.5 w-3.5" /> Read in App
+            <BookText className="mr-1.5 h-3.5 w-3.5" /> {t('library.books.readInApp')}
           </Button>
         ) : (
           <Button variant="outline" size="sm" asChild className="w-full text-xs">
             <a href={book.webReaderLink || book.infoLink} target="_blank" rel="noopener noreferrer">
-             <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> View on Google Books
+             <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> {t('library.books.viewOnGoogle')}
             </a>
           </Button>
         )}
         {book.infoLink && (book.embeddable || (!book.embeddable && book.infoLink !== (book.webReaderLink || book.infoLink))) && (
            <Button variant="link" size="sm" asChild className="w-full text-xs justify-center h-auto py-1 px-2">
             <a href={book.infoLink} target="_blank" rel="noopener noreferrer">
-              More Info <ExternalLink className="ml-1 h-3 w-3" />
+              {t('library.books.moreInfo')} <ExternalLink className="ml-1 h-3 w-3" />
             </a>
           </Button>
         )}
