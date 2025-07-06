@@ -320,7 +320,7 @@ export default function LibraryPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-4">{t('library.resources.title')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {OTHER_RESOURCES.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText={'library.resources.visitSite'}/>)}
+          {OTHER_RESOURCES.map(resource => <ResourceCard key={resource.title} title={resource.title} description={resource.description} link={resource.link} icon={resource.icon} linkText={t('library.resources.visitSite')}/>)}
         </div>
       </section>
     </div>

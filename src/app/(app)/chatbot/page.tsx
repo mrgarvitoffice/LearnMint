@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -236,7 +237,7 @@ export default function ChatbotPage() {
                   size="sm"
                   className="text-xs h-7 px-3"
                 >
-                  Gojo
+                  {t('chatbot.gojo.name')}
                 </Button>
                 <Button 
                   onClick={() => handleCharacterChange('holo')} 
@@ -244,7 +245,7 @@ export default function ChatbotPage() {
                   size="sm"
                   className="text-xs h-7 px-3"
                 >
-                  Holo
+                  {t('chatbot.holo.name')}
                 </Button>
               </div>
 

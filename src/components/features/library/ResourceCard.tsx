@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -44,7 +46,7 @@ export function ResourceCard({ title, description, link, imageUrl, icon: Icon, l
       <CardFooter>
         <Button asChild variant="outline" size="sm" className="w-full">
           <a href={link} target="_blank" rel="noopener noreferrer">
-            {t(linkText)} <ExternalLink className="w-4 h-4 ml-2" />
+            {linkText} <ExternalLink className="w-4 h-4 ml-2" />
           </a>
         </Button>
       </CardFooter>
