@@ -14,8 +14,8 @@ export function TotalUsers() {
   const { data: userCount, isLoading, isError, error } = useQuery<number, Error>({
     queryKey: ['totalUsers'],
     queryFn: getTotalUsers,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5, // Data is considered fresh for 5 minutes
+    refetchOnWindowFocus: true, // This will refetch data when the user focuses the window
   });
 
   if (isLoading || !isReady) {
