@@ -406,7 +406,7 @@ export default function CustomTestPage() {
     if (currentSelected.includes(topic)) newSelected = currentSelected.filter(t => t !== topic);
     else {
       if (currentSelected.length < MAX_RECENT_TOPICS_SELECT) newSelected = [...currentSelected, topic];
-      else { toast({ title: t('customTest.recent.error.tooManySelected', { count: MAX_RECENT_TOPICS_SELECT }), description: `You can select a maximum of ${MAX_RECENT_TOPICS_SELECT} topics.`, variant: "default" }); return; }
+      else { toast({ title: t('customTest.recent.error.tooManySelected', { count: MAX_RECENT_TOPICS_SELECT }), variant: "default" }); return; }
     }
     setValue('selectedRecentTopics', newSelected, { shouldValidate: true });
   };
@@ -501,7 +501,7 @@ export default function CustomTestPage() {
                   <Label htmlFor="topics" className="text-base">{t('customTest.source.topic')}</Label>
                   <div className="flex gap-2">
                     <Input id="topics" placeholder={t('customTest.topic.placeholder')} {...register('topics')} className="transition-colors duration-200 ease-in-out text-base" />
-                    {browserSupportsSpeechRecognition && (<Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening}><Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} /></Button>)}
+                    {browserSupportsSpeechRecognition && (<Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening} title={t('customTest.voice.useInput')}><Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} /></Button>)}
                   </div>
                   {errors.topics && <p className="text-sm text-destructive">{errors.topics.message || t('customTest.topic.error.minLength')}</p>}
                   {voiceError && <p className="text-sm text-destructive">{t('customTest.voice.error')}</p>}
@@ -517,7 +517,7 @@ export default function CustomTestPage() {
                         <ImageIcon className="w-5 h-5" />
                       </Button>
                       {browserSupportsSpeechRecognition && (
-                        <Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening}>
+                        <Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening} title={t('customTest.voice.useInput')}>
                           <Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} />
                         </Button>
                       )}
@@ -529,7 +529,7 @@ export default function CustomTestPage() {
                     {notesImagePreview && (
                       <div className="relative w-20 h-20 mt-2">
                         <Image src={notesImagePreview} alt={t('customTest.file.image.previewAlt')} layout="fill" objectFit="cover" className="rounded-md" />
-                        <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
+                        <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground" title={t('customTest.file.image.remove')}>
                           <XCircle className="w-4 h-4" />
                         </Button>
                       </div>
@@ -538,21 +538,21 @@ export default function CustomTestPage() {
                       <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
                           <FileText className="w-5 h-5 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground truncate flex-1">{pdfFileName}</span>
-                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full" title={t('customTest.file.pdf.remove')}><XCircle className="w-4 h-4 text-destructive/70" /></Button>
                       </div>
                     )}
                     {audioFileName && (
                       <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
                           <AudioLines className="w-5 h-5 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground truncate flex-1">{audioFileName}</span>
-                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full" title={t('customTest.file.audio.remove')}><XCircle className="w-4 h-4 text-destructive/70" /></Button>
                       </div>
                     )}
                     {videoFileName && (
                       <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
                           <Video className="w-5 h-5 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground truncate flex-1">{videoFileName}</span>
-                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full" title={t('customTest.file.video.remove')}><XCircle className="w-4 h-4 text-destructive/70" /></Button>
                       </div>
                     )}
                   </div>
@@ -624,7 +624,7 @@ export default function CustomTestPage() {
             <CardFooter className="justify-center p-6">
               <Button type="submit" size="lg" disabled={isLoading} className="min-w-[200px] group">
                 {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Sparkles className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-[360deg] group-hover:scale-125" />}
-                {t('customTest.generateButton.default')}
+                {isLoading ? t('customTest.generateButton.loading') : t('customTest.generateButton.default')}
               </Button>
             </CardFooter>
           </form>
@@ -645,8 +645,8 @@ export default function CustomTestPage() {
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                 <CardTitle className="text-xl sm:text-2xl text-primary font-bold truncate max-w-md">{t('customTest.test.title', { topics: testState.settings.topics.join(', ').substring(0, 50) + (testState.settings.topics.join(', ').length > 50 ? "..." : ""), difficulty: testState.settings.difficulty })}</CardTitle>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {overallTimeLeft !== undefined && formatTime(overallTimeLeft) !== null && (<span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {t('customTest.test.totalTime', { time: formatTime(overallTimeLeft) })}</span>)}
-                  {perQuestionTimeLeft !== undefined && testState.settings.perQuestionTimer && testState.settings.perQuestionTimer > 0 && formatTime(perQuestionTimeLeft) !== null && (<span className="flex items-center gap-1"><TimerIcon className="w-4 h-4 text-destructive animate-pulse" /> {t('customTest.test.questionTime', { time: formatTime(perQuestionTimeLeft) })}</span>)}
+                  {overallTimeLeft !== undefined && formatTime(overallTimeLeft) !== null && (<span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {t('customTest.test.totalTime', { time: formatTime(overallTimeLeft)! })}</span>)}
+                  {perQuestionTimeLeft !== undefined && testState.settings.perQuestionTimer && testState.settings.perQuestionTimer > 0 && formatTime(perQuestionTimeLeft) !== null && (<span className="flex items-center gap-1"><TimerIcon className="w-4 h-4 text-destructive animate-pulse" /> {t('customTest.test.questionTime', { time: formatTime(perQuestionTimeLeft)! })}</span>)}
                 </div>
               </div>
               <Progress value={((testState.currentQuestionIndex + 1) / testState.questions.length) * 100} className="w-full mt-3 h-2.5" />
@@ -666,7 +666,7 @@ export default function CustomTestPage() {
                     </Label>
                   ))}
                 </RadioGroup>
-              ) : (<p className="text-muted-foreground">Question options not available.</p>)}
+              ) : (<p className="text-muted-foreground">{t('quizView.unavailable')}</p>)}
             </CardContent>
             <CardFooter className="flex justify-between p-6 border-t">
               <Button variant="outline" onClick={handlePrevQuestion} disabled={testState.currentQuestionIndex === 0 || testState.isAutoSubmitting}>{t('customTest.test.previousButton')}</Button>

@@ -111,7 +111,7 @@
   "customTest.recent.title": "Select Recent Topic(s) (Max {{count}})",
   "customTest.recent.empty": "No recent topics found. Generate some notes first!",
   "customTest.recent.error.noneSelected": "Please select at least one recent topic.",
-  "customTest.recent.error.tooManySelected": "You can select a maximum of {{count}} recent topics.",
+  "customTest.recent.error.tooManySelected": "You can select a maximum of {{count}} topics.",
   "customTest.recent.confirmButton": "Confirm Recent Topics Selection",
   "customTest.recent.confirmedMessage": "Recent topics selection confirmed!",
   "customTest.toast.topicsConfirmedTitle": "Topics Confirmed",
