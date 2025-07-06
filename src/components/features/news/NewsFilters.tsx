@@ -8,6 +8,7 @@ import { NEWS_CATEGORIES, NEWS_COUNTRIES, COUNTRY_SPECIFIC_REGIONS, APP_LANGUAGE
 import { Label } from "@/components/ui/label";
 import { RotateCcw } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ANY_COUNTRY_VALUE = "_any_country_";
 const ANY_REGION_VALUE = "_any_region_";
@@ -28,7 +29,22 @@ interface NewsFiltersProps {
 }
 
 export function NewsFilters({ filters, onFilterChange, onApplyFilters, onResetFilters, isLoading }: NewsFiltersProps) {
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
+  
+  if (!isReady) {
+    return (
+        <div className="space-y-6 p-4 border rounded-lg bg-card shadow-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                {[...Array(6)].map((_, i) => <div key={i} className="space-y-1.5"><Skeleton className="h-5 w-1/3" /><Skeleton className="h-10 w-full" /></div>)}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                <Skeleton className="h-10 w-full sm:w-32" />
+                <Skeleton className="h-10 w-full sm:w-32" />
+            </div>
+        </div>
+    );
+  }
+  
   const isSpecificCountrySelected = !!filters.country && filters.country !== ANY_COUNTRY_VALUE;
   const availableRegions = isSpecificCountrySelected && COUNTRY_SPECIFIC_REGIONS[filters.country] 
     ? COUNTRY_SPECIFIC_REGIONS[filters.country] 

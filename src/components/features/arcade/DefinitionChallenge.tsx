@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { DEFINITION_CHALLENGE_WORDS } from '@/lib/constants';
 import type { DefinitionChallengeWord } from '@/lib/types';
-import { Lightbulb, CheckCircle, XCircle, Zap, RotateCcw } from 'lucide-react';
+import { Lightbulb, CheckCircle, XCircle, Zap, RotateCcw, Loader2 } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS'; 
 import { cn } from '@/lib/utils';
@@ -33,7 +33,7 @@ export function DefinitionChallenge() {
   const { playSound: playIncorrectSound } = useSound('/sounds/incorrect-answer.mp3', { volume: 0.5, priority: 'essential' }); 
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
   const { speak, setVoicePreference } = useTTS();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   
   useEffect(() => {
     setVoicePreference('holo'); 
@@ -73,6 +73,7 @@ export function DefinitionChallenge() {
   const currentWord = words[currentWordIndex];
 
   const nextWord = useCallback(() => {
+    if (!isReady) return;
     if (currentWordIndex < words.length - 1) {
       setCurrentWordIndex(prev => prev + 1);
       setGuess('');
@@ -88,12 +89,12 @@ export function DefinitionChallenge() {
       setFeedback(finalMessage);
       speak(finalMessage, { priority: 'essential' });
     }
-  }, [currentWordIndex, words.length, streak, highScore, speak, t]);
+  }, [currentWordIndex, words.length, streak, highScore, speak, t, isReady]);
 
   const handleGuessSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     playClickSound();
-    if (!currentWord || gameOver || isCorrect === true) return;
+    if (!currentWord || gameOver || isCorrect === true || !isReady) return;
 
     if (guess.trim().toLowerCase() === currentWord.term.toLowerCase()) {
       setFeedback(t('arcade.challenge.feedback.correct'));
@@ -126,11 +127,11 @@ export function DefinitionChallenge() {
         setIsCorrect(false);
       }
     }
-  }, [playClickSound, currentWord, gameOver, isCorrect, guess, streak, highScore, mistakesMadeThisWord, nextWord, playCorrectSound, playIncorrectSound, speak, t]);
+  }, [playClickSound, currentWord, gameOver, isCorrect, guess, streak, highScore, mistakesMadeThisWord, nextWord, playCorrectSound, playIncorrectSound, speak, t, isReady]);
 
   const handleUseHint = () => {
     playClickSound();
-    if (!currentWord || hintsUsed >= 3 || gameOver || isCorrect === true) return; 
+    if (!currentWord || hintsUsed >= 3 || gameOver || isCorrect === true || !isReady) return; 
     setShowHint(true);
     const newHintsUsed = hintsUsed + 1;
     setHintsUsed(newHintsUsed);
@@ -151,7 +152,15 @@ export function DefinitionChallenge() {
     playClickSound();
     setStreak(0); 
     initializeGame();
-    speak(t('arcade.challenge.speak.newGame'), { priority: 'essential' });
+    if (isReady) speak(t('arcade.challenge.speak.newGame'), { priority: 'essential' });
+  }
+
+  if (!isReady) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
   
   if (!currentWord && !gameOver) {

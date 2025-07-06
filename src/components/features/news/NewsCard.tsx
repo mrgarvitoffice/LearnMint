@@ -8,40 +8,47 @@ import { ExternalLink, CalendarDays, Globe, ImageOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface NewsCardProps {
   article: NewsArticle;
 }
 
 export function NewsCard({ article }: NewsCardProps) {
-  const { t } = useTranslation();
-  const placeholderTextContent = article.title?.substring(0, 25) || article.category?.[0] || 'News';
-  const placeholderImageBase = `https://placehold.co/600x400.png`;
-  const placeholderImageWithText = `${placeholderImageBase}?text=${encodeURIComponent(placeholderTextContent)}`;
-  const dataAiHintForPlaceholder = placeholderTextContent.toLowerCase().split(' ').slice(0, 2).join(' ');
-
-  const [currentImageSrc, setCurrentImageSrc] = useState<string>(article.image_url || placeholderImageWithText);
+  const { t, isReady } = useTranslation();
+  
+  const [currentImageSrc, setCurrentImageSrc] = useState<string>('');
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
 
   useEffect(() => {
-    // Reset state when the article prop changes significantly (ID or link or image_url itself)
-    // This ensures that if a component instance is reused for a new article, its image state is fresh.
-    setCurrentImageSrc(article.image_url || placeholderImageWithText);
+    const placeholderTextContent = article.title?.substring(0, 25) || article.category?.[0] || 'News';
+    const placeholderImage = `https://placehold.co/600x400.png?text=${encodeURIComponent(placeholderTextContent)}`;
+    setCurrentImageSrc(article.image_url || placeholderImage);
     setImageLoadError(false);
-  }, [article.article_id, article.link, article.image_url, placeholderImageWithText]);
+  }, [article.article_id, article.link, article.image_url, article.title, article.category]);
+
+  if (!isReady) {
+    return (
+      <Card className="flex flex-col h-full overflow-hidden">
+        <Skeleton className="h-48 w-full" />
+        <CardHeader className="pb-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2 mt-2" /></CardHeader>
+        <CardContent className="flex-grow pb-4 space-y-2"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></CardContent>
+        <CardFooter><Skeleton className="h-9 w-full" /></CardFooter>
+      </Card>
+    );
+  }
+
+  const placeholderTextContent = article.title?.substring(0, 25) || article.category?.[0] || 'News';
+  const placeholderImageWithText = `https://placehold.co/600x400.png?text=${encodeURIComponent(placeholderTextContent)}`;
+  const dataAiHintForPlaceholder = placeholderTextContent.toLowerCase().split(' ').slice(0, 2).join(' ');
 
   const handleError = () => {
     if (currentImageSrc === placeholderImageWithText) {
-      // Placeholder itself failed or was the initial src and failed
       console.error(`NewsCard: Placeholder image ALSO FAILED for article: ${article.title?.substring(0,30)}... Placeholder URL was: ${placeholderImageWithText}`);
-      setImageLoadError(true); // Mark that we cannot show any image.
+      setImageLoadError(true);
     } else {
-      // Original image failed, switch to placeholder
       console.warn(`NewsCard: Original image FAILED for article: ${article.title?.substring(0,30)}... (URL: ${article.image_url}). Switching to placeholder: ${placeholderImageWithText}`);
       setCurrentImageSrc(placeholderImageWithText);
-      // imageLoadError remains false for now, as we're *trying* the placeholder.
-      // If the placeholder itself triggers an error, this handleError will be called again,
-      // and the condition `currentImageSrc === placeholderImageWithText` will be true, setting imageLoadError.
     }
   };
 
@@ -51,10 +58,8 @@ export function NewsCard({ article }: NewsCardProps) {
 
   const getDynamicDataAiHint = () => {
     if (imageLoadError || (!article.image_url && currentImageSrc === placeholderImageWithText)) {
-      // If error or original image was null and we're on placeholder
       return dataAiHintForPlaceholder;
     }
-    // Otherwise, use title-based hint for the original image
     return article.title?.toLowerCase().split(' ').slice(0,2).join(' ') || 'news article';
   };
 

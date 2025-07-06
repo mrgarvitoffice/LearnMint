@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { PlayCircle, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface YoutubeVideoResultItemProps {
   video: YoutubeVideoItem;
@@ -14,9 +15,25 @@ interface YoutubeVideoResultItemProps {
 }
 
 export function YoutubeVideoResultItem({ video, onPlay }: YoutubeVideoResultItemProps) {
-  const { t } = useTranslation();
-  // Using medium thumbnail (320x180) or high (480x360) if available
-  const thumbnailUrl = video.thumbnailUrl; // Already prefer medium/high from the action
+  const { t, isReady } = useTranslation();
+
+  if (!isReady) {
+    return (
+        <Card className="overflow-hidden flex flex-col h-full">
+            <Skeleton className="w-full aspect-video" />
+            <CardHeader className="p-3 pb-1 flex-grow">
+                <Skeleton className="h-4 w-5/6 mb-1" />
+                <Skeleton className="h-4 w-3/4" />
+            </CardHeader>
+            <CardContent className="p-3 pt-1 space-y-1">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-1/2" />
+            </CardContent>
+        </Card>
+    )
+  }
+
+  const thumbnailUrl = video.thumbnailUrl;
   const placeholderImage = `https://placehold.co/320x180.png?text=${encodeURIComponent(video.title.substring(0,15) + '...')}`;
   const dataAiHintKeywords = video.title.toLowerCase().split(' ').slice(0, 2).join(' ');
 

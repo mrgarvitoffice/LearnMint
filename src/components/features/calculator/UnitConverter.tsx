@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { UnitCategory, Unit, UnitConverterState } from '@/lib/types';
-import { ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const unitsConfig: Record<UnitCategory, Unit[]> = {
   Length: [
@@ -58,7 +59,7 @@ const unitsConfig: Record<UnitCategory, Unit[]> = {
 };
 
 export function UnitConverter() {
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const [state, setState] = useState<UnitConverterState>({
     category: 'Length',
     fromUnit: unitsConfig['Length'][0].symbol,
@@ -70,6 +71,7 @@ export function UnitConverter() {
   const { category, fromUnit, toUnit, inputValue, outputValue } = state;
 
   const handleConvert = useCallback(() => {
+    if (!isReady) return;
     const valueNum = parseFloat(inputValue);
     if (isNaN(valueNum)) {
       if (outputValue !== t('calculator.converter.error.invalidInput')) {
@@ -114,7 +116,7 @@ export function UnitConverter() {
     if (newOutputValue !== outputValue) {
       setState(s => ({ ...s, outputValue: newOutputValue }));
     }
-  }, [category, fromUnit, toUnit, inputValue, outputValue, t]); 
+  }, [category, fromUnit, toUnit, inputValue, outputValue, t, isReady]); 
   
   useEffect(() => {
     handleConvert();
@@ -133,6 +135,7 @@ export function UnitConverter() {
   };
   
   const handleSwapUnits = () => {
+    if (!isReady) return;
     setState(s => ({
       ...s,
       fromUnit: s.toUnit,
@@ -143,6 +146,22 @@ export function UnitConverter() {
 
 
   const currentUnits = unitsConfig[state.category];
+
+  if (!isReady) {
+    return (
+        <Card>
+            <CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader>
+            <CardContent className="space-y-4 pt-6">
+                <Skeleton className="h-10 w-full" />
+                <div className="flex items-end gap-2">
+                    <div className="w-full space-y-2"><Skeleton className="h-5 w-1/4" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+                    <Skeleton className="h-10 w-10" />
+                    <div className="w-full space-y-2"><Skeleton className="h-5 w-1/4" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+  }
 
   return (
     <Card className="w-full">

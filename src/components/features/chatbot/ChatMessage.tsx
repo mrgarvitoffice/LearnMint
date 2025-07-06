@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
@@ -14,7 +15,12 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
+  
+  if (!isReady) {
+    return null; // Don't render anything until translations are loaded to prevent key flashing
+  }
+
   const isUser = message.role === 'user';
   const alignment = isUser ? 'items-end' : 'items-start';
   const bubbleColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground';

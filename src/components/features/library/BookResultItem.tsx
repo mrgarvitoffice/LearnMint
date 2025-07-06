@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ExternalLink, BookText } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface BookResultItemProps {
   book: GoogleBookItem;
@@ -14,7 +15,28 @@ interface BookResultItemProps {
 }
 
 export function BookResultItem({ book, onPreviewRequest }: BookResultItemProps) {
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
+
+  if (!isReady) {
+    return (
+        <Card className="flex flex-col overflow-hidden h-full">
+            <CardHeader className="p-3 pb-2">
+                <Skeleton className="w-full aspect-[2/3] mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+            </CardHeader>
+            <CardContent className="p-3 pt-0 flex-grow space-y-1">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-4/5" />
+            </CardContent>
+            <CardFooter className="p-3 pt-1">
+                <Skeleton className="h-9 w-full" />
+            </CardFooter>
+        </Card>
+    );
+  }
+
   const placeholderImage = `https://placehold.co/300x450.png?text=${encodeURIComponent(book.title.substring(0, 10) + '...')}`;
   const dataAiHintKeywords = book.title.toLowerCase().split(' ').slice(0, 2).join(' ');
 
