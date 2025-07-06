@@ -63,7 +63,7 @@ export function ResourceCard({ title, description, link, imageUrl, icon: Icon, l
       <CardFooter>
         <Button asChild variant="outline" size="sm" className="w-full">
           <a href={link} target="_blank" rel="noopener noreferrer">
-            {linkText} <ExternalLink className="w-4 h-4 ml-2" />
+            {t(linkText)} <ExternalLink className="w-4 h-4 ml-2" />
           </a>
         </Button>
       </CardFooter>

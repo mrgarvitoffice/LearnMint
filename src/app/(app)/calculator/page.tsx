@@ -15,30 +15,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'learnmint-calculator-history';
 
-const calculatorButtonsConfig: CalculatorButtonConfig[] = [
-  { value: 'AC', label: 'AC', type: 'action', action: 'clear', className: 'bg-destructive/80 hover:bg-destructive text-destructive-foreground' },
-  { value: '(', label: '(', type: 'operator' },
-  { value: ')', label: ')', type: 'operator' },
-  { value: '/', label: '÷', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
-  { value: '7', label: '7', type: 'digit' }, { value: '8', label: '8', type: 'digit' }, { value: '9', label: '9', type: 'digit' },
-  { value: '*', label: '×', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
-  { value: '4', label: '4', type: 'digit' }, { value: '5', label: '5', type: 'digit' }, { value: '6', label: '6', type: 'digit' },
-  { value: '-', label: '−', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
-  { value: '1', label: '1', type: 'digit' }, { value: '2', label: '2', type: 'digit' }, { value: '3', label: '3', type: 'digit' },
-  { value: '+', label: '+', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
-  { value: '0', label: '0', type: 'digit', className: 'col-span-2' }, { value: '.', label: '.', type: 'decimal' },
-  { value: '=', label: '=', type: 'equals', className: 'bg-accent hover:bg-accent/90 text-accent-foreground' },
-];
-
-const scientificButtonsConfig: CalculatorButtonConfig[] = [
-  { value: 'sin(', label: 'sin', type: 'scientific', action: 'sin' }, { value: 'cos(', label: 'cos', type: 'scientific', action: 'cos' },
-  { value: 'tan(', label: 'tan', type: 'scientific', action: 'tan' }, { value: 'deg', label: 'DEG', type: 'action', action: 'toggleMode' },
-  { value: 'log10(', label: 'log', type: 'scientific', action: 'log10' }, { value: 'log(', label: 'ln', type: 'scientific', action: 'log' }, 
-  { value: 'sqrt(', label: '√', type: 'scientific', action: 'sqrt' }, { value: '**', label: 'xʸ', type: 'operator', }, 
-  { value: 'Math.PI', label: 'π', type: 'digit', action: 'pi' }, { value: 'Math.E', label: 'e', type: 'digit', action: 'e' }, 
-  { value: '±', label: '±', type: 'action', action: 'toggleSign' }, { value: '%', label: '%', type: 'action', action: 'percentage' },
-];
-
 export default function CalculatorPage() {
   const [visualExpression, setVisualExpression] = useState('');
   const [internalExpression, setInternalExpression] = useState('');
@@ -52,6 +28,30 @@ export default function CalculatorPage() {
   const { speak, setVoicePreference } = useTTS();
   const { t, isReady } = useTranslation();
   const pageTitleSpokenRef = useRef(false);
+
+  const calculatorButtonsConfig: CalculatorButtonConfig[] = [
+    { value: 'AC', label: 'AC', type: 'action', action: 'clear', className: 'bg-destructive/80 hover:bg-destructive text-destructive-foreground' },
+    { value: '(', label: '(', type: 'operator' },
+    { value: ')', label: ')', type: 'operator' },
+    { value: '/', label: '÷', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
+    { value: '7', label: '7', type: 'digit' }, { value: '8', label: '8', type: 'digit' }, { value: '9', label: '9', type: 'digit' },
+    { value: '*', label: '×', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
+    { value: '4', label: '4', type: 'digit' }, { value: '5', label: '5', type: 'digit' }, { value: '6', label: '6', type: 'digit' },
+    { value: '-', label: '−', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
+    { value: '1', label: '1', type: 'digit' }, { value: '2', label: '2', type: 'digit' }, { value: '3', label: '3', type: 'digit' },
+    { value: '+', label: '+', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
+    { value: '0', label: '0', type: 'digit', className: 'col-span-2' }, { value: '.', label: '.', type: 'decimal' },
+    { value: '=', label: '=', type: 'equals', className: 'bg-accent hover:bg-accent/90 text-accent-foreground' },
+  ];
+
+  const scientificButtonsConfig: CalculatorButtonConfig[] = [
+    { value: 'sin(', label: 'sin', type: 'scientific', action: 'sin' }, { value: 'cos(', label: 'cos', type: 'scientific', action: 'cos' },
+    { value: 'tan(', label: 'tan', type: 'scientific', action: 'tan' }, { value: 'deg', label: isRadians ? 'DEG' : 'RAD', type: 'action', action: 'toggleMode' },
+    { value: 'log10(', label: 'log', type: 'scientific', action: 'log10' }, { value: 'log(', label: 'ln', type: 'scientific', action: 'log' }, 
+    { value: 'sqrt(', label: '√', type: 'scientific', action: 'sqrt' }, { value: '**', label: 'xʸ', type: 'operator', }, 
+    { value: 'Math.PI', label: 'π', type: 'digit', action: 'pi' }, { value: 'Math.E', label: 'e', type: 'digit', action: 'e' }, 
+    { value: '±', label: '±', type: 'action', action: 'toggleSign' }, { value: '%', label: '%', type: 'action', action: 'percentage' },
+  ];
 
   useEffect(() => {
     setVoicePreference('gojo');

@@ -17,10 +17,6 @@ interface ChatMessageProps {
 export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
   const { t, isReady } = useTranslation();
   
-  if (!isReady) {
-    return null; // Don't render anything until translations are loaded to prevent key flashing
-  }
-
   const isUser = message.role === 'user';
   const alignment = isUser ? 'items-end' : 'items-start';
   const bubbleColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground';
@@ -35,6 +31,18 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
     return character === 'gojo' ? <Bot /> : <Wand2 />;
   };
   
+  if (!isReady) {
+    return (
+       <div className={cn('flex flex-col gap-2 py-3', alignment)}>
+        <div className={cn('flex gap-3 items-start', isUser ? 'flex-row-reverse' : 'flex-row')}>
+            <div className="h-8 w-8 rounded-full bg-muted animate-pulse"></div>
+            <div className="max-w-[75%] rounded-lg px-4 py-3 shadow-md flex items-center gap-2 bg-muted animate-pulse h-10 w-40">
+            </div>
+        </div>
+      </div>
+    )
+  }
+
   const getAvatarAlt = () => {
     if (isUser) return t('chatbot.avatar.userAlt');
     return t(character === 'gojo' ? 'chatbot.avatar.gojoAlt' : 'chatbot.avatar.holoAlt');

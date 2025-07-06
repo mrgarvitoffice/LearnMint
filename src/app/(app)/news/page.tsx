@@ -176,8 +176,6 @@ export default function NewsPage() {
     return { text: t('news.controls.read'), icon: <PlayCircle className="h-4 w-4 mr-2" /> };
   };
 
-  const { text: playbackButtonText, icon: playbackButtonIcon } = getPlaybackButtonTextAndIcon();
-
   if (!isReady) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
@@ -185,6 +183,8 @@ export default function NewsPage() {
       </div>
     );
   }
+  
+  const { text: playbackButtonText, icon: playbackButtonIcon } = getPlaybackButtonTextAndIcon();
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-8">

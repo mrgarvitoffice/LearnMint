@@ -8,8 +8,6 @@ import { Gamepad2, Puzzle, Crown, ExternalLink, Loader2 } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
 import { useTranslation } from '@/hooks/useTranslation';

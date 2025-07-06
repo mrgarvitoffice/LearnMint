@@ -85,7 +85,7 @@ export function DefinitionChallenge() {
       setWordFailedMessage('');
     } else {
       setGameOver(true);
-      const finalMessage = t('arcade.challenge.gameOverMessage', { streak, highScore });
+      const finalMessage = t('arcade.challenge.gameOverMessage', { streak: streak.toString(), highScore: highScore.toString() });
       setFeedback(finalMessage);
       speak(finalMessage, { priority: 'essential' });
     }
@@ -123,7 +123,7 @@ export function DefinitionChallenge() {
         setIsCorrect(false); 
         setTimeout(nextWord, 2500); 
       } else {
-        setFeedback(t('arcade.challenge.feedback.attemptsLeft', { attempts: 3 - newMistakes }));
+        setFeedback(t('arcade.challenge.feedback.attemptsLeft', { attempts: (3 - newMistakes).toString() }));
         setIsCorrect(false);
       }
     }
@@ -178,13 +178,13 @@ export function DefinitionChallenge() {
         <CardTitle className="text-xl text-primary">{t('arcade.challenge.title')}</CardTitle>
         <CardDescription>{t('arcade.challenge.description')}</CardDescription>
         <div className="flex justify-between text-sm text-muted-foreground mt-2">
-          <span>{t('arcade.challenge.wordProgress', { current: currentWordIndex + 1, total: words.length })}</span>
+          <span>{t('arcade.challenge.wordProgress', { current: (currentWordIndex + 1).toString(), total: words.length.toString() })}</span>
           <div className="space-x-3">
-            <span>{t('arcade.challenge.streak', { streak })} <Zap className="inline h-4 w-4 text-yellow-500" /></span>
-            <span>{t('arcade.challenge.highScore', { highScore })}</span>
+            <span>{t('arcade.challenge.streak', { streak: streak.toString() })} <Zap className="inline h-4 w-4 text-yellow-500" /></span>
+            <span>{t('arcade.challenge.highScore', { highScore: highScore.toString() })}</span>
           </div>
         </div>
-         {!gameOver && currentWord && <p className="text-xs text-muted-foreground">{t('arcade.challenge.attemptsLeft', { attempts: 3 - mistakesMadeThisWord })}</p>}
+         {!gameOver && currentWord && <p className="text-xs text-muted-foreground">{t('arcade.challenge.attemptsLeft', { attempts: (3 - mistakesMadeThisWord).toString() })}</p>}
       </CardHeader>
       <CardContent className="space-y-4">
         {gameOver ? (
@@ -198,11 +198,11 @@ export function DefinitionChallenge() {
             <div className="p-4 bg-muted rounded-md min-h-[6rem] flex items-center justify-center">
               <p className="text-md text-center">{currentWord.definition}</p>
             </div>
-            {showHint && feedback.startsWith(t('arcade.challenge.hints.prefix')) && (
+            {showHint && feedback.startsWith(t('arcade.challenge.hints.hint1Prefix')) && (
               <Alert variant="default" className="bg-primary/10 border-primary/30">
                 <Lightbulb className="h-5 w-5 text-primary" />
                 <AlertTitle>{t('arcade.challenge.hints.title')}</AlertTitle>
-                <AlertDescription>{feedback.replace(`${t('arcade.challenge.hints.prefix')}: `, "")}</AlertDescription>
+                <AlertDescription>{feedback}</AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleGuessSubmit} className="space-y-3">
@@ -233,7 +233,7 @@ export function DefinitionChallenge() {
                 <AlertTitle>{t('arcade.challenge.feedback.correct')}</AlertTitle>
               </Alert>
             )}
-            {isCorrect === false && feedback && !feedback.startsWith(t('arcade.challenge.hints.prefix')) && mistakesMadeThisWord < 3 && (
+            {isCorrect === false && feedback && !feedback.startsWith(t('arcade.challenge.hints.hint1Prefix')) && mistakesMadeThisWord < 3 && (
               <Alert variant="destructive">
                 <XCircle className="h-5 w-5" />
                 <AlertTitle>{t('arcade.challenge.feedback.incorrect')}</AlertTitle>
@@ -250,7 +250,7 @@ export function DefinitionChallenge() {
             disabled={hintsUsed >= 3 || isCorrect === true || gameOver || mistakesMadeThisWord >= 3}
             className="w-full sm:w-auto"
         >
-          <Lightbulb className="w-4 h-4 mr-2" /> {t('arcade.challenge.useHintButton', { count: 3 - hintsUsed })}
+          <Lightbulb className="w-4 h-4 mr-2" /> {t('arcade.challenge.useHintButton', { count: (3 - hintsUsed).toString() })}
         </Button>
         <Button onClick={handleResetGameAndStreak} variant="secondary" className="w-full sm:w-auto">
           <RotateCcw className="w-4 h-4 mr-2" /> {t('arcade.challenge.resetButton')}
