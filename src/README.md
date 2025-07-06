@@ -1,6 +1,6 @@
 
 # 🌱 LearnMint: Your AI-Powered Study Revolution! 🚀
-### A Project by **MrGarvit**
+### A Project Made by **MrGarvit**
 
 <p align="center">
   <a href="https://learnmint.dev" target="_blank">
