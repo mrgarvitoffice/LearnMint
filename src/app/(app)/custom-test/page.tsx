@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ChangeEvent } from 'react';
@@ -29,10 +30,10 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
 import { extractTextFromPdf } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
 const MAX_RECENT_TOPICS_SELECT = 3;
-const PAGE_TITLE = "Advanced Test Configuration";
 const RECENT_TOPICS_LS_KEY = 'learnmint-recent-topics';
 const NOTES_TRUNCATION_LIMIT = 4000; // Character limit for notes sent to AI
 
@@ -48,19 +49,6 @@ const formSchema = z.object({
   numQuestions: z.coerce.number().min(1, 'Min 1 question').max(50, 'Max 50 questions').default(5),
   timer: z.coerce.number().min(0, 'Timer cannot be negative').default(0),
   perQuestionTimer: z.coerce.number().min(0, 'Per-question timer cannot be negative').optional().default(0),
-}).superRefine((data, ctx) => {
-  if (data.sourceType === 'topic' && (!data.topics || data.topics.trim().length < 3)) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Topic(s) must be at least 3 characters.", path: ['topics'] });
-  }
-  if (data.sourceType === 'notes' && (!data.notes || data.notes.trim().length < 50)) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Notes must be at least 50 characters.", path: ['notes'] });
-  }
-  if (data.sourceType === 'recent' && (!data.selectedRecentTopics || data.selectedRecentTopics.length === 0)) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select at least one recent topic.", path: ['selectedRecentTopics'] });
-  }
-  if (data.sourceType === 'recent' && data.selectedRecentTopics && data.selectedRecentTopics.length > MAX_RECENT_TOPICS_SELECT) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: `You can select a maximum of ${MAX_RECENT_TOPICS_SELECT} recent topics.`, path: ['selectedRecentTopics'] });
-  }
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -92,6 +80,7 @@ export default function CustomTestPage() {
 
   const notesFileRef = useRef<HTMLInputElement>(null);
 
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { playSound: playCorrectSound } = useSound('/sounds/correct-answer.mp3', { priority: 'essential' });
   const { playSound: playIncorrectSound } = useSound('/sounds/incorrect-answer.mp3', { priority: 'essential' });
@@ -116,13 +105,13 @@ export default function CustomTestPage() {
   const selectedRecentTopicsWatch = watch('selectedRecentTopics');
   
   const getPerformanceTag = useCallback((percentage: number): string => {
-    if (percentage === 100) return "Conqueror";
-    if (percentage >= 90) return "Ace";
-    if (percentage >= 80) return "Diamond";
-    if (percentage >= 70) return "Gold";
-    if (percentage >= 50) return "Bronze";
-    return "Keep Practicing!";
-  }, []);
+    if (percentage === 100) return t('customTest.results.performance.conqueror');
+    if (percentage >= 90) return t('customTest.results.performance.ace');
+    if (percentage >= 80) return t('customTest.results.performance.diamond');
+    if (percentage >= 70) return t('customTest.results.performance.gold');
+    if (percentage >= 50) return t('customTest.results.performance.bronze');
+    return t('customTest.results.performance.practice');
+  }, [t]);
 
   const handleSubmitTest = useCallback((autoSubmitted = false) => {
     if (!autoSubmitted) playClickSound();
@@ -147,12 +136,12 @@ export default function CustomTestPage() {
       const calculatedPerformanceTag = getPerformanceTag(percentage);
 
       if (!resultAnnouncementSpokenRef.current) {
-        const ttsMessage = `Test ${autoSubmitted ? "auto-submitted" : "submitted"}! Your score is ${currentScore} out of ${totalPossibleScore}. Your performance is ${calculatedPerformanceTag}!`;
+        const ttsMessage = `${t(autoSubmitted ? 'customTest.toast.autoSubmittedTitle' : 'customTest.toast.submittedTitle')}! ${t('customTest.toast.scoreMessage', { score: currentScore, totalPossibleScore })}. ${t('customTest.toast.performanceMessage', { performanceTag: calculatedPerformanceTag })}!`;
         speak(ttsMessage, { priority: 'essential' });
         resultAnnouncementSpokenRef.current = true;
       }
       if (!autoSubmitted || (autoSubmitted && !prevTestState.isAutoSubmitting)) {
-        toast({ title: autoSubmitted ? "Test Auto-Submitted!" : "Test Submitted!", description: `Score: ${currentScore}/${totalPossibleScore} (${percentage.toFixed(1)}%). Performance: ${calculatedPerformanceTag}` });
+        toast({ title: autoSubmitted ? t('customTest.toast.autoSubmittedTitle') : t('customTest.toast.submittedTitle'), description: `${t('customTest.toast.scoreMessage', { score: currentScore, totalPossibleScore })} (${percentage.toFixed(1)}%). ${t('customTest.toast.performanceMessage', { performanceTag: calculatedPerformanceTag })}` });
       }
 
       return {
@@ -161,7 +150,7 @@ export default function CustomTestPage() {
         performanceTag: calculatedPerformanceTag, currentQuestionTimeLeft: undefined,
       };
     });
-  }, [playClickSound, getPerformanceTag, playCorrectSound, playIncorrectSound, speak, toast]);
+  }, [playClickSound, getPerformanceTag, playCorrectSound, playIncorrectSound, speak, toast, t]);
 
   useEffect(() => { setVoicePreference('holo'); }, [setVoicePreference]);
 
@@ -175,23 +164,23 @@ export default function CustomTestPage() {
     playClickSound();
     if (selectedRecentTopicsWatch && selectedRecentTopicsWatch.length > 0) {
       setRecentTopicsSelectionDone(true);
-      toast({ title: "Topics Confirmed", description: "Recent topics selection confirmed. Please proceed with other test settings." });
+      toast({ title: t('customTest.toast.topicsConfirmedTitle'), description: t('customTest.toast.topicsConfirmedDesc') });
     } else {
-      toast({ title: "No Topics Selected", description: "Please select at least one recent topic to confirm.", variant: "destructive" });
+      toast({ title: t('customTest.toast.noTopicsSelectedTitle'), description: t('customTest.toast.noTopicsSelectedDesc'), variant: "destructive" });
     }
   };
   
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!pageTitleSpokenRef.current && !testState && !isLoading) {
-        speak(PAGE_TITLE, { priority: 'optional' });
+        speak(t('customTest.pageTitle'), { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [speak, testState, isLoading]);
+  }, [speak, testState, isLoading, t]);
 
-  useEffect(() => { if (isLoading) speak("Creating custom test. Please wait.", { priority: 'optional' }); }, [isLoading, speak]);
+  useEffect(() => { if (isLoading) speak(t('customTest.generate.speak.creating'), { priority: 'optional' }); }, [isLoading, speak, t]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -214,7 +203,7 @@ export default function CustomTestPage() {
           const newTimeLeftVal = currentTestState.timeLeft - 1;
           if (newTimeLeftVal <= 0) {
             clearInterval(timerId);
-            toast({ title: "Time's Up!", description: "Your test is being submitted automatically.", variant: "default" });
+            toast({ title: t('customTest.test.toast.timesUp'), description: t('customTest.test.toast.timesUpDesc'), variant: "default" });
             handleSubmitTest(true);
             return { ...currentTestState, timeLeft: 0, isAutoSubmitting: true };
           }
@@ -223,7 +212,7 @@ export default function CustomTestPage() {
       }, 1000);
       return () => clearInterval(timerId);
     }
-  }, [testState?.timeLeft, testState?.showResults, handleSubmitTest, toast]);
+  }, [testState?.timeLeft, testState?.showResults, handleSubmitTest, toast, t]);
   
   const handleNextQuestion = useCallback(() => {
       playClickSound();
@@ -249,7 +238,7 @@ export default function CustomTestPage() {
           const newTimeLeft = prev.currentQuestionTimeLeft - 1;
           if (newTimeLeft <= 0) {
             clearInterval(timerId);
-            toast({ title: "Time's up for this question!", variant: "default" });
+            toast({ title: t('customTest.test.toast.questionTimesUp'), variant: "default" });
             handleNextQuestion();
             return { ...prev, currentQuestionTimeLeft: 0 };
           }
@@ -258,7 +247,7 @@ export default function CustomTestPage() {
       }, 1000);
       return () => clearInterval(timerId);
     }
-  }, [testState?.currentQuestionIndex, testState?.settings.perQuestionTimer, testState?.showResults, handleNextQuestion, toast]);
+  }, [testState?.currentQuestionIndex, testState?.settings.perQuestionTimer, testState?.showResults, handleNextQuestion, toast, t]);
 
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -266,7 +255,7 @@ export default function CustomTestPage() {
     setIsLoading(true); setTestState(null);
     resultAnnouncementSpokenRef.current = false;
     pageTitleSpokenRef.current = true; 
-    speak("Creating custom test. Please wait.", { priority: 'optional' });
+    speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
 
     let topicForAI = ""; let topicsForSettings: string[] = []; let notesForAI = "";
     if (data.sourceType === 'topic' && data.topics) {
@@ -276,15 +265,15 @@ export default function CustomTestPage() {
         if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
           const truncatedNotes = `${notesForAI.substring(0, NOTES_TRUNCATION_LIMIT / 2)}... (content truncated) ...${notesForAI.substring(notesForAI.length - NOTES_TRUNCATION_LIMIT / 2)}`;
           topicForAI = `questions based on the following notes: ${truncatedNotes}`;
-          toast({ title: "Notes Truncated", description: `Your notes were long and have been truncated to prevent errors.`, variant: "default"});
+          toast({ title: t('customTest.generate.toast.notesTruncatedTitle'), description: t('customTest.generate.toast.notesTruncatedDesc'), variant: "default"});
         } else {
           topicForAI = `questions based on the following notes: ${notesForAI}`;
         }
-        topicsForSettings = ["Notes-based Test"];
+        topicsForSettings = [t('customTest.generate.notesBasedTest')];
     } else if (data.sourceType === 'recent' && data.selectedRecentTopics && data.selectedRecentTopics.length > 0) {
         topicForAI = data.selectedRecentTopics.join(', '); topicsForSettings = data.selectedRecentTopics;
     } else {
-        toast({ title: "Error", description: "Please provide a topic, notes, or select recent topics.", variant: "destructive" });
+        toast({ title: t('customTest.generate.toast.errorTitle'), description: t('customTest.generate.error.noSource'), variant: "destructive" });
         setIsLoading(false); return;
     }
 
@@ -311,17 +300,17 @@ export default function CustomTestPage() {
           timeLeft: settings.timer && settings.timer > 0 ? settings.timer * 60 : undefined,
           currentQuestionTimeLeft: settings.perQuestionTimer && settings.perQuestionTimer > 0 ? settings.perQuestionTimer : undefined,
         });
-        toast({ title: 'Test Generated!', description: 'Your custom test is ready to start.' });
-        speak("Test Generated!", { priority: 'essential' });
+        toast({ title: t('customTest.generate.toast.successTitle'), description: t('customTest.generate.toast.successDesc') });
+        speak(t('customTest.generate.speak.success'), { priority: 'essential' });
       } else {
-        toast({ title: 'No Questions', description: 'The AI returned no questions for this configuration.', variant: 'destructive' });
-        speak("Sorry, no questions were returned.", { priority: 'essential' });
+        toast({ title: t('customTest.generate.toast.noQuestionsTitle'), description: t('customTest.generate.toast.noQuestionsDesc'), variant: 'destructive' });
+        speak(t('customTest.generate.speak.noQuestions'), { priority: 'essential' });
       }
     } catch (error) {
       console.error('Error generating custom test:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate test. Please try again.';
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
-      speak("Sorry, there was an error generating the test.", { priority: 'essential' });
+      const errorMessage = error instanceof Error ? error.message : t('customTest.generate.toast.errorTitle');
+      toast({ title: t('customTest.generate.toast.errorTitle'), description: errorMessage, variant: 'destructive' });
+      speak(t('customTest.generate.speak.error'), { priority: 'essential' });
     } finally { setIsLoading(false); }
   };
 
@@ -358,7 +347,7 @@ export default function CustomTestPage() {
     resultAnnouncementSpokenRef.current = false;
     pageTitleSpokenRef.current = true;
 
-    speak("Recreating test. Please wait.", { priority: 'optional' });
+    speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
     let topicForAI = "";
     if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) topicForAI = originalSettings.topics.join(', ');
     else if (originalSettings.sourceType === 'notes' && originalSettings.notes) topicForAI = `questions based on the following notes: ${originalSettings.notes}`;
@@ -373,10 +362,10 @@ export default function CustomTestPage() {
             timeLeft: originalSettings.timer && originalSettings.timer > 0 ? originalSettings.timer * 60 : undefined,
             currentQuestionTimeLeft: originalSettings.perQuestionTimer && originalSettings.perQuestionTimer > 0 ? originalSettings.perQuestionTimer : undefined,
           });
-          speak("Test ready for retake!", { priority: 'essential' });
+          speak(t('customTest.generate.speak.success'), { priority: 'essential' });
         } else {
-          toast({ title: 'Retake Error', description: 'Could not regenerate questions for retake.', variant: 'destructive' });
-          speak("Sorry, could not regenerate the test.", { priority: 'essential' });
+          toast({ title: t('customTest.toast.retakeErrorTitle'), description: t('customTest.toast.retakeErrorDesc'), variant: 'destructive' });
+          speak(t('customTest.generate.speak.error'), { priority: 'essential' });
         }
       })
       .catch(error => { console.error('Error retaking test:', error); const errorMessage = error instanceof Error ? error.message : 'Failed to retake test.'; toast({ title: 'Error', description: errorMessage, variant: 'destructive' }); })
@@ -417,7 +406,7 @@ export default function CustomTestPage() {
     if (currentSelected.includes(topic)) newSelected = currentSelected.filter(t => t !== topic);
     else {
       if (currentSelected.length < MAX_RECENT_TOPICS_SELECT) newSelected = [...currentSelected, topic];
-      else { toast({ title: "Limit Reached", description: `You can select a maximum of ${MAX_RECENT_TOPICS_SELECT} topics.`, variant: "default" }); return; }
+      else { toast({ title: t('customTest.recent.error.tooManySelected', { count: MAX_RECENT_TOPICS_SELECT }), description: `You can select a maximum of ${MAX_RECENT_TOPICS_SELECT} topics.`, variant: "default" }); return; }
     }
     setValue('selectedRecentTopics', newSelected, { shouldValidate: true });
   };
@@ -430,33 +419,33 @@ export default function CustomTestPage() {
     handleRemoveFile(false);
 
     if (file.type.startsWith('image/')) {
-        if (file.size > 2 * 1024 * 1024) { toast({ title: "Image Too Large", description: "Max 2MB.", variant: "destructive" }); return; }
+        if (file.size > 2 * 1024 * 1024) { toast({ title: t('customTest.file.image.tooLarge'), description: t('customTest.file.image.tooLargeDesc'), variant: "destructive" }); return; }
         const reader = new FileReader();
         reader.onloadend = () => { setNotesImagePreview(reader.result as string); setValue('notesImage', reader.result as string); };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        if (file.size > 5 * 1024 * 1024) { toast({ title: "PDF Too Large", description: "Max 5MB.", variant: "destructive" }); return; }
+        if (file.size > 5 * 1024 * 1024) { toast({ title: t('customTest.file.pdf.tooLarge'), description: t('customTest.file.pdf.tooLargeDesc'), variant: "destructive" }); return; }
         setPdfFileName(file.name);
         try {
             const text = await extractTextFromPdf(file);
             setValue('notes', text);
-            toast({ title: "PDF Processed", description: "Text from PDF has been added to the notes field." });
+            toast({ title: t('customTest.file.pdf.processed'), description: t('customTest.file.pdf.processedDesc') });
         } catch(err) {
-            toast({ title: "PDF Error", description: "Could not extract text from the PDF.", variant: "destructive" });
+            toast({ title: t('customTest.file.pdf.error'), description: t('customTest.file.pdf.errorDesc'), variant: "destructive" });
             setPdfFileName(null);
         }
     } else if (file.type.startsWith('audio/')) {
-        if (file.size > 25 * 1024 * 1024) { toast({ title: "Audio Too Large", description: "Max 25MB.", variant: "destructive" }); return; }
+        if (file.size > 25 * 1024 * 1024) { toast({ title: t('customTest.file.audio.tooLarge'), description: t('customTest.file.audio.tooLargeDesc'), variant: "destructive" }); return; }
         const reader = new FileReader();
         reader.onloadend = () => { setAudioFileName(file.name); setValue('notesAudio', reader.result as string); };
         reader.readAsDataURL(file);
     } else if (file.type.startsWith('video/')) {
-        if (file.size > 25 * 1024 * 1024) { toast({ title: "Video Too Large", description: "Max 25MB.", variant: "destructive" }); return; }
+        if (file.size > 25 * 1024 * 1024) { toast({ title: t('customTest.file.video.tooLarge'), description: t('customTest.file.video.tooLargeDesc'), variant: "destructive" }); return; }
         const reader = new FileReader();
         reader.onloadend = () => { setVideoFileName(file.name); setValue('notesVideo', reader.result as string); };
         reader.readAsDataURL(file);
     } else {
-        toast({ title: "Unsupported File", description: "Please upload an image, PDF, audio, or video file.", variant: "default" });
+        toast({ title: t('customTest.file.unsupported'), description: t('customTest.file.unsupportedDesc'), variant: "default" });
     }
   };
 
@@ -491,40 +480,40 @@ export default function CustomTestPage() {
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4"><TestTubeDiagonal className="h-12 w-12 text-primary" /></div>
             <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
-              <CardTitle className="text-2xl sm:text-3xl font-bold text-primary flex-1 text-center">{PAGE_TITLE}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-primary flex-1 text-center">{t('customTest.pageTitle')}</CardTitle>
             </div>
-            <CardDescription className="text-sm sm:text-base text-muted-foreground px-2">Configure your test parameters. Generate questions from topics, notes, or recent studies.</CardDescription>
+            <CardDescription className="text-sm sm:text-base text-muted-foreground px-2">{t('customTest.pageDescription')}</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-6 p-6">
               <div>
-                <Label className="text-base font-semibold mb-2 block">Test Source</Label>
+                <Label className="text-base font-semibold mb-2 block">{t('customTest.sourceTitle')}</Label>
                 <Controller name="sourceType" control={control} render={({ field }) => (
                   <RadioGroup onValueChange={(value) => { playClickSound(); field.onChange(value); setRecentTopicsSelectionDone(false); }} value={field.value} className="flex flex-col sm:flex-row gap-4">
-                    <Label htmlFor="source-topic" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="topic" id="source-topic" /> <span>Topic(s)</span></Label>
-                    <Label htmlFor="source-notes" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="notes" id="source-notes" /> <span>My Notes</span></Label>
-                    <Label htmlFor="source-recent" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="recent" id="source-recent" /> <span>Recent Topics</span></Label>
+                    <Label htmlFor="source-topic" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="topic" id="source-topic" /> <span>{t('customTest.source.topic')}</span></Label>
+                    <Label htmlFor="source-notes" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="notes" id="source-notes" /> <span>{t('customTest.source.notes')}</span></Label>
+                    <Label htmlFor="source-recent" className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted has-[:checked]:bg-primary/20 has-[:checked]:border-primary cursor-pointer flex-1 transition-all"><RadioGroupItem value="recent" id="source-recent" /> <span>{t('customTest.source.recent')}</span></Label>
                   </RadioGroup>
                 )} />
               </div>
               {sourceType === 'topic' && (
                 <div className="space-y-2 animate-in fade-in-50">
-                  <Label htmlFor="topics" className="text-base">Topic(s)</Label>
+                  <Label htmlFor="topics" className="text-base">{t('customTest.source.topic')}</Label>
                   <div className="flex gap-2">
-                    <Input id="topics" placeholder="e.g., Photosynthesis, World War II" {...register('topics')} className="transition-colors duration-200 ease-in-out text-base" />
+                    <Input id="topics" placeholder={t('customTest.topic.placeholder')} {...register('topics')} className="transition-colors duration-200 ease-in-out text-base" />
                     {browserSupportsSpeechRecognition && (<Button type="button" variant="outline" size="icon" onClick={handleMicClick} disabled={isLoading || isListening}><Mic className={`w-5 h-5 ${isListening ? 'text-destructive animate-pulse' : ''}`} /></Button>)}
                   </div>
-                  {errors.topics && <p className="text-sm text-destructive">{errors.topics.message}</p>}
-                  {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
+                  {errors.topics && <p className="text-sm text-destructive">{errors.topics.message || t('customTest.topic.error.minLength')}</p>}
+                  {voiceError && <p className="text-sm text-destructive">{t('customTest.voice.error')}</p>}
                 </div>
               )}
               {sourceType === 'notes' && (
                 <div className="space-y-2 animate-in fade-in-50">
-                  <Label htmlFor="notes" className="text-base">Your Notes & Files</Label>
+                  <Label htmlFor="notes" className="text-base">{t('customTest.source.notes')}</Label>
                    <div className="flex gap-2">
-                    <Textarea id="notes" placeholder="Paste your study notes here (min 50 characters)..." {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
+                    <Textarea id="notes" placeholder={t('customTest.notes.placeholder')} {...register('notes')} rows={6} className="transition-colors duration-200 ease-in-out text-base flex-1" />
                     <div className="flex flex-col gap-2">
-                      <Button type="button" variant="outline" size="icon" onClick={() => notesFileRef.current?.click()} title="Attach Image, PDF, Audio, or Video">
+                      <Button type="button" variant="outline" size="icon" onClick={() => notesFileRef.current?.click()} title={t('customTest.notes.attachFile')}>
                         <ImageIcon className="w-5 h-5" />
                       </Button>
                       {browserSupportsSpeechRecognition && (
@@ -534,12 +523,12 @@ export default function CustomTestPage() {
                       )}
                     </div>
                   </div>
-                  {errors.notes && <p className="text-sm text-destructive mt-1">{errors.notes.message}</p>}
+                  {errors.notes && <p className="text-sm text-destructive mt-1">{errors.notes.message || t('customTest.notes.error.minLength')}</p>}
                   
                   <div className="flex flex-wrap gap-2">
                     {notesImagePreview && (
                       <div className="relative w-20 h-20 mt-2">
-                        <Image src={notesImagePreview} alt="Notes preview" layout="fill" objectFit="cover" className="rounded-md" />
+                        <Image src={notesImagePreview} alt={t('customTest.file.image.previewAlt')} layout="fill" objectFit="cover" className="rounded-md" />
                         <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground">
                           <XCircle className="w-4 h-4" />
                         </Button>
@@ -568,12 +557,12 @@ export default function CustomTestPage() {
                     )}
                   </div>
                   <input type="file" ref={notesFileRef} onChange={handleFileUpload} accept="image/*,application/pdf,audio/*,video/*" className="hidden" />
-                  {voiceError && <p className="text-sm text-destructive">Voice input error. Please try again.</p>}
+                  {voiceError && <p className="text-sm text-destructive">{t('customTest.voice.error')}</p>}
                 </div>
               )}
               {sourceType === 'recent' && (
                 <div className="space-y-3 animate-in fade-in-50">
-                  <Label className="text-base font-semibold">Select Recent Topic(s) (Max {MAX_RECENT_TOPICS_SELECT})</Label>
+                  <Label className="text-base font-semibold">{t('customTest.recent.title', { count: MAX_RECENT_TOPICS_SELECT })}</Label>
                   {recentTopics.length > 0 ? (
                     <div className="space-y-2 max-h-48 overflow-y-auto p-2 border rounded-md bg-muted/30">
                       {recentTopics.map(topic => (
@@ -583,55 +572,59 @@ export default function CustomTestPage() {
                         </Label>
                       ))}
                     </div>
-                  ) : <p className="text-sm text-muted-foreground p-2 border rounded-md">No recent topics found. Generate some notes first!</p>}
-                  {errors.selectedRecentTopics && <p className="text-sm text-destructive">{errors.selectedRecentTopics.message}</p>}
+                  ) : <p className="text-sm text-muted-foreground p-2 border rounded-md">{t('customTest.recent.empty')}</p>}
+                  {errors.selectedRecentTopics && <p className="text-sm text-destructive">{errors.selectedRecentTopics.message || t('customTest.recent.error.noneSelected')}</p>}
                   
                   {recentTopics.length > 0 && selectedRecentTopicsWatch && selectedRecentTopicsWatch.length > 0 && !recentTopicsSelectionDone && (
-                    <Button type="button" onClick={handleConfirmRecentTopics} variant="secondary" className="mt-2">Confirm Recent Topics Selection</Button>
+                    <Button type="button" onClick={handleConfirmRecentTopics} variant="secondary" className="mt-2">{t('customTest.recent.confirmButton')}</Button>
                   )}
                   {recentTopicsSelectionDone && (
                     <div className="mt-2 flex items-center gap-2 text-green-600 p-2 border border-green-500 bg-green-500/10 rounded-md text-sm">
                       <CheckCircle className="h-5 w-5" />
-                      <span>Recent topics selection confirmed!</span>
+                      <span>{t('customTest.recent.confirmedMessage')}</span>
                     </div>
                   )}
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="difficulty" className="text-base">Difficulty</Label>
+                  <Label htmlFor="difficulty" className="text-base">{t('customTest.settings.difficulty.label')}</Label>
                   <Controller name="difficulty" control={control} render={({ field }) => (
                     <Select onValueChange={(value) => { playClickSound(); field.onChange(value); }} value={field.value}>
-                      <SelectTrigger id="difficulty" className="text-base"><SelectValue placeholder="Select difficulty" /></SelectTrigger>
-                      <SelectContent><SelectItem value="easy">Easy</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="hard">Hard</SelectItem></SelectContent>
+                      <SelectTrigger id="difficulty" className="text-base"><SelectValue placeholder={t('customTest.settings.difficulty.placeholder')} /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="easy">{t('customTest.settings.difficulty.easy')}</SelectItem>
+                        <SelectItem value="medium">{t('customTest.settings.difficulty.medium')}</SelectItem>
+                        <SelectItem value="hard">{t('customTest.settings.difficulty.hard')}</SelectItem>
+                      </SelectContent>
                     </Select>
                   )} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="numQuestions" className="text-base">Number of Questions (1-50)</Label>
+                  <Label htmlFor="numQuestions" className="text-base">{t('customTest.settings.numQuestions.label')}</Label>
                   <Input id="numQuestions" type="number" {...register('numQuestions')} className="transition-colors duration-200 ease-in-out text-base" />
-                  {errors.numQuestions && <p className="text-sm text-destructive">{errors.numQuestions.message}</p>}
+                  {errors.numQuestions && <p className="text-sm text-destructive">{errors.numQuestions.message || t('customTest.settings.numQuestions.error.min')}</p>}
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="timer" className="text-base">Overall Test Timer (minutes, 0 for none)</Label>
+                  <Label htmlFor="timer" className="text-base">{t('customTest.settings.timer.label')}</Label>
                   <Input id="timer" type="number" {...register('timer')} className="transition-colors duration-200 ease-in-out text-base" />
-                  {errors.timer && <p className="text-sm text-destructive">{errors.timer.message}</p>}
+                  {errors.timer && <p className="text-sm text-destructive">{errors.timer.message || t('customTest.settings.timer.error.negative')}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="perQuestionTimer" className="text-base">Time per Question (sec, 0 for none)</Label>
+                  <Label htmlFor="perQuestionTimer" className="text-base">{t('customTest.settings.perQuestionTimer.label')}</Label>
                   <Input id="perQuestionTimer" type="number" {...register('perQuestionTimer')} className="transition-colors duration-200 ease-in-out text-base" />
-                  {errors.perQuestionTimer && <p className="text-sm text-destructive">{errors.perQuestionTimer.message}</p>}
-                  <p className="text-xs text-muted-foreground/80">Per-question timer will auto-advance if time expires.</p>
+                  {errors.perQuestionTimer && <p className="text-sm text-destructive">{errors.perQuestionTimer.message || t('customTest.settings.perQuestionTimer.error.negative')}</p>}
+                  <p className="text-xs text-muted-foreground/80">{t('customTest.settings.perQuestionTimer.description')}</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground/80 text-center">Marking: +4 correct, -1 incorrect (for answered questions).</p>
+              <p className="text-xs text-muted-foreground/80 text-center">{t('customTest.settings.markingScheme')}</p>
             </CardContent>
             <CardFooter className="justify-center p-6">
               <Button type="submit" size="lg" disabled={isLoading} className="min-w-[200px] group">
                 {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Sparkles className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-[360deg] group-hover:scale-125" />}
-                Generate Test
+                {t('customTest.generateButton.default')}
               </Button>
             </CardFooter>
           </form>
@@ -650,20 +643,20 @@ export default function CustomTestPage() {
           <>
             <CardHeader className="border-b pb-4">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-                <CardTitle className="text-xl sm:text-2xl text-primary font-bold truncate max-w-md">Test: {testState.settings.topics.join(', ').substring(0, 50)}{testState.settings.topics.join(', ').length > 50 ? "..." : ""} (Difficulty: {testState.settings.difficulty})</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl text-primary font-bold truncate max-w-md">{t('customTest.test.title', { topics: testState.settings.topics.join(', ').substring(0, 50) + (testState.settings.topics.join(', ').length > 50 ? "..." : ""), difficulty: testState.settings.difficulty })}</CardTitle>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {overallTimeLeft !== undefined && formatTime(overallTimeLeft) !== null && (<span className="flex items-center gap-1"><Clock className="w-4 h-4" /> Total: {formatTime(overallTimeLeft)}</span>)}
-                  {perQuestionTimeLeft !== undefined && testState.settings.perQuestionTimer && testState.settings.perQuestionTimer > 0 && formatTime(perQuestionTimeLeft) !== null && (<span className="flex items-center gap-1"><TimerIcon className="w-4 h-4 text-destructive animate-pulse" /> Q Time: {formatTime(perQuestionTimeLeft)}</span>)}
+                  {overallTimeLeft !== undefined && formatTime(overallTimeLeft) !== null && (<span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {t('customTest.test.totalTime', { time: formatTime(overallTimeLeft) })}</span>)}
+                  {perQuestionTimeLeft !== undefined && testState.settings.perQuestionTimer && testState.settings.perQuestionTimer > 0 && formatTime(perQuestionTimeLeft) !== null && (<span className="flex items-center gap-1"><TimerIcon className="w-4 h-4 text-destructive animate-pulse" /> {t('customTest.test.questionTime', { time: formatTime(perQuestionTimeLeft) })}</span>)}
                 </div>
               </div>
               <Progress value={((testState.currentQuestionIndex + 1) / testState.questions.length) * 100} className="w-full mt-3 h-2.5" />
-              <CardDescription className="mt-2 text-center sm:text-left">Question {testState.currentQuestionIndex + 1} of {testState.questions.length}</CardDescription>
+              <CardDescription className="mt-2 text-center sm:text-left">{t('customTest.test.questionProgress', { current: testState.currentQuestionIndex + 1, total: testState.questions.length })}</CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <ReactMarkdown className="text-lg font-semibold prose dark:prose-invert max-w-none">{currentQuestionData.question}</ReactMarkdown>
               
               {currentQuestionData.type === 'short-answer' ? (
-                <Input value={currentAnswerForQuestion || ''} onChange={handleShortAnswerChange} disabled={testState.showResults || testState.isAutoSubmitting} placeholder="Type your answer here" className="text-base" aria-label="Short answer input"/>
+                <Input value={currentAnswerForQuestion || ''} onChange={handleShortAnswerChange} disabled={testState.showResults || testState.isAutoSubmitting} placeholder={t('customTest.test.shortAnswerPlaceholder')} className="text-base" aria-label="Short answer input"/>
               ) : currentQuestionData.options ? (
                 <RadioGroup onValueChange={handleAnswerSelect} value={currentAnswerForQuestion} className="space-y-3">
                   {currentQuestionData.options.map((option, i) => (
@@ -676,37 +669,37 @@ export default function CustomTestPage() {
               ) : (<p className="text-muted-foreground">Question options not available.</p>)}
             </CardContent>
             <CardFooter className="flex justify-between p-6 border-t">
-              <Button variant="outline" onClick={handlePrevQuestion} disabled={testState.currentQuestionIndex === 0 || testState.isAutoSubmitting}>Previous</Button>
-              {testState.currentQuestionIndex < testState.questions.length - 1 ? (<Button onClick={handleNextQuestion} disabled={testState.isAutoSubmitting}>Next</Button>) : (<Button onClick={() => handleSubmitTest(false)} variant="default" disabled={testState.isAutoSubmitting}>Submit Test</Button>)}
+              <Button variant="outline" onClick={handlePrevQuestion} disabled={testState.currentQuestionIndex === 0 || testState.isAutoSubmitting}>{t('customTest.test.previousButton')}</Button>
+              {testState.currentQuestionIndex < testState.questions.length - 1 ? (<Button onClick={handleNextQuestion} disabled={testState.isAutoSubmitting}>{t('customTest.test.nextButton')}</Button>) : (<Button onClick={() => handleSubmitTest(false)} variant="default" disabled={testState.isAutoSubmitting}>{t('customTest.test.submitButton')}</Button>)}
             </CardFooter>
           </>
         ) : testState.showResults ? (
           <Card>
             <CardHeader className="text-center border-b pb-4">
-              <CardTitle className="text-3xl font-bold text-primary">Test Results</CardTitle>
-              <CardDescription className="text-lg">You scored {testState.score} out of {testState.questions.length * 4} ({((testState.score / (testState.questions.length * 4 || 1)) * 100).toFixed(1)}%)</CardDescription>
-              {testState.performanceTag && (<Badge variant={testState.performanceTag === "Conqueror" || testState.performanceTag === "Ace" ? "default" : testState.performanceTag === "Diamond" || testState.performanceTag === "Gold" ? "secondary" : testState.performanceTag === "Bronze" ? "outline" : "destructive"} className="mx-auto mt-2 text-base px-4 py-1.5 shadow-md"><Award className="w-5 h-5 mr-2" /> {testState.performanceTag}</Badge>)}
+              <CardTitle className="text-3xl font-bold text-primary">{t('customTest.results.title')}</CardTitle>
+              <CardDescription className="text-lg">{t('customTest.results.scoreMessage', { score: testState.score, totalPossibleScore: testState.questions.length * 4, percentage: ((testState.score / (testState.questions.length * 4 || 1)) * 100).toFixed(1) })}</CardDescription>
+              {testState.performanceTag && (<Badge variant={testState.performanceTag === t('customTest.results.performance.conqueror') || testState.performanceTag === t('customTest.results.performance.ace') ? "default" : testState.performanceTag === t('customTest.results.performance.diamond') || testState.performanceTag === t('customTest.results.performance.gold') ? "secondary" : testState.performanceTag === t('customTest.results.performance.bronze') ? "outline" : "destructive"} className="mx-auto mt-2 text-base px-4 py-1.5 shadow-md"><Award className="w-5 h-5 mr-2" /> {testState.performanceTag}</Badge>)}
             </CardHeader>
             <CardContent className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-              <h3 className="text-xl font-semibold text-center mb-4 text-muted-foreground">Review Your Answers</h3>
+              <h3 className="text-xl font-semibold text-center mb-4 text-muted-foreground">{t('customTest.results.reviewTitle')}</h3>
               {testState.questions.map((q, index) => (
                 <Card key={index} className={cn("overflow-hidden shadow-sm", q.isCorrect ? 'border-green-500/70 bg-green-500/10' : (q.userAnswer !== undefined && q.userAnswer.trim() !== "") ? 'border-destructive/70 bg-destructive/10' : 'border-border bg-muted/30')}>
-                  <CardHeader className="pb-3 pt-4 px-4"><CardTitle className="text-base flex items-start gap-2">{q.isCorrect ? <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" /> : (q.userAnswer !== undefined && q.userAnswer.trim() !== "") ? <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" /> : <HelpCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />}<span className="font-normal text-sm text-muted-foreground mr-1">Q{index + 1}:</span><ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none inline leading-tight">{q.question}</ReactMarkdown></CardTitle></CardHeader>
+                  <CardHeader className="pb-3 pt-4 px-4"><CardTitle className="text-base flex items-start gap-2">{q.isCorrect ? <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" /> : (q.userAnswer !== undefined && q.userAnswer.trim() !== "") ? <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" /> : <HelpCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />}<span className="font-normal text-sm text-muted-foreground mr-1">{t('customTest.results.questionPrefix', { index: index + 1 })}:</span><ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none inline leading-tight">{q.question}</ReactMarkdown></CardTitle></CardHeader>
                   <CardContent className="text-sm space-y-1 px-4 pb-4">
-                    <p>Your answer: <span className="font-medium">{q.userAnswer || 'Not answered'}</span></p>
-                    {!q.isCorrect && <p>Correct answer: <span className="font-medium text-green-600 dark:text-green-500">{q.answer}</span></p>}
-                    {q.explanation && (<Alert variant="default" className="mt-2 bg-accent/10 border-accent/30 p-3"><Lightbulb className="h-4 w-4 text-accent-foreground/80" /><AlertTitle className="text-accent-foreground/90 text-xs font-semibold">Explanation</AlertTitle><AlertDescription className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground"><ReactMarkdown>{q.explanation}</ReactMarkdown></AlertDescription></Alert>)}
+                    <p>{t('customTest.results.yourAnswer', { answer: '' })} <span className="font-medium">{q.userAnswer || t('customTest.results.notAnswered')}</span></p>
+                    {!q.isCorrect && <p>{t('customTest.results.correctAnswer', { answer: '' })} <span className="font-medium text-green-600 dark:text-green-500">{q.answer}</span></p>}
+                    {q.explanation && (<Alert variant="default" className="mt-2 bg-accent/10 border-accent/30 p-3"><Lightbulb className="h-4 w-4 text-accent-foreground/80" /><AlertTitle className="text-accent-foreground/90 text-xs font-semibold">{t('customTest.results.explanation')}</AlertTitle><AlertDescription className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground"><ReactMarkdown>{q.explanation}</ReactMarkdown></AlertDescription></Alert>)}
                   </CardContent>
                 </Card>
               ))}
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t">
-              <Button onClick={handleRetakeTest} disabled={isLoading} size="lg"><RotateCcw className="w-4 h-4 mr-2" />Retake Test</Button>
-              <Button variant="outline" onClick={handleNewTest} size="lg">Create New Test</Button>
+              <Button onClick={handleRetakeTest} disabled={isLoading} size="lg"><RotateCcw className="w-4 h-4 mr-2" />{t('customTest.results.retakeButton')}</Button>
+              <Button variant="outline" onClick={handleNewTest} size="lg">{t('customTest.results.newTestButton')}</Button>
             </CardFooter>
           </Card>
         ) : (
-          <Card><CardHeader className="text-center"><AlertTriangle className="w-12 h-12 mx-auto text-destructive mb-4" /><AlertTitle className="text-xl font-semibold">Test Error</AlertTitle></CardHeader><CardContent className="text-center"><AlertDescription className="text-muted-foreground">Something went wrong, or no questions were generated. Please try configuring a new test.</AlertDescription><Button variant="outline" onClick={handleNewTest} className="mt-6">Create New Test</Button></CardContent></Card>
+          <Card><CardHeader className="text-center"><AlertTriangle className="w-12 h-12 mx-auto text-destructive mb-4" /><AlertTitle className="text-xl font-semibold">{t('customTest.results.error.title')}</AlertTitle></CardHeader><CardContent className="text-center"><AlertDescription className="text-muted-foreground">{t('customTest.results.error.description')}</AlertDescription><Button variant="outline" onClick={handleNewTest} className="mt-6">{t('customTest.results.newTestButton')}</Button></CardContent></Card>
         )}
       </Card>
     </div>

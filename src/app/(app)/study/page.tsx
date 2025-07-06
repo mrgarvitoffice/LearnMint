@@ -23,8 +23,8 @@ import NotesView from '@/components/study/NotesView';
 import QuizView from '@/components/study/QuizView';
 import FlashcardsView from '@/components/study/FlashcardsView';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/hooks/useTranslation';
 
-const PAGE_TITLE_BASE = "Study Hub";
 const LOCALSTORAGE_KEY_PREFIX = "learnmint-study-";
 
 const NotesLoadingSkeleton = () => (
@@ -57,16 +57,19 @@ const FlashcardsLoadingSkeleton = () => (
   </Card>
 );
 
-const ErrorDisplay = ({ error, onRetry, contentType }: { error: Error | null, onRetry: () => void, contentType: string }) => (
-  <Alert variant="destructive" className="mt-2">
-    <AlertTriangle className="h-4 w-4" />
-    <AlertTitle>Error loading {contentType}</AlertTitle>
-    <AlertDescription>
-      {error?.message || `Failed to load ${contentType}.`}
-      <Button onClick={onRetry} variant="link" className="pl-1 text-destructive h-auto py-0">Try again</Button>
-    </AlertDescription>
-  </Alert>
-);
+const ErrorDisplay = ({ error, onRetry, contentType }: { error: Error | null, onRetry: () => void, contentType: string }) => {
+  const { t } = useTranslation();
+  return (
+    <Alert variant="destructive" className="mt-2">
+      <AlertTriangle className="h-4 w-4" />
+      <AlertTitle>{t('studyHub.error.loading', { contentType })}</AlertTitle>
+      <AlertDescription>
+        {error?.message || t('studyHub.error.failed', { contentType })}
+        <Button onClick={onRetry} variant="link" className="pl-1 text-destructive h-auto py-0">{t('studyHub.error.retry')}</Button>
+      </AlertDescription>
+    </Alert>
+  );
+};
 
 
 function StudyPageContent() {
@@ -77,6 +80,7 @@ function StudyPageContent() {
   const [activeTopic, setActiveTopic] = useState<string>(""); 
   const [activeTab, setActiveTab] = useState<string>("notes");
 
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
@@ -104,13 +108,13 @@ function StudyPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!pageTitleSpokenRef.current && activeTopic) {
-        speak(`${PAGE_TITLE_BASE} for: ${activeTopic}`, { priority: 'optional' });
+        speak(t('studyHub.titleForTopic', { topic: activeTopic }), { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, activeTopic]);
+  }, [speak, activeTopic, t]);
 
 
   const getCacheKey = (type: string, topic: string) => `${LOCALSTORAGE_KEY_PREFIX}${type}-${topic.toLowerCase().replace(/\s+/g, '-')}`;
@@ -204,15 +208,15 @@ function StudyPageContent() {
   const handleRefreshContent = useCallback(() => {
     playActionSound();
     if (activeTopic) {
-      toast({ title: "Refreshing All Content", description: `Re-fetching materials for ${activeTopic}.` });
+      toast({ title: t('studyHub.toast.refreshingTitle'), description: t('studyHub.toast.refreshingDesc', { topic: activeTopic }) });
       pageTitleSpokenRef.current = false; 
       queryClient.invalidateQueries({ queryKey: ["studyNotes", activeTopic] });
       queryClient.invalidateQueries({ queryKey: ["quizQuestions", activeTopic] });
       queryClient.invalidateQueries({ queryKey: ["flashcards", activeTopic] });
     } else {
-      toast({ title: "No Topic", description: "Cannot refresh without a valid topic.", variant: "destructive" });
+      toast({ title: t('studyHub.toast.noTopicError'), description: t('studyHub.toast.noTopicErrorDesc'), variant: "destructive" });
     }
-  }, [activeTopic, queryClient, toast, playActionSound]);
+  }, [activeTopic, queryClient, toast, playActionSound, t]);
 
   const handleTabChange = (value: string) => {
     playClickSound();
@@ -224,12 +228,12 @@ function StudyPageContent() {
       return (
         <Alert variant="default" className="mt-6 flex flex-col items-center justify-center text-center p-6">
           <Home className="h-10 w-10 text-muted-foreground mb-3" />
-          <AlertTitle className="text-xl">No Topic Specified</AlertTitle>
+          <AlertTitle className="text-xl">{t('studyHub.noTopic.title')}</AlertTitle>
           <AlertDescription className="mb-4">
-            Please generate study materials from the main "Generate" page first, or select a recent topic from the dashboard.
+            {t('studyHub.noTopic.description')}
           </AlertDescription>
           <Button onClick={() => router.push('/notes')} variant="outline">
-            Go to Generate Page
+            {t('studyHub.noTopic.button')}
           </Button>
         </Alert>
       );
@@ -238,34 +242,34 @@ function StudyPageContent() {
     return (
       <Tabs defaultValue="notes" value={activeTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 mx-auto md:max-w-md sticky top-[calc(theme(spacing.16)_+_1px)] sm:top-0 z-10 bg-background/80 backdrop-blur-sm py-1.5">
-          <TabsTrigger value="notes" className="py-2.5 text-sm sm:text-base"><BookOpenText className="mr-1.5 sm:mr-2 h-4 w-4"/>Notes {(isLoadingNotes || (isFetchingNotes && !isErrorNotes)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
-          <TabsTrigger value="quiz" className="py-2.5 text-sm sm:text-base"><Brain className="mr-1.5 sm:mr-2 h-4 w-4"/>Quiz {(isLoadingQuiz || (isFetchingQuiz && !isErrorQuiz)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
-          <TabsTrigger value="flashcards" className="py-2.5 text-sm sm:text-base"><Layers className="mr-1.5 sm:mr-2 h-4 w-4"/>Flashcards {(isLoadingFlashcards || (isFetchingFlashcards && !isErrorFlashcards)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
+          <TabsTrigger value="notes" className="py-2.5 text-sm sm:text-base"><BookOpenText className="mr-1.5 sm:mr-2 h-4 w-4"/>{t('studyHub.tabs.notes')} {(isLoadingNotes || (isFetchingNotes && !isErrorNotes)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
+          <TabsTrigger value="quiz" className="py-2.5 text-sm sm:text-base"><Brain className="mr-1.5 sm:mr-2 h-4 w-4"/>{t('studyHub.tabs.quiz')} {(isLoadingQuiz || (isFetchingQuiz && !isErrorQuiz)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
+          <TabsTrigger value="flashcards" className="py-2.5 text-sm sm:text-base"><Layers className="mr-1.5 sm:mr-2 h-4 w-4"/>{t('studyHub.tabs.flashcards')} {(isLoadingFlashcards || (isFetchingFlashcards && !isErrorFlashcards)) && <Loader2 className="ml-2 h-4 w-4 animate-spin"/>}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="notes" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
           { (isLoadingNotes || (isFetchingNotes && !isErrorNotes)) ? <NotesLoadingSkeleton /> :
-           isErrorNotes ? <ErrorDisplay error={notesErrorObj} onRetry={refetchNotes} contentType="notes" /> :
+           isErrorNotes ? <ErrorDisplay error={notesErrorObj} onRetry={refetchNotes} contentType={t('studyHub.tabs.notes')} /> :
            (notesData?.notes && notesData.notes.trim() !== "") ? <NotesView notesContent={notesData.notes} topic={activeTopic} /> : 
-           (notesData && (notesData.notes === null || notesData.notes.trim() === "")) ? <p className="text-muted-foreground p-4 text-center">Notes for this topic were generated successfully but appear to be empty.</p> :
-           <p className="text-muted-foreground p-4 text-center">No notes available. Try refreshing or generating for a different topic.</p>}
+           (notesData && (notesData.notes === null || notesData.notes.trim() === "")) ? <p className="text-muted-foreground p-4 text-center">{t('studyHub.notes.empty')}</p> :
+           <p className="text-muted-foreground p-4 text-center">{t('studyHub.notes.unavailable')}</p>}
         </TabsContent>
         
         <TabsContent value="quiz" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
           { (isLoadingQuiz || (isFetchingQuiz && !isErrorQuiz)) ? <QuizLoadingSkeleton /> :
-            isErrorQuiz ? <ErrorDisplay error={quizErrorObj} onRetry={refetchQuiz} contentType="quiz questions" /> :
+            isErrorQuiz ? <ErrorDisplay error={quizErrorObj} onRetry={refetchQuiz} contentType={t('studyHub.tabs.quiz')} /> :
             quizData?.questions && quizData.questions.length > 0 ? <QuizView questions={quizData.questions} topic={activeTopic} difficulty="medium" /> :
-            quizData && (!quizData.questions || quizData.questions.length === 0) ? <p className="text-muted-foreground p-4 text-center">Quiz was processed, but no questions were returned for this topic. Try refreshing or a different topic.</p> :
-            <p className="text-muted-foreground p-4 text-center">Quiz data could not be loaded. Please try refreshing.</p>
+            quizData && (!quizData.questions || quizData.questions.length === 0) ? <p className="text-muted-foreground p-4 text-center">{t('studyHub.quiz.empty')}</p> :
+            <p className="text-muted-foreground p-4 text-center">{t('studyHub.quiz.unavailable')}</p>
           }
         </TabsContent>
 
         <TabsContent value="flashcards" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
           { (isLoadingFlashcards || (isFetchingFlashcards && !isErrorFlashcards)) ? <FlashcardsLoadingSkeleton /> :
-            isErrorFlashcards ? <ErrorDisplay error={flashcardsErrorObj} onRetry={refetchFlashcards} contentType="flashcards" /> :
+            isErrorFlashcards ? <ErrorDisplay error={flashcardsErrorObj} onRetry={refetchFlashcards} contentType={t('studyHub.tabs.flashcards')} /> :
             flashcardsData?.flashcards && flashcardsData.flashcards.length > 0 ? <FlashcardsView flashcards={flashcardsData.flashcards} topic={activeTopic} /> :
-            flashcardsData && (!flashcardsData.flashcards || flashcardsData.flashcards.length === 0) ? <p className="text-muted-foreground p-4 text-center">Flashcards were processed, but no cards were returned for this topic. Try refreshing or a different topic.</p> :
-            <p className="text-muted-foreground p-4 text-center">Flashcard data could not be loaded. Please try refreshing.</p>
+            flashcardsData && (!flashcardsData.flashcards || flashcardsData.flashcards.length === 0) ? <p className="text-muted-foreground p-4 text-center">{t('studyHub.flashcards.empty')}</p> :
+            <p className="text-muted-foreground p-4 text-center">{t('studyHub.flashcards.unavailable')}</p>
           }
         </TabsContent>
       </Tabs>
@@ -277,10 +281,10 @@ function StudyPageContent() {
       {activeTopic ? (
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center sm:text-left truncate max-w-xl">
-            Study Hub for: <span className="text-primary">{activeTopic}</span>
+            {t('studyHub.titleForTopic', { topic: activeTopic })}
           </h1>
           <Button onClick={handleRefreshContent} variant="outline" size="sm" className="active:scale-95" disabled={isLoadingNotes || isLoadingQuiz || isLoadingFlashcards || isFetchingNotes || isFetchingQuiz || isFetchingFlashcards}>
-            <RefreshCw className="mr-2 h-4 w-4" /> Refresh Content
+            <RefreshCw className="mr-2 h-4 w-4" /> {t('studyHub.refreshButton')}
           </Button>
         </div>
       ) : null}
@@ -290,11 +294,12 @@ function StudyPageContent() {
 }
 
 export default function StudyPage() {
+  const { t } = useTranslation();
   return (
     <Suspense fallback={
       <div className="container mx-auto max-w-5xl px-4 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading Study Hub...</p>
+        <p className="mt-4 text-muted-foreground">{t('studyHub.loading.title')}</p>
       </div>
     }>
       <StudyPageContent />

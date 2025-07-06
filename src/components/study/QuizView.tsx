@@ -16,6 +16,7 @@ import { useTTS } from '@/hooks/useTTS';
 import { useQuests } from '@/contexts/QuestContext';
 import { cn } from '@/lib/utils';
 import type { QuizQuestion as QuizQuestionType } from '@/lib/types';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface QuizViewProps {
   questions: QuizQuestionType[] | null;
@@ -37,6 +38,7 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
   const { speak, isSpeaking, isPaused, setVoicePreference } = useTTS();
   const { quests, completeQuest2 } = useQuests();
+  const { t } = useTranslation();
   
   useEffect(() => {
     setVoicePreference('gojo');
@@ -66,15 +68,15 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
 
     if (isCorrect) {
       setScore(prev => prev + 4);
-      if (!isSpeaking && !isPaused) speak("Correct!");
+      if (!isSpeaking && !isPaused) speak(t('quizView.correct'));
       playCorrectSound();
     } else {
       setScore(prev => prev - 1); 
-      if (!isSpeaking && !isPaused) speak("Incorrect.");
+      if (!isSpeaking && !isPaused) speak(t('quizView.incorrect'));
       playIncorrectSound();
     }
     setIsAnswerFinalized(true);
-  }, [currentQuestion, isAnswerFinalized, userAnswers, currentQuestionIndex, playCorrectSound, playIncorrectSound, speak, isSpeaking, isPaused]);
+  }, [currentQuestion, isAnswerFinalized, userAnswers, currentQuestionIndex, playCorrectSound, playIncorrectSound, speak, isSpeaking, isPaused, t]);
 
 
   const handleMcqOptionClick = useCallback((optionValue: string) => {
@@ -133,7 +135,7 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
       completeQuest2();
     }
     const totalPossibleScore = questions.length * 4;
-    const finalScoreMessage = `Quiz finished! Your final score is ${score} out of ${totalPossibleScore}.`;
+    const finalScoreMessage = t('quizView.speak.results', { score, totalPossibleScore });
     if (!isSpeaking && !isPaused) speak(finalScoreMessage);
   };
   
@@ -148,14 +150,14 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
     setIsAnswerFinalized(false);
     setShortAnswerValue('');
     setSelectedMcqOption(null);
-    if (!isSpeaking && !isPaused) speak("Quiz restarted.");
+    if (!isSpeaking && !isPaused) speak(t('quizView.speak.restarted'));
   };
 
   if (!questions || questions.length === 0) {
     return (
       <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0">
-        <CardHeader><CardTitle className="text-lg md:text-xl text-primary font-semibold">Quiz on: {topic}</CardTitle></CardHeader>
-        <CardContent className="flex-1 flex items-center justify-center"><p className="text-muted-foreground">No quiz questions available.</p></CardContent>
+        <CardHeader><CardTitle className="text-lg md:text-xl text-primary font-semibold">{t('quizView.title', { topic })}</CardTitle></CardHeader>
+        <CardContent className="flex-1 flex items-center justify-center"><p className="text-muted-foreground">{t('quizView.unavailable')}</p></CardContent>
       </Card>
     );
   }
@@ -165,9 +167,9 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
     return (
       <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">Quiz Results</CardTitle>
-          <CardDescription>Topic: {topic} (Difficulty: {difficulty})</CardDescription>
-          <p className="text-3xl font-bold mt-2">Your Score: {score} / {totalPossibleScore}</p>
+          <CardTitle className="text-2xl font-bold text-primary">{t('quizView.results.title')}</CardTitle>
+          <CardDescription>{t('quizView.results.topic', { topic, difficulty })}</CardDescription>
+          <p className="text-3xl font-bold mt-2">{t('quizView.results.score', { score, totalPossibleScore })}</p>
           <Progress value={((score / (totalPossibleScore || 1)) * 100)} className="w-3/4 mx-auto mt-3 h-3" />
         </CardHeader>
         <CardContent className="space-y-3 flex-1 overflow-y-auto p-4">
@@ -176,13 +178,13 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
             const isCorrect = userAnswer && userAnswer.toLowerCase().trim() === q.answer.toLowerCase().trim();
             return (
               <Card key={index} className={cn("p-3", isCorrect ? "border-green-500 bg-green-500/10" : userAnswer !== undefined ? "border-destructive bg-destructive/10" : "border-border")}>
-                <p className="font-semibold text-sm mb-1">Q{index + 1}: <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none inline">{q.question}</ReactMarkdown></p>
-                <p className="text-xs">Your answer: <span className={cn("font-medium", isCorrect ? "text-green-700 dark:text-green-400" : "text-destructive")}>{userAnswer || "Not answered"}</span></p>
-                {!isCorrect && <p className="text-xs">Correct answer: <span className="font-medium text-green-700 dark:text-green-500">{q.answer}</span></p>}
+                <p className="font-semibold text-sm mb-1">{t('customTest.results.questionPrefix', { index: index + 1 })}: <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none inline">{q.question}</ReactMarkdown></p>
+                <p className="text-xs">{t('customTest.results.yourAnswer', { answer: '' })} <span className={cn("font-medium", isCorrect ? "text-green-700 dark:text-green-400" : "text-destructive")}>{userAnswer || t('customTest.results.notAnswered')}</span></p>
+                {!isCorrect && <p className="text-xs">{t('customTest.results.correctAnswer', { answer: '' })} <span className="font-medium text-green-700 dark:text-green-500">{q.answer}</span></p>}
                 {q.explanation && (
                   <Alert variant="default" className="mt-1.5 p-2 text-xs bg-accent/20 border-accent/30">
                     <Lightbulb className="h-3.5 w-3.5 text-accent-foreground/80" />
-                    <AlertTitle className="text-xs font-semibold text-accent-foreground/90">Explanation</AlertTitle>
+                    <AlertTitle className="text-xs font-semibold text-accent-foreground/90">{t('customTest.results.explanation')}</AlertTitle>
                     <AlertDescription className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground"><ReactMarkdown>{q.explanation}</ReactMarkdown></AlertDescription>
                   </Alert>
                 )}
@@ -190,12 +192,12 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
             );
           })}
         </CardContent>
-        <CardFooter className="justify-center p-4 border-t"><Button onClick={handleRestartQuiz} variant="outline"><RotateCcw className="mr-2 h-4 w-4"/>Restart Quiz</Button></CardFooter>
+        <CardFooter className="justify-center p-4 border-t"><Button onClick={handleRestartQuiz} variant="outline"><RotateCcw className="mr-2 h-4 w-4"/>{t('quizView.restart')}</Button></CardFooter>
       </Card>
     );
   }
 
-  if (!currentQuestion) return <div className="p-4 text-center"><Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" /><p className="text-muted-foreground mt-2">Loading question...</p></div>;
+  if (!currentQuestion) return <div className="p-4 text-center"><Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" /><p className="text-muted-foreground mt-2">{t('quizView.loading')}</p></div>;
 
   const isCurrentAnswerCorrect = isAnswerFinalized && userAnswers[currentQuestionIndex]?.toLowerCase().trim() === currentQuestion.answer.toLowerCase().trim();
 
@@ -208,8 +210,8 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
   return (
     <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0"> 
       <CardHeader>
-        <CardTitle className="text-lg md:text-xl text-primary font-semibold">Quiz on: {topic}</CardTitle>
-        <CardDescription>Question {currentQuestionIndex + 1} of {questions.length} (Difficulty: {difficulty})</CardDescription>
+        <CardTitle className="text-lg md:text-xl text-primary font-semibold">{t('quizView.title', { topic })}</CardTitle>
+        <CardDescription>{t('customTest.test.questionProgress', { current: currentQuestionIndex + 1, total: questions.length })} ({t('customTest.settings.difficulty.label')}: {difficulty})</CardDescription>
         <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} className="w-full mt-2 h-2.5" />
       </CardHeader>
       <CardContent className="space-y-4 flex-1 p-4 sm:p-6">
@@ -260,13 +262,13 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
 
         {isEffectivelyShortAnswer && (
           <div className="space-y-2">
-            <Input type="text" placeholder="Type your answer here..." value={shortAnswerValue}
+            <Input type="text" placeholder={t('customTest.test.shortAnswerPlaceholder')} value={shortAnswerValue}
               onChange={(e) => setShortAnswerValue(e.target.value)}
               disabled={isAnswerFinalized} className="text-sm sm:text-base"
               onKeyDown={(e) => { if (e.key === 'Enter' && !isAnswerFinalized && shortAnswerValue.trim()) handleShortAnswerSubmit(); }}
             />
             {!isAnswerFinalized && (
-              <Button onClick={handleShortAnswerSubmit} disabled={!shortAnswerValue.trim()} className="mt-2">Submit Answer</Button>
+              <Button onClick={handleShortAnswerSubmit} disabled={!shortAnswerValue.trim()} className="mt-2">{t('quizView.submitAnswer')}</Button>
             )}
           </div>
         )}
@@ -274,9 +276,9 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
         {!isEffectivelyMultipleChoice && !isEffectivelyShortAnswer && currentQuestion && (
              <Alert variant="destructive" className="mt-4">
                 <AlertTriangle className="h-5 w-5"/>
-                <AlertTitle>Question Format Error</AlertTitle>
+                <AlertTitle>{t('quizView.formatError.title')}</AlertTitle>
                 <AlertDescription className="text-xs">
-                This question is not in a recognizable format (e.g., multiple-choice with missing options, or an unknown type). Please check the AI generation source or skip this question.
+                  {t('quizView.formatError.description')}
                 </AlertDescription>
             </Alert>
         )}
@@ -285,20 +287,20 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, topic, difficulty = 'med
         {isAnswerFinalized && (
           <Alert variant={isCurrentAnswerCorrect ? 'default' : 'destructive'} className={cn("mt-4", isCurrentAnswerCorrect ? "bg-green-500/10 border-green-500/50" : "bg-destructive/10 border-destructive/50")}>
             {isCurrentAnswerCorrect ? <CheckCircle className="h-5 w-5 text-green-600"/> : <XCircle className="h-5 w-5 text-destructive"/>}
-            <AlertTitle>{isCurrentAnswerCorrect ? "Correct!" : "Incorrect!"}</AlertTitle>
+            <AlertTitle>{isCurrentAnswerCorrect ? t('quizView.correct') : t('quizView.incorrect')}</AlertTitle>
             <AlertDescription className="text-xs">
-              {!isCurrentAnswerCorrect && <p>Correct answer: <span className="font-semibold text-green-700 dark:text-green-500">{currentQuestion.answer}</span></p>}
+              {!isCurrentAnswerCorrect && <p>{t('customTest.results.correctAnswer', { answer: '' })} <span className="font-semibold text-green-700 dark:text-green-500">{currentQuestion.answer}</span></p>}
               {currentQuestion.explanation && <div className="mt-1 prose prose-xs dark:prose-invert max-w-none"><ReactMarkdown>{currentQuestion.explanation}</ReactMarkdown></div>}
             </AlertDescription>
           </Alert>
         )}
       </CardContent>
       <CardFooter className="flex justify-between p-4 sm:p-6 border-t">
-        <Button variant="outline" onClick={handlePrevQuestion} disabled={currentQuestionIndex === 0}>Previous</Button>
+        <Button variant="outline" onClick={handlePrevQuestion} disabled={currentQuestionIndex === 0}>{t('customTest.test.previousButton')}</Button>
         {currentQuestionIndex < questions.length - 1 ? (
-          <Button onClick={handleNextQuestion} disabled={!isAnswerFinalized}>Next Question</Button>
+          <Button onClick={handleNextQuestion} disabled={!isAnswerFinalized}>{t('quizView.nextQuestion')}</Button>
         ) : (
-          <Button onClick={handleViewResults} variant="default" disabled={!isAnswerFinalized}>Finish & View Results</Button>
+          <Button onClick={handleViewResults} variant="default" disabled={!isAnswerFinalized}>{t('quizView.viewResults')}</Button>
         )}
       </CardFooter>
     </Card>

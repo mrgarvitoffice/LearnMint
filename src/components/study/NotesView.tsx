@@ -12,6 +12,7 @@ import { useTTS } from '@/hooks/useTTS';
 import { useSound } from '@/hooks/useSound';
 import { useToast } from '@/hooks/use-toast';
 import AiGeneratedImage from './AiGeneratedImage';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface NotesViewProps {
   notesContent: string | null;
@@ -31,6 +32,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
   } = useTTS();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [cleanedNotesForTTS, setCleanedNotesForTTS] = useState<string>("");
 
@@ -41,7 +43,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
   useEffect(() => {
     if (notesContent) {
       const textForSpeech = notesContent
-        .replace(/\[VISUAL_PROMPT:[^\]]+\]/gi, "(A visual aid is suggested here in the notes.)")
+        .replace(/\[VISUAL_PROMPT:[^\]]+\]/gi, `(${t('notesView.visualAid.title')})`)
         .replace(/#+\s*/g, '')
         .replace(/(\*\*|__)(.*?)\1/g, '$2')
         .replace(/(\*|_)(.*?)\1/g, '$2')
@@ -50,7 +52,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
     } else {
       setCleanedNotesForTTS("");
     }
-  }, [notesContent]);
+  }, [notesContent, t]);
   
   // Cleanup TTS on component unmount
   useEffect(() => {
@@ -62,13 +64,13 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
   const handlePlaybackControl = useCallback(() => {
     playClickSound();
     if (!cleanedNotesForTTS) {
-        toast({title: "No Content", description: "Nothing to speak.", variant: "destructive"});
+        toast({title: t('notesView.speak.toast.noContent'), description: t('notesView.speak.toast.noContentDesc'), variant: "destructive"});
         return;
     }
     if (isSpeaking && !isPaused) pauseTTS();
     else if (isPaused) resumeTTS();
     else speak(cleanedNotesForTTS, { priority: 'manual' });
-  }, [playClickSound, cleanedNotesForTTS, isSpeaking, isPaused, pauseTTS, resumeTTS, speak, toast]);
+  }, [playClickSound, cleanedNotesForTTS, isSpeaking, isPaused, pauseTTS, resumeTTS, speak, toast, t]);
 
   const handleStopTTS = useCallback(() => {
     playClickSound();
@@ -78,7 +80,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
   const handleDownloadNotes = () => {
     playClickSound();
     if (!notesContent) {
-      toast({ title: "No Notes", description: "Nothing to download.", variant: "destructive" });
+      toast({ title: t('notesView.download.toast.noNotes'), description: t('notesView.download.toast.noNotesDesc'), variant: "destructive" });
       return;
     }
     const plainText = notesContent
@@ -103,7 +105,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast({ title: "Notes Downloaded", description: "Notes saved as a .txt file." });
+    toast({ title: t('notesView.download.toast.success'), description: t('notesView.download.toast.successDesc') });
   };
 
   const customRenderers = {
@@ -144,22 +146,29 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
       return <img {...props} className="max-w-full h-auto rounded-lg shadow-md my-4 mx-auto" alt={props.alt || 'AI generated image'} />;
     },
   };
+  
+  const getPlaybackButtonTitle = () => {
+      if (isTTSLoading) return t('notesView.speak.loading');
+      if (isSpeaking && !isPaused) return t('notesView.speak.pause');
+      if (isPaused) return t('notesView.speak.resume');
+      return t('notesView.speak.start');
+  };
 
   return (
     <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0">
       <CardHeader className="sticky top-0 bg-background/90 backdrop-blur-sm z-10 border-b">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <CardTitle className="text-base md:text-lg text-primary font-semibold flex items-center gap-2 truncate">
-            Notes: {topic}
+            {t('notesView.title', { topic })}
           </CardTitle>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button onClick={handlePlaybackControl} variant="outline" size="icon" className="h-8 w-8" title={isTTSLoading ? "Loading Audio..." : isSpeaking && !isPaused ? "Pause Notes" : isPaused ? "Resume Notes" : "Speak Notes"} disabled={isTTSLoading}>
+            <Button onClick={handlePlaybackControl} variant="outline" size="icon" className="h-8 w-8" title={getPlaybackButtonTitle()} disabled={isTTSLoading}>
               {isTTSLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : isSpeaking && !isPaused ? <PauseCircle className="h-4 w-4" /> : <PlayCircle className="h-4 w-4" />}
             </Button>
-            <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-8 w-8" title="Stop Speaking" disabled={!isSpeaking && !isPaused}>
+            <Button onClick={handleStopTTS} variant="outline" size="icon" className="h-8 w-8" title={t('notesView.speak.stop')} disabled={!isSpeaking && !isPaused}>
               <StopCircle className="h-4 w-4" />
             </Button>
-            <Button onClick={handleDownloadNotes} variant="outline" size="sm" className="h-8 text-xs"><Download className="mr-1.5 h-3.5 w-3.5"/>Download</Button>
+            <Button onClick={handleDownloadNotes} variant="outline" size="sm" className="h-8 text-xs"><Download className="mr-1.5 h-3.5 w-3.5"/>{t('notesView.download.button')}</Button>
           </div>
         </div>
       </CardHeader>
@@ -171,7 +180,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notesContent, topic }) => {
                 components={customRenderers}
                 className="prose prose-sm sm:prose-base dark:prose-invert max-w-none break-words"
             >
-                {notesContent || "No notes to display."}
+                {notesContent || t('notesView.speak.toast.noContent')}
             </ReactMarkdown>
            </div>
         </ScrollArea>

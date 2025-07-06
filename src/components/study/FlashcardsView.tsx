@@ -12,6 +12,7 @@ import type { Flashcard as FlashcardType } from '@/lib/types';
 import { useQuests } from '@/contexts/QuestContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface FlashcardsViewProps {
   flashcards: FlashcardType[] | null;
@@ -24,6 +25,7 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards, topic }) =>
   const [animationType, setAnimationType] = useState<'flip-y' | 'flip-x' | 'fade'>('flip-y');
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', 0.3);
   const { quests, completeQuest3 } = useQuests();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setCurrentCardIndex(0);
@@ -58,10 +60,10 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards, topic }) =>
     return (
       <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0">
         <CardHeader>
-          <CardTitle className="text-lg md:text-xl text-primary font-semibold">Flashcards for: {topic}</CardTitle>
+          <CardTitle className="text-lg md:text-xl text-primary font-semibold">{t('flashcardsView.title', { topic })}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">No flashcards available for this topic, or an error occurred.</p>
+          <p className="text-muted-foreground">{t('flashcardsView.unavailable')}</p>
         </CardContent>
       </Card>
     );
@@ -73,11 +75,11 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards, topic }) =>
     return (
         <Card className="mt-0 shadow-lg flex-1 flex flex-col min-h-0">
             <CardHeader>
-                <CardTitle className="text-lg md:text-xl text-primary font-semibold">Flashcards for: {topic}</CardTitle>
+                <CardTitle className="text-lg md:text-xl text-primary font-semibold">{t('flashcardsView.title', { topic })}</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex items-center justify-center">
                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 <p className="ml-3 text-muted-foreground">Loading flashcard...</p>
+                 <p className="ml-3 text-muted-foreground">{t('flashcardsView.loading')}</p>
             </CardContent>
         </Card>
     );
@@ -88,21 +90,21 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards, topic }) =>
       <CardHeader>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex-1">
-                <CardTitle className="text-lg md:text-xl text-primary font-semibold">Flashcards for: {topic}</CardTitle>
+                <CardTitle className="text-lg md:text-xl text-primary font-semibold">{t('flashcardsView.title', { topic })}</CardTitle>
                 <CardDescription>
-                  Card {currentCardIndex + 1} of {flashcards.length}
+                  {t('flashcardsView.progress', { current: currentCardIndex + 1, total: flashcards.length })}
                 </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-                <Label htmlFor="animation-type" className="text-xs text-muted-foreground">Animation</Label>
+                <Label htmlFor="animation-type" className="text-xs text-muted-foreground">{t('flashcardsView.animation.label')}</Label>
                 <Select value={animationType} onValueChange={(value) => setAnimationType(value as any)}>
                     <SelectTrigger id="animation-type" className="w-[140px] h-8 text-xs">
-                        <SelectValue placeholder="Animation" />
+                        <SelectValue placeholder={t('flashcardsView.animation.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="flip-y">Flip Vertical</SelectItem>
-                        <SelectItem value="flip-x">Flip Horizontal</SelectItem>
-                        <SelectItem value="fade">Fade</SelectItem>
+                        <SelectItem value="flip-y">{t('flashcardsView.animation.flipVertical')}</SelectItem>
+                        <SelectItem value="flip-x">{t('flashcardsView.animation.flipHorizontal')}</SelectItem>
+                        <SelectItem value="fade">{t('flashcardsView.animation.fade')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -119,10 +121,10 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards, topic }) =>
       </CardContent>
       <CardFooter className="flex justify-between p-4 sm:p-6 border-t">
         <Button variant="outline" onClick={handlePrevCard} disabled={currentCardIndex === 0} className="px-3 sm:px-4">
-          <ChevronLeft className="w-4 h-4 mr-1 sm:mr-2" /> Previous
+          <ChevronLeft className="w-4 h-4 mr-1 sm:mr-2" /> {t('flashcardsView.previous')}
         </Button>
         <Button variant="outline" onClick={handleNextCard} disabled={currentCardIndex === flashcards.length - 1} className="px-3 sm:px-4">
-          Next <ChevronRight className="w-4 h-4 ml-1 sm:ml-2" />
+          {t('flashcardsView.next')} <ChevronRight className="w-4 h-4 ml-1 sm:ml-2" />
         </Button>
       </CardFooter>
     </Card>
