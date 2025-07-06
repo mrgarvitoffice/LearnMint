@@ -105,7 +105,7 @@ export default function ProfilePage() {
 
              <div className="space-y-2 pt-6 border-t border-border/50">
                 <Button asChild variant="outline" className="w-full">
-                    <a href="mailto:feedback.learnmint@example.com?subject=LearnMint%20App%20Feedback">
+                    <a href="mailto:learnmint.ai@gmail.com?subject=LearnMint%20App%20Feedback">
                         <MessageSquareText className="mr-2 h-4 w-4" />
                         Send Feedback
                     </a>
