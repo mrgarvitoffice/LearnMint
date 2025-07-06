@@ -21,6 +21,7 @@ import { fetchMathFact } from '@/lib/math-fact-api';
 import type { MathFact } from '@/lib/types';
 import { MATH_FACTS_FALLBACK } from '@/lib/constants';
 import { useAuth } from '@/contexts/AuthContext';
+import { TotalUsers } from '@/components/features/dashboard/TotalUsers';
 
 const ActionCard = ({ titleKey, descriptionKey, buttonTextKey, href, icon: Icon }: { titleKey: string, descriptionKey: string, buttonTextKey: string, href: string, icon: React.ElementType }) => {
     const { t } = useTranslation();
@@ -85,7 +86,6 @@ export default function DashboardPage() {
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
     const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
-    const [learnerCount, setLearnerCount] = useState(21); // Starting count
     const pageTitleSpokenRef = useRef(false);
 
     const { data: mathFact, isLoading: isLoadingMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
@@ -95,14 +95,6 @@ export default function DashboardPage() {
         gcTime: 1000 * 60 * 65,
         refetchOnWindowFocus: false,
     });
-    
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setLearnerCount(prevCount => prevCount + 1);
-        }, 5000); // Increase count every 5 seconds
-
-        return () => clearInterval(intervalId); // Cleanup on component unmount
-    }, []);
     
     useEffect(() => {
         if (mathFact) {
@@ -178,14 +170,14 @@ export default function DashboardPage() {
                         <CardDescription className="text-lg text-muted-foreground mt-1">{t('dashboard.description')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                            <Users className="h-5 w-5" />
-                            {user?.isAnonymous ? (
+                       {user?.isAnonymous ? (
+                            <div className="text-sm text-center text-muted-foreground mt-4 flex items-center justify-center gap-2">
+                                <Users className="h-4 w-4" />
                                 <span className="font-semibold">{t('dashboard.totalLearnersGuestMessage')}</span>
-                            ) : (
-                                <span className="font-semibold">{t('dashboard.totalLearners')}: {learnerCount.toLocaleString()}</span>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <TotalUsers />
+                        )}
                     </CardContent>
                 </Card>
             </motion.div>
@@ -304,5 +296,3 @@ export default function DashboardPage() {
       </motion.div>
   );
 }
-
-    

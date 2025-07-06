@@ -15,6 +15,7 @@ import { generateAudioSummary, type GenerateAudioSummaryInput, type GenerateAudi
 import { generateDiscussionAudio, type GenerateDiscussionAudioInput, type GenerateDiscussionAudioOutput } from "@/ai/flows/generate-discussion-audio";
 import { generateQuizFromNotes, type GenerateQuizFromNotesInput } from "@/ai/flows/generate-quiz-from-notes";
 import { generateFlashcardsFromNotes, type GenerateFlashcardsFromNotesInput } from "@/ai/flows/generate-flashcards-from-notes";
+import { getTotalUsers } from './actions/stats';
 
 
 import type { YoutubeSearchInput, YoutubeSearchOutput, YoutubeVideoItem, GoogleBooksSearchInput, GoogleBooksSearchOutput, GoogleBookItem } from './types';

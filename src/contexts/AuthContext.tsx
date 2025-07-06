@@ -59,10 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         if (!docSnap.exists()) {
-            // New user: set data including createdAt
+            // New user: set data including joinedAt
             await setDoc(userRef, {
                 ...userData,
-                createdAt: serverTimestamp(),
+                joinedAt: serverTimestamp(),
             });
             console.log("Firestore user document created for:", user.uid);
         } else {
@@ -73,12 +73,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
         console.error("Firestore user creation/update error:", error);
         toast({
-            title: "Profile Error",
-            description: "Could not save your profile data. You may have restrictive security rules in Firestore.",
+            title: t('auth.profileErrorTitle'),
+            description: t('auth.profileErrorDesc'),
             variant: "destructive",
         });
     }
-  }, [toast]);
+  }, [toast, t]);
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
