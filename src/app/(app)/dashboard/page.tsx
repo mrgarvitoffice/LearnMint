@@ -84,7 +84,6 @@ export default function DashboardPage() {
     const { user } = useAuth();
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
-    const [totalLearners, setTotalLearners] = useState<number | null>(21);
     const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
     const pageTitleSpokenRef = useRef(false);
 
@@ -96,36 +95,6 @@ export default function DashboardPage() {
         refetchOnWindowFocus: false,
     });
     
-    useEffect(() => {
-        // This effect simulates a 'live' counter without a database call to avoid permission errors.
-        const key = 'learnmint-learner-count';
-        let initialCount = 21;
-        try {
-            const storedValue = localStorage.getItem(key);
-            if (storedValue) {
-                const parsedCount = parseInt(storedValue, 10);
-                if (!isNaN(parsedCount)) {
-                    initialCount = parsedCount > 21 ? parsedCount : 21;
-                }
-            }
-        } catch (e) {
-            console.warn("Could not parse learner count from localStorage.");
-        }
-
-        // Increment the count slightly every time the dashboard is visited
-        const newCount = initialCount + Math.floor(Math.random() * 3) + 1;
-        setTotalLearners(newCount);
-        localStorage.setItem(key, newCount.toString());
-
-        // Animate the number increasing slightly while on the page for a dynamic feel
-        const interval = setInterval(() => {
-            setTotalLearners(prevCount => (prevCount || 0) + 1);
-        }, 15000); // Increment every 15 seconds
-
-        return () => clearInterval(interval);
-    }, []);
-
-
     useEffect(() => {
         if (mathFact) {
             setCurrentMathFact(mathFact);
@@ -198,17 +167,6 @@ export default function DashboardPage() {
                         </motion.div>
                         <CardTitle className="text-4xl font-bold mt-4">{t('dashboard.welcome')}</CardTitle>
                         <CardDescription className="text-lg text-muted-foreground mt-1">{t('dashboard.description')}</CardDescription>
-                        
-                         <div className="mt-3 h-6 flex justify-center items-center gap-2 group cursor-pointer transition-transform duration-300 hover:scale-105">
-                            <Users className="h-5 w-5 text-primary/80 group-hover:text-primary transition-colors" />
-                            {user?.isAnonymous ? (
-                                <span className="text-sm text-muted-foreground italic">{t('dashboard.totalLearnersGuestMessage')}</span>
-                            ) : (
-                                <span className="font-semibold text-primary group-hover:text-primary/90 transition-colors">
-                                    {t('dashboard.totalLearners')}: {totalLearners !== null ? totalLearners.toLocaleString() : <Loader2 className="inline-block h-4 w-4 animate-spin" />}
-                                </span>
-                            )}
-                         </div>
                     </CardHeader>
                 </Card>
             </motion.div>
@@ -327,3 +285,5 @@ export default function DashboardPage() {
       </motion.div>
   );
 }
+
+    
