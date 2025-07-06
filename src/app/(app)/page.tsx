@@ -1,11 +1,23 @@
-/**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- *
- * This file is intentionally left without a default export.
- * Its presence is necessary for some routing configurations, but exporting a component
- * from it creates a build conflict with the root `app/page.tsx`.
- *
- * By not exporting a default component, we signal to Next.js that this is not a renderable page,
- * which resolves the deployment error.
- */
+
+"use client";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+
+// This component redirects any traffic from the root of the (app) group to the dashboard.
+// This resolves a build conflict with the root src/app/page.tsx file.
+export default function AppRootRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/dashboard');
+  }, [router]);
+
+  // Render a loader as a fallback while redirecting
+  return (
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
+      <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <p className="mt-3 text-lg">Redirecting...</p>
+    </div>
+  );
+}
