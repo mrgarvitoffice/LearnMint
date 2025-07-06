@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useQuery } from '@tanstack/react-query';
@@ -39,9 +40,9 @@ export function TotalUsers() {
     return (
       <div 
         className={cn(
-          "mt-4 flex cursor-default items-center justify-center gap-2 text-lg font-bold text-lime-400 transition-all duration-300",
-          "hover:scale-110 hover:brightness-150",
-          "[text-shadow:0_0_15px_theme(colors.lime.500/0.8)]"
+          "mt-4 flex cursor-default items-center justify-center gap-2 text-lg font-bold text-emerald-400 transition-all duration-300",
+          "hover:scale-110 hover:brightness-125",
+          "[text-shadow:0_0_12px_theme(colors.emerald.500/0.7)]"
         )}
       >
         <Users className="h-5 w-5" />
