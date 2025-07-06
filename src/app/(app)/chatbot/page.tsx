@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'AI Chatbot',
-  description: 'Engage in dynamic conversations with personalized AI characters like Gojo and Holo. Supports text, image, and file uploads for contextual assistance.',
-};
-
 "use client";
 
 import { useState, useEffect, useRef } from 'react';

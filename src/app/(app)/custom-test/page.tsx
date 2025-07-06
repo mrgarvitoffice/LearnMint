@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Custom Test Creator',
-  description: 'Build tailored tests with custom topics, personal notes, specific difficulty levels, and optional timers to challenge yourself.',
-};
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ChangeEvent } from 'react';

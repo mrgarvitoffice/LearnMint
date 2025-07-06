@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Audio Factory & Flashcards',
-  description: 'Generate spoken audio summaries from text or images, create multi-speaker discussions, and produce audio-enabled flashcards for effective studying.',
-};
-
 "use client";
 
 import { useState, useRef, useEffect, type ChangeEvent } from 'react';

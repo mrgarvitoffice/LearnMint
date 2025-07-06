@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Precision Toolkit',
-  description: 'Utilize the scientific calculator and a comprehensive unit converter for all your academic and technical calculation needs.',
-};
-
 "use client";
 
 import { useState, useEffect, useRef } from 'react';

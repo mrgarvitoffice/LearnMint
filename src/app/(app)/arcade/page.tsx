@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'LearnMint Arcade',
-  description: 'Take a productive break and sharpen your mind with fun, educational games like the Definition Challenge.',
-};
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

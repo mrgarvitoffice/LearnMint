@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Generate Study Materials',
-  description: 'Instantly create comprehensive notes, interactive quizzes, and flashcards from any topic using the power of AI.',
-};
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback, type ChangeEvent } from 'react';

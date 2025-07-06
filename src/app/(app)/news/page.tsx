@@ -1,11 +1,3 @@
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Global News Terminal',
-  description: 'Stay updated with the latest global news. Filter headlines by country, category, language, and keywords.',
-};
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
