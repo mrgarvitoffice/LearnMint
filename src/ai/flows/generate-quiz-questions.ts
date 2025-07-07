@@ -43,11 +43,16 @@ export type GenerateQuizQuestionsOutput = z.infer<typeof GenerateQuizQuestionsOu
 
 const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   name: 'generateQuizQuestionsPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizQuestionsInputSchema},
   output: {schema: GenerateQuizQuestionsOutputSchema},
   prompt: `You are an expert quiz designer for educational content.
-  Generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}}}{{#if difficulty}} (Difficulty: {{{difficulty}}}){{/if}}.
+
+**CRUCIAL LANGUAGE INSTRUCTION:** First, analyze the topic "{{{topic}}}" to determine if a specific output language is requested (e.g., "History of Rome in Italian", "日本の歴史").
+- If a language is specified, you **MUST** generate all questions, options, answers, and explanations in that language.
+- If no language is specified, generate the quiz in English.
+  
+Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}}}{{#if difficulty}} (Difficulty: {{{difficulty}}}){{/if}}.
   {{#if image}}
   The user has also provided an image for additional context. Use it to inform the questions where relevant.
   User's Image: {{media url=image}}
@@ -142,5 +147,3 @@ export async function generateQuizQuestions(input: GenerateQuizQuestionsInput): 
     throw new Error(clientErrorMessage);
   }
 }
-
-    

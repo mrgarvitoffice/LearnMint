@@ -11,7 +11,7 @@
 'use server';
 
 import {aiForQuizzes} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 import type { GenerateFlashcardsOutput } from './generate-flashcards'; // Reuse existing output type
 
 // Define GenerateFlashcardsOutputSchema locally for this flow's prompt
@@ -38,10 +38,12 @@ export async function generateFlashcardsFromNotes(input: GenerateFlashcardsFromN
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateFlashcardsFromNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateFlashcardsFromNotesInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an expert educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes. Each flashcard should have a key term and its corresponding definition.
+  prompt: `You are an expert multilingual educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes.
+
+**CRUCIAL INSTRUCTION:** First, determine the primary language of the provided "Study Notes Content". You **MUST** write all 'term' and 'definition' fields in that same language.
 
 Study Notes Content:
 ---
@@ -72,5 +74,3 @@ const generateFlashcardsFromNotesFlow = aiForQuizzes.defineFlow(
     return output;
   }
 );
-
-    

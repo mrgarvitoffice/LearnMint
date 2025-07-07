@@ -39,17 +39,19 @@ export async function generateQuizFromNotes(input: GenerateQuizFromNotesInput): 
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizFromNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizFromNotesInputSchema},
   output: {schema: GenerateQuizOutputSchema},
-  prompt: `You are an expert quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes. Include a mix of 'multiple-choice' and 'short-answer' questions. Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
+  prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.
+
+**CRUCIAL INSTRUCTION:** First, determine the primary language of the provided "Study Notes Content". You **MUST** write all questions, options, answers, and explanations in that same language.
 
 Study Notes Content:
 ---
 {{{notesContent}}}
 ---
 
-Please ensure all questions, options, answers, and explanations are derived directly from the information within the provided notes. Do not use any external knowledge.
+Include a mix of 'multiple-choice' and 'short-answer' questions. Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
 
 Output the questions in JSON format. Here is the schema:
 \n{{{outputSchema}}}
@@ -72,5 +74,3 @@ const generateQuizFromNotesFlow = aiForQuizzes.defineFlow(
     return output;
   }
 );
-
-    
