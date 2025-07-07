@@ -5,32 +5,34 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function RemovedQuizPage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto max-w-xl px-4 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-12rem)]">
       <Card className="w-full text-center p-6">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-destructive">Feature Removed</CardTitle>
+          <CardTitle className="text-2xl font-bold text-destructive">{t('quiz.removed.title')}</CardTitle>
           <CardDescription className="text-muted-foreground mt-2">
-            The standalone Quiz Creator has been removed to streamline the app experience.
+            {t('quiz.removed.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="mb-4">
-            You can still generate quizzes as part of a complete study set on the{" "}
+            {t('quiz.removed.p1_1')}{" "}
             <Link href="/notes" className="text-primary underline hover:text-primary/80">
-              Generate Materials
+              {t('quiz.removed.p1_link1')}
             </Link>{" "}
-            page, or build a highly specific test using the{" "}
+            {t('quiz.removed.p1_2')}{" "}
             <Link href="/custom-test" className="text-primary underline hover:text-primary/80">
-              Custom Test Creator
+              {t('quiz.removed.p1_link2')}
             </Link>.
           </p>
           <Button onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t('quiz.removed.goBack')}
           </Button>
         </CardContent>
       </Card>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -28,9 +27,9 @@ export default function CalculatorPage() {
   const { speak, setVoicePreference } = useTTS();
   const { t, isReady } = useTranslation();
   const pageTitleSpokenRef = useRef(false);
-
+  
   const calculatorButtonsConfig: CalculatorButtonConfig[] = [
-    { value: 'AC', label: 'AC', type: 'action', action: 'clear', className: 'bg-destructive/80 hover:bg-destructive text-destructive-foreground' },
+    { value: 'AC', label: t('calculator.buttons.ac'), type: 'action', action: 'clear', className: 'bg-destructive/80 hover:bg-destructive text-destructive-foreground' },
     { value: '(', label: '(', type: 'operator' },
     { value: ')', label: ')', type: 'operator' },
     { value: '/', label: '÷', type: 'operator', className: 'bg-primary/80 hover:bg-primary text-primary-foreground' },
@@ -45,9 +44,9 @@ export default function CalculatorPage() {
   ];
 
   const scientificButtonsConfig: CalculatorButtonConfig[] = [
-    { value: 'sin(', label: 'sin', type: 'scientific', action: 'sin' }, { value: 'cos(', label: 'cos', type: 'scientific', action: 'cos' },
-    { value: 'tan(', label: 'tan', type: 'scientific', action: 'tan' }, { value: 'deg', label: isRadians ? 'DEG' : 'RAD', type: 'action', action: 'toggleMode' },
-    { value: 'log10(', label: 'log', type: 'scientific', action: 'log10' }, { value: 'log(', label: 'ln', type: 'scientific', action: 'log' }, 
+    { value: 'sin(', label: t('calculator.buttons.sin'), type: 'scientific', action: 'sin' }, { value: 'cos(', label: t('calculator.buttons.cos'), type: 'scientific', action: 'cos' },
+    { value: 'tan(', label: t('calculator.buttons.tan'), type: 'scientific', action: 'tan' }, { value: 'deg', label: isRadians ? t('calculator.buttons.rad') : t('calculator.buttons.deg'), type: 'action', action: 'toggleMode' },
+    { value: 'log10(', label: t('calculator.buttons.log'), type: 'scientific', action: 'log10' }, { value: 'log(', label: t('calculator.buttons.ln'), type: 'scientific', action: 'log' }, 
     { value: 'sqrt(', label: '√', type: 'scientific', action: 'sqrt' }, { value: '**', label: 'xʸ', type: 'operator', }, 
     { value: 'Math.PI', label: 'π', type: 'digit', action: 'pi' }, { value: 'Math.E', label: 'e', type: 'digit', action: 'e' }, 
     { value: '±', label: '±', type: 'action', action: 'toggleSign' }, { value: '%', label: '%', type: 'action', action: 'percentage' },
@@ -97,15 +96,15 @@ export default function CalculatorPage() {
       }
       // eslint-disable-next-line no-eval
       let result = eval(exprToEval);
-      if (typeof result === 'number' && !Number.isFinite(result)) return 'Error';
+      if (typeof result === 'number' && !Number.isFinite(result)) return t('calculator.error.general');
       if (typeof result === 'number' && result.toString().length > 15) return result.toPrecision(10);
       return String(result);
-    } catch (error) { return 'Error'; }
+    } catch (error) { return t('calculator.error.general'); }
   };
 
   const handleButtonClick = (value: string, type: CalculatorButtonConfig['type'], action?: string) => {
     playSound();
-    if (visualExpression.startsWith('Error')) {
+    if (visualExpression.startsWith(t('calculator.error.general'))) {
       setVisualExpression(''); setInternalExpression(''); setPreviousCalculation('');
     }
     if (justEvaluated && type !== 'operator' && type !== 'equals') {
@@ -138,10 +137,10 @@ export default function CalculatorPage() {
       case 'equals':
         if (internalExpression) {
           const result = evaluateInternalExpression(internalExpression);
-          setPreviousCalculation(visualExpression + (result.startsWith('Error') ? '' : ' ='));
+          setPreviousCalculation(visualExpression + (result.startsWith(t('calculator.error.prefix')) ? '' : ' ='));
           setVisualExpression(result); 
-          setInternalExpression(result.startsWith('Error') ? '' : result);
-          if (!result.startsWith('Error')) {
+          setInternalExpression(result.startsWith(t('calculator.error.prefix')) ? '' : result);
+          if (!result.startsWith(t('calculator.error.prefix'))) {
              setCalculationHistory(prev => [{expression: visualExpression, result}, ...prev.slice(0,4)]);
              setJustEvaluated(true);
           }

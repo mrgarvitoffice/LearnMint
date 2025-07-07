@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -19,6 +18,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSettings } from '@/contexts/SettingsContext';
+import { APP_LANGUAGES } from '@/lib/constants';
+
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
 const PDF_TRUNCATION_LIMIT = 5000; // Character limit for PDF content sent to AI
@@ -34,6 +36,7 @@ export default function ChatbotPage() {
   const { toast } = useToast();
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { t, isReady } = useTranslation();
+  const { appLanguage } = useSettings();
 
   const {
     speak,
@@ -165,6 +168,7 @@ export default function ChatbotPage() {
 
       const input: GojoChatbotInput | HoloChatbotInput | MeguminChatbotInput = {
         message: messageForAI,
+        language: APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English',
         image,
         audio,
         video,
