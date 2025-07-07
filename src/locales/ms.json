@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Selamat datang ke LearnMint!",
+  "dashboard.description": "Pembantu pembelajaran berkuasa AI anda untuk nota, kuiz, ujian dan banyak lagi.",
+  "dashboard.generateMaterials.title": "Hasilkan Bahan Kajian",
+  "dashboard.generateMaterials.description": "Biarkan AI mencipta nota komprehensif, kuiz dan kad imbas untuk sebarang topik.",
+  "dashboard.customTest.title": "Cipta Ujian Tersuai",
+  "dashboard.customTest.description": "Bina ujian yang disesuaikan daripada topik, nota atau sesi belajar terkini.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Yang Dihormati ada di sini untuk membantu.",
+  "chatbot.holo.description": "Serigala Bijaksana dari Yoitsu.",
+  "chatbot.megumin.description": "Gila letupan dan taksub.",
+  "chatbot.gojo.greeting": "Yo! Lama betul awak. Saya fikir saya terpaksa melawan kebosanan tanpa awak.",
+  "chatbot.holo.greeting": "Ah, si kecil kembali. Adakah awak datang untuk berjemur dalam kecemerlangan saya sekali lagi?",
+  "chatbot.megumin.greeting": "Hahahaha! Awak telah mencari pengguna sihir Letupan yang terhebat! Pengetahuan apa yang awak cari dari saya, Megumin?!",
+  "chatbot.gojo.typing": "Gojo sedang berfikir...",
+  "chatbot.holo.typing": "Holo sedang merenung kebijaksanaannya...",
+  "chatbot.megumin.typing": "Megumin sedang menumpukan perhatian pada manteranya...",
+  "chatbot.gojo.errorMessage": "Teknik saya mesti gagal. Tanya lagi, saya tidak memberi perhatian.",
+  "chatbot.holo.errorMessage": "Fikiran saya mesti telah mengembara ke tuaian yang jauh. Tanya lagi.",
+  "chatbot.megumin.errorMessage": "Kejeniusan saya... ia mesti sedang bertenang! Tanya lagi dan saksikan kuasa sebenar!",
+  "chatbot.gojo.errorToast": "Hoh? Ada sesuatu yang tidak kena. Mari kita cuba lagi.",
+  "chatbot.holo.errorToast": "Hmph. Kebijaksanaan saya mesti terlalu banyak untuk peranti ini. Cuba lagi.",
+  "chatbot.megumin.errorToast": "Waaaah! Mana saya tidak seimbang! Mantera gagal!",
+  "chatbot.avatar.meguminAlt": "Avatar Megumin AI"
+}

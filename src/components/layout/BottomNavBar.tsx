@@ -32,7 +32,7 @@ export function BottomMobileNav() {
               onClick={playSound}
             >
               <Icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
-              <span className="text-[10px] font-medium leading-tight text-center">{title}</span>
+              <span className="text-[10px] font-medium leading-tight text-center break-words">{title}</span>
             </Link>
           );
         })}

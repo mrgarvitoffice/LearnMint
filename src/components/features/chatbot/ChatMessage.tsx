@@ -4,14 +4,14 @@
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bot, User, Loader2, Wand2, FileText, AudioLines, Video } from 'lucide-react';
+import { Bot, User, Loader2, Wand2, FileText, AudioLines, Video, Atom } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ChatMessageProps {
   message: ChatMessageType;
-  character?: 'gojo' | 'holo';
+  character?: 'gojo' | 'holo' | 'megumin';
 }
 
 export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
@@ -23,14 +23,42 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
 
   const getAvatarSrc = () => {
     if (isUser) return undefined;
-    return character === 'gojo' ? "/images/gojo-dp.jpg" : "/images/holo-dp.jpg";
-  };
-
-  const getAvatarFallback = () => {
-    if (isUser) return <User />;
-    return character === 'gojo' ? <Bot /> : <Wand2 />;
+    switch(character) {
+        case 'gojo': return "/images/gojo-dp.jpg";
+        case 'holo': return "/images/holo-dp.jpg";
+        case 'megumin': return "/images/megumin-dp.jpg";
+        default: return undefined;
+    }
   };
   
+  const getAvatarFallback = () => {
+    if (isUser) return <User />;
+     switch(character) {
+        case 'gojo': return <Bot />;
+        case 'holo': return <Wand2 />;
+        case 'megumin': return <Atom />;
+        default: return <Bot />;
+    }
+  };
+
+  const getAvatarAlt = () => {
+    if (isUser) return t('chatbot.avatar.userAlt');
+    switch(character) {
+        case 'gojo': return t('chatbot.avatar.gojoAlt');
+        case 'holo': return t('chatbot.avatar.holoAlt');
+        case 'megumin': return t('chatbot.avatar.meguminAlt');
+    }
+  };
+
+  const getAvatarDataAiHint = () => {
+    if (isUser) return "user";
+    switch(character) {
+        case 'gojo': return "Gojo Satoru";
+        case 'holo': return "Holo wise wolf";
+        case 'megumin': return "Megumin konosuba";
+    }
+  }
+
   if (!isReady) {
     return (
        <div className={cn('flex flex-col gap-2 py-3', alignment)}>
@@ -41,16 +69,6 @@ export function ChatMessage({ message, character = 'gojo' }: ChatMessageProps) {
         </div>
       </div>
     )
-  }
-
-  const getAvatarAlt = () => {
-    if (isUser) return t('chatbot.avatar.userAlt');
-    return t(character === 'gojo' ? 'chatbot.avatar.gojoAlt' : 'chatbot.avatar.holoAlt');
-  };
-
-  const getAvatarDataAiHint = () => {
-    if (isUser) return "user";
-    return character === 'gojo' ? "Gojo Satoru" : "Holo wise wolf";
   }
 
   if (message.type === 'typing_indicator') {

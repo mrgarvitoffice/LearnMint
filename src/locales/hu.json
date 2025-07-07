@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Üdvözöljük a LearnMintben!",
+  "dashboard.description": "Az Ön AI-alapú tanulási asszisztense jegyzetekhez, kvízekhez, tesztekhez és még sok máshoz.",
+  "dashboard.generateMaterials.title": "Tanulmányi anyagok generálása",
+  "dashboard.generateMaterials.description": "Hagyja, hogy az AI átfogó jegyzeteket, kvízeket és kártyákat hozzon létre bármilyen témához.",
+  "dashboard.customTest.title": "Egyéni teszt létrehozása",
+  "dashboard.customTest.description": "Készítsen személyre szabott tesztet témákból, jegyzetekből vagy legutóbbi tanulási ülésekből.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "A Tisztelt itt van, hogy segítsen.",
+  "chatbot.holo.description": "Yoitsu Bölcs Farkasa.",
+  "chatbot.megumin.description": "Robbanásmániás és megszállott.",
+  "chatbot.gojo.greeting": "Yo! Sokáig tartott. Azt hittem, nélküled kell megküzdenem az unalommal.",
+  "chatbot.holo.greeting": "Ah, a kicsi visszatér. Újra azért jöttél, hogy sütkérezz a ragyogásomban?",
+  "chatbot.megumin.greeting": "Hahahaha! Megkerested a legnagyobb Robbanásmágia használóját! Milyen tudást keresel tőlem, Megumintól?!",
+  "chatbot.gojo.typing": "Gojo gondolkodik...",
+  "chatbot.holo.typing": "Holo a bölcsességén elmélkedik...",
+  "chatbot.megumin.typing": "Megumin a varázslatára koncentrál...",
+  "chatbot.gojo.errorMessage": "A technikám biztosan kudarcot vallott. Kérdezz újra, nem figyeltem.",
+  "chatbot.holo.errorMessage": "A gondolataim biztosan egy távoli aratás felé kalandoztak. Kérdezz újra.",
+  "chatbot.megumin.errorMessage": "A zsenialitásom... biztosan hűlőben van! Kérdezz újra és légy tanúja az igazi hatalomnak!",
+  "chatbot.gojo.errorToast": "Hoh? Valami elromlott. Próbáljuk újra.",
+  "chatbot.holo.errorToast": "Hmph. A bölcsességem biztosan túl sok volt ennek az eszköznek. Próbáld újra.",
+  "chatbot.megumin.errorToast": "Waaaah! A manám kiegyensúlyozatlan! A varázslat meghiúsult!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatár"
+}

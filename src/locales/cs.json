@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Vítejte v LearnMint!",
+  "dashboard.description": "Váš AI-poháněný studijní asistent pro poznámky, kvízy, testy a další.",
+  "dashboard.generateMaterials.title": "Generovat studijní materiály",
+  "dashboard.generateMaterials.description": "Nechte AI vytvořit komplexní poznámky, kvízy a kartičky pro jakékoli téma.",
+  "dashboard.customTest.title": "Vytvořit vlastní test",
+  "dashboard.customTest.description": "Sestavte si přizpůsobený test z témat, poznámek nebo nedávných studijních sezení.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Počestný je zde, aby pomohl.",
+  "chatbot.holo.description": "Moudrý vlk z Yoitsu.",
+  "chatbot.megumin.description": "Šílená výbuchem a posedlá.",
+  "chatbot.gojo.greeting": "Yo! Trvalo ti to. Myslel jsem, že budu muset bojovat s nudou bez tebe.",
+  "chatbot.holo.greeting": "Á, ten malý se vrací. Přišel jsi se znovu koupat v mém lesku?",
+  "chatbot.megumin.greeting": "Hahaha! Vyhledal jsi největšího mistra výbuchové magie! Jaké znalosti hledáš od mě, Megumin?!",
+  "chatbot.gojo.typing": "Gojo přemýšlí...",
+  "chatbot.holo.typing": "Holo přemítá o své moudrosti...",
+  "chatbot.megumin.typing": "Megumin se soustředí na své zaklínadlo...",
+  "chatbot.gojo.errorMessage": "Moje technika musela selhat. Zeptej se znovu, neposlouchal jsem.",
+  "chatbot.holo.errorMessage": "Moje myšlenky musely zabloudit k vzdálené sklizni. Zeptej se znovu.",
+  "chatbot.megumin.errorMessage": "Můj génius... musí se ochlazovat! Zeptej se znovu a staň se svědkem skutečné moci!",
+  "chatbot.gojo.errorToast": "Hoh? Něco se pokazilo. Zkusme to znovu.",
+  "chatbot.holo.errorToast": "Hmph. Moje moudrost musela být pro toto zařízení příliš. Zkus to znovu.",
+  "chatbot.megumin.errorToast": "Waaaah! Moje mana je v nerovnováze! Kouzlo selhalo!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}

@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Velkommen til LearnMint!",
+  "dashboard.description": "Din AI-drevne studieassistent til noter, quizzer, tests og mere.",
+  "dashboard.generateMaterials.title": "Generer studiematerialer",
+  "dashboard.generateMaterials.description": "Lad AI oprette omfattende noter, quizzer og flashcards til ethvert emne.",
+  "dashboard.customTest.title": "Opret brugerdefineret test",
+  "dashboard.customTest.description": "Byg en skræddersyet test ud fra emner, noter eller seneste studiesessioner.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Den Ærede er her for at hjælpe.",
+  "chatbot.holo.description": "Den Vise Ulv fra Yoitsu.",
+  "chatbot.megumin.description": "Eksplosionsgal og besat.",
+  "chatbot.gojo.greeting": "Yo! Det tog dig lang tid. Jeg troede, jeg skulle bekæmpe kedsomheden uden dig.",
+  "chatbot.holo.greeting": "Ah, den lille vender tilbage. Er du kommet for at sole dig i min glans igen?",
+  "chatbot.megumin.greeting": "Hahaha! Du har opsøgt den største mester i eksplosionsmagi! Hvilken viden søger du fra mig, Megumin?!",
+  "chatbot.gojo.typing": "Gojo overvejer...",
+  "chatbot.holo.typing": "Holo overvejer sin visdom...",
+  "chatbot.megumin.typing": "Megumin koncentrerer sig om sin besværgelse...",
+  "chatbot.gojo.errorMessage": "Min teknik må være mislykkedes. Spørg igen, jeg var ikke opmærksom.",
+  "chatbot.holo.errorMessage": "Mine tanker må være vandret til en fjern høst. Spørg igen.",
+  "chatbot.megumin.errorMessage": "Mit geni... det må være på nedkøling! Spørg igen og vær vidne til sand magt!",
+  "chatbot.gojo.errorToast": "Hoh? Noget gik galt. Lad os prøve igen.",
+  "chatbot.holo.errorToast": "Hmph. Min visdom må have været for meget for denne enhed. Prøv igen.",
+  "chatbot.megumin.errorToast": "Waaaah! Min mana er i ubalance! Besværgelsen mislykkedes!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}

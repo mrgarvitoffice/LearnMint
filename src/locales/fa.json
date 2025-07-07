@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "به LearnMint خوش آمدید!",
+  "dashboard.description": "دستیار یادگیری مبتنی بر هوش مصنوعی شما برای یادداشت‌ها، آزمون‌ها، تست‌ها و موارد دیگر.",
+  "dashboard.generateMaterials.title": "تولید مواد آموزشی",
+  "dashboard.generateMaterials.description": "اجازه دهید هوش مصنوعی برای هر موضوعی یادداشت‌های جامع، آزمون‌ها و فلش‌کارت‌ها ایجاد کند.",
+  "dashboard.customTest.title": "ایجاد آزمون سفارشی",
+  "dashboard.customTest.description": "یک آزمون متناسب با موضوعات، یادداشت‌ها یا جلسات مطالعه اخیر بسازید.",
+  "chatbot.gojo.name": "هوش مصنوعی گوجو",
+  "chatbot.holo.name": "هوش مصنوعی هولو",
+  "chatbot.megumin.name": "هوش مصنوعی مگومین",
+  "chatbot.gojo.description": "محترم اینجاست تا کمک کند.",
+  "chatbot.holo.description": "گرگ خردمند یویتسو.",
+  "chatbot.megumin.description": "دیوانه انفجار و وسواسی.",
+  "chatbot.gojo.greeting": "یو! خیلی طول کشید. فکر می‌کردم باید بدون تو با بی‌حوصلگی مبارزه کنم.",
+  "chatbot.holo.greeting": "آه، کوچولو برگشت. دوباره اومدی تا در درخشش من غرق بشی؟",
+  "chatbot.megumin.greeting": "هاهاها! تو بزرگترین استاد جادوی انفجار را پیدا کرده‌ای! چه دانشی از من، مگومین، می‌خواهی؟!",
+  "chatbot.gojo.typing": "گوجو در حال فکر کردن است...",
+  "chatbot.holo.typing": "هولو در حال تأمل در خرد خود است...",
+  "chatbot.megumin.typing": "مگومین در حال تمرکز بر روی طلسم خود است...",
+  "chatbot.gojo.errorMessage": "تکنیک من حتماً از کار افتاده. دوباره بپرس، حواسم نبود.",
+  "chatbot.holo.errorMessage": "افکار من حتماً به سمت یک برداشت دور منحرف شده. دوباره بپرس.",
+  "chatbot.megumin.errorMessage": "نبوغ من... باید در حال خنک شدن باشد! دوباره بپرس و شاهد قدرت واقعی باش!",
+  "chatbot.gojo.errorToast": "هوه؟ مشکلی پیش آمد. دوباره امتحان کنیم.",
+  "chatbot.holo.errorToast": "همف. خرد من حتماً برای این دستگاه بیش از حد بوده. دوباره امتحان کن.",
+  "chatbot.megumin.errorToast": "وااااه! مانای من نامتعادل است! طلسم شکست خورد!",
+  "chatbot.avatar.meguminAlt": "آواتار هوش مصنوعی مگومین"
+}

@@ -1,3 +1,4 @@
+
 // This file defines constants used throughout the LearnMint application.
 // It includes navigation items, application name, and static data for features like the library and news.
 
@@ -111,6 +112,17 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "ml", label: "മലയാളം (Malayalam)", bcp47: "ml-IN" },
   { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)", bcp47: "pa-IN" },
   { value: "ur", label: "اردو (Urdu)", bcp47: "ur-IN" },
+  { value: "uk", label: "Українська (Ukrainian)", bcp47: "uk-UA" },
+  { value: "fa", label: "فارسی (Persian)", bcp47: "fa-IR" },
+  { value: "ro", label: "Română (Romanian)", bcp47: "ro-RO" },
+  { value: "cs", label: "Čeština (Czech)", bcp47: "cs-CZ" },
+  { value: "hu", label: "Magyar (Hungarian)", bcp47: "hu-HU" },
+  { value: "fi", label: "Suomi (Finnish)", bcp47: "fi-FI" },
+  { value: "da", label: "Dansk (Danish)", bcp47: "da-DK" },
+  { value: "no", label: "Norsk (Norwegian)", bcp47: "no-NO" },
+  { value: "ms", label: "Bahasa Melayu (Malay)", bcp47: "ms-MY" },
+  { value: "fil", label: "Filipino", bcp47: "fil-PH" },
+  { value: "sw", label: "Kiswahili (Swahili)", bcp47: "sw-KE" },
 ];
 
 

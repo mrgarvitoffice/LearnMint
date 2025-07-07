@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Tervetuloa LearnMintiin!",
+  "dashboard.description": "Tekoälypohjainen opiskeluavustajasi muistiinpanoihin, tietokilpailuihin, kokeisiin ja muuhun.",
+  "dashboard.generateMaterials.title": "Luo oppimateriaaleja",
+  "dashboard.generateMaterials.description": "Anna tekoälyn luoda kattavat muistiinpanot, tietokilpailut ja muistikortit mihin tahansa aiheeseen.",
+  "dashboard.customTest.title": "Luo mukautettu koe",
+  "dashboard.customTest.description": "Rakenna räätälöity koe aiheista, muistiinpanoista tai viimeaikaisista opiskelusessioista.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Kunnioitettu on täällä auttamassa.",
+  "chatbot.holo.description": "Yoitsun viisas susi.",
+  "chatbot.megumin.description": "Räjähdysvimmainen ja pakkomielteinen.",
+  "chatbot.gojo.greeting": "Yo! Kesti kauan. Luulin, että joudun taistelemaan tylsyyttä vastaan ilman sinua.",
+  "chatbot.holo.greeting": "Ah, pienokainen palaa. Tulitko taas paistattelemaan loistossani?",
+  "chatbot.megumin.greeting": "Hahahaha! Olet etsinyt suurimman räjähdysmagian taitajan! Mitä tietoa etsit minulta, Meguminilta?!",
+  "chatbot.gojo.typing": "Gojo miettii...",
+  "chatbot.holo.typing": "Holo mietiskelee viisauttaan...",
+  "chatbot.megumin.typing": "Megumin keskittyy loitsuunsa...",
+  "chatbot.gojo.errorMessage": "Tekniikkani on täytynyt epäonnistua. Kysy uudelleen, en kuunnellut.",
+  "chatbot.holo.errorMessage": "Ajatukseni ovat täytyneet harhailla kaukaiseen satoon. Kysy uudelleen.",
+  "chatbot.megumin.errorMessage": "Nerouteni... sen täytyy olla jäähtymässä! Kysy uudelleen ja todista todellista voimaa!",
+  "chatbot.gojo.errorToast": "Hoh? Jotain meni pieleen. Yritetään uudelleen.",
+  "chatbot.holo.errorToast": "Hmph. Viisauteni on täytynyt olla liikaa tälle laitteelle. Yritä uudelleen.",
+  "chatbot.megumin.errorToast": "Waaaah! Manani on epätasapainossa! Loitsu epäonnistui!",
+  "chatbot.avatar.meguminAlt": "Megumin AI -avatari"
+}

@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Ласкаво просимо до LearnMint!",
+  "dashboard.description": "Ваш помічник у навчанні на базі штучного інтелекту для нотаток, вікторин, тестів тощо.",
+  "dashboard.generateMaterials.title": "Створити навчальні матеріали",
+  "dashboard.generateMaterials.description": "Дозвольте ШІ створювати вичерпні нотатки, вікторини та картки для будь-якої теми.",
+  "dashboard.customTest.title": "Створити власний тест",
+  "dashboard.customTest.description": "Створіть індивідуальний тест з тем, нотаток або останніх навчальних сесій.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Почесний тут, щоб допомогти.",
+  "chatbot.holo.description": "Мудрий Вовк з Йоіцу.",
+  "chatbot.megumin.description": "Божевільна від вибухів і одержима.",
+  "chatbot.gojo.greeting": "Йо! Ти довго. Я думав, що доведеться боротися з нудьгою без тебе.",
+  "chatbot.holo.greeting": "А, малий повертається. Ти прийшов знову погрітися в моєму сяйві?",
+  "chatbot.megumin.greeting": "Ха-ха-ха! Ти знайшов найвеличнішого володаря вибухової магії! Які знання ти шукаєш від мене, Мегумін?!",
+  "chatbot.gojo.typing": "Годжо розмірковує...",
+  "chatbot.holo.typing": "Холо розмірковує над своєю мудрістю...",
+  "chatbot.megumin.typing": "Мегумін зосереджується на своєму заклятті...",
+  "chatbot.gojo.errorMessage": "Моя техніка, мабуть, дала збій. Запитай ще раз, я не слухав.",
+  "chatbot.holo.errorMessage": "Мої думки, мабуть, заблукали до далекого врожаю. Запитай ще раз.",
+  "chatbot.megumin.errorMessage": "Мій геній... він, мабуть, на перезарядці! Запитай ще раз і стань свідком справжньої сили!",
+  "chatbot.gojo.errorToast": "Хох? Щось пішло не так. Спробуймо ще раз.",
+  "chatbot.holo.errorToast": "Хмф. Моя мудрість, мабуть, була занадто великою для цього пристрою. Спробуй ще раз.",
+  "chatbot.megumin.errorToast": "Ваааа! Моя мана в дисбалансі! Закляття провалилося!",
+  "chatbot.avatar.meguminAlt": "Аватар Megumin AI"
+}

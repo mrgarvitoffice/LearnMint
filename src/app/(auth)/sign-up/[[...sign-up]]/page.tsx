@@ -2,24 +2,28 @@
 "use client";
 
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User, UserPlus } from 'lucide-react';
+import { Loader2, User, UserPlus, Languages } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSettings } from '@/contexts/SettingsContext';
+import { APP_LANGUAGES } from '@/lib/constants';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   displayName: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string(),
+  appLanguage: z.string().default('en'),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
@@ -30,11 +34,14 @@ type FormData = z.infer<typeof formSchema>;
 export default function SignUpPage() {
   const { signUpWithEmail, signInAnonymously, loading } = useAuth();
   const { t } = useTranslation();
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { appLanguage, setAppLanguage } = useSettings();
+  const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: { appLanguage: appLanguage }
   });
   
   const handleEmailSignUp = async (data: FormData) => {
+    setAppLanguage(data.appLanguage);
     await signUpWithEmail(data.email, data.password, data.displayName);
   };
   
@@ -81,6 +88,25 @@ export default function SignUpPage() {
             <Label htmlFor="confirmPassword">{t('auth.confirmPasswordLabel')}</Label>
             <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={loading} />
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
+          </div>
+          <div className="space-y-2">
+              <Label htmlFor="appLanguage">{t('header.appLanguage')}</Label>
+              <Controller
+                name="appLanguage"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
+                    <SelectTrigger id="appLanguage">
+                      <SelectValue placeholder={t('header.appLanguage')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {APP_LANGUAGES.map(lang => (
+                        <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}

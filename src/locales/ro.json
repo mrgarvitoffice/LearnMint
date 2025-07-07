@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Bun venit la LearnMint!",
+  "dashboard.description": "Asistentul tău de învățare bazat pe AI pentru notițe, chestionare, teste și multe altele.",
+  "dashboard.generateMaterials.title": "Generează materiale de studiu",
+  "dashboard.generateMaterials.description": "Lasă AI să creeze notițe complete, chestionare și fișe de memorare pentru orice subiect.",
+  "dashboard.customTest.title": "Creează test personalizat",
+  "dashboard.customTest.description": "Construiește un test personalizat din subiecte, notițe sau sesiuni de studiu recente.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Cel Onoare este aici pentru a ajuta.",
+  "chatbot.holo.description": "Lupul Înțelept din Yoitsu.",
+  "chatbot.megumin.description": "Nebună după explozii și obsedată.",
+  "chatbot.gojo.greeting": "Yo! Ți-a luat mult. Credeam că va trebui să lupt cu plictiseala fără tine.",
+  "chatbot.holo.greeting": "Ah, cel mic se întoarce. Ai venit să te bucuri din nou de strălucirea mea?",
+  "chatbot.megumin.greeting": "Hahahaha! Ai căutat cel mai mare utilizator de magie a exploziei! Ce cunoștințe cauți de la mine, Megumin?!",
+  "chatbot.gojo.typing": "Gojo contemplă...",
+  "chatbot.holo.typing": "Holo meditează la înțelepciunea ei...",
+  "chatbot.megumin.typing": "Megumin se concentrează pe vraja ei...",
+  "chatbot.gojo.errorMessage": "Tehnica mea trebuie să fi eșuat. Întreabă din nou, nu eram atent.",
+  "chatbot.holo.errorMessage": "Gândurile mele trebuie să fi rătăcit spre o recoltă îndepărtată. Întreabă din nou.",
+  "chatbot.megumin.errorMessage": "Geniul meu... trebuie să fie în pauză! Întreabă din nou și fii martor la adevărata putere!",
+  "chatbot.gojo.errorToast": "Hoh? Ceva nu a mers bine. Să încercăm din nou.",
+  "chatbot.holo.errorToast": "Hmph. Înțelepciunea mea trebuie să fi fost prea mult pentru acest dispozitiv. Încearcă din nou.",
+  "chatbot.megumin.errorToast": "Waaaah! Mana mea este în dezechilibru! Vraja a eșuat!",
+  "chatbot.avatar.meguminAlt": "Avatar Megumin AI"
+}

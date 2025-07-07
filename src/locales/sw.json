@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Karibu LearnMint!",
+  "dashboard.description": "Msaidizi wako wa kujifunza anayetumiwa na AI kwa madokezo, maswali, majaribio, na zaidi.",
+  "dashboard.generateMaterials.title": "Tengeneza Vifaa vya Kujifunza",
+  "dashboard.generateMaterials.description": "Acha AI itengeneze madokezo ya kina, maswali, na kadi za kumbukumbu kwa mada yoyote.",
+  "dashboard.customTest.title": "Unda Jaribio Maalum",
+  "dashboard.customTest.description": "Jenga jaribio lililobinafsishwa kutoka kwa mada, madokezo, au vipindi vya hivi karibuni vya kujifunza.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Mheshimiwa yuko hapa kusaidia.",
+  "chatbot.holo.description": "Mbwa Mwitu Mwenye Hekima wa Yoitsu.",
+  "chatbot.megumin.description": "Mwendawazimu wa mlipuko na aliyechanganyikiwa.",
+  "chatbot.gojo.greeting": "Yo! Umechukua muda mrefu. Nilidhani nitalazimika kupigana na uchovu bila wewe.",
+  "chatbot.holo.greeting": "Ah, mdogo anarudi. Umekuja kuota tena katika mng'ao wangu?",
+  "chatbot.megumin.greeting": "Hahahaha! Umetafuta mtumiaji mkuu wa uchawi wa Mlipuko! Unatafuta maarifa gani kutoka kwangu, Megumin?!",
+  "chatbot.gojo.typing": "Gojo anatafakari...",
+  "chatbot.holo.typing": "Holo anatafakari hekima yake...",
+  "chatbot.megumin.typing": "Megumin anazingatia uchawi wake...",
+  "chatbot.gojo.errorMessage": "Mbinu yangu lazima iwe imeshindwa. Uliza tena, sikuwa makini.",
+  "chatbot.holo.errorMessage": "Mawazo yangu lazima yawe yamezurura hadi kwenye mavuno ya mbali. Uliza tena.",
+  "chatbot.megumin.errorMessage": "Ujanja wangu... lazima uwe unapoa! Uliza tena na ushuhudie nguvu halisi!",
+  "chatbot.gojo.errorToast": "Hoh? Kuna kitu kimeenda mrama. Tujaribu tena.",
+  "chatbot.holo.errorToast": "Hmph. Hekima yangu lazima iwe ilikuwa nyingi mno kwa kifaa hiki. Jaribu tena.",
+  "chatbot.megumin.errorToast": "Waaaah! Mana yangu haina usawa! Uchawi umeshindwa!",
+  "chatbot.avatar.meguminAlt": "Avatar ya Megumin AI"
+}

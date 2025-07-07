@@ -53,7 +53,7 @@ export function TopMobileNav() {
                 )}
               >
                 <Icon className="h-6 w-6 transition-transform duration-200 group-hover:scale-110" />
-                <span className="text-[10px] font-medium leading-tight text-center">{title}</span>
+                <span className="text-[10px] font-medium leading-tight text-center break-words">{title}</span>
               </Link>
             );
           })}

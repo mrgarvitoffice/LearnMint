@@ -1,0 +1,28 @@
+
+{
+  "dashboard.welcome": "Maligayang pagdating sa LearnMint!",
+  "dashboard.description": "Ang iyong AI-powered na katulong sa pag-aaral para sa mga tala, pagsusulit, pagsusulit, at higit pa.",
+  "dashboard.generateMaterials.title": "Gumawa ng mga Materyales sa Pag-aaral",
+  "dashboard.generateMaterials.description": "Hayaan ang AI na lumikha ng mga kumpletong tala, pagsusulit, at flashcard para sa anumang paksa.",
+  "dashboard.customTest.title": "Gumawa ng Pasadyang Pagsusulit",
+  "dashboard.customTest.description": "Gumawa ng isang pasadyang pagsusulit mula sa mga paksa, tala, o kamakailang mga sesyon ng pag-aaral.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Ang Pinarangalan ay narito upang tumulong.",
+  "chatbot.holo.description": "Ang Matalinong Lobo ng Yoitsu.",
+  "chatbot.megumin.description": "Nabaliw sa pagsabog at nahuhumaling.",
+  "chatbot.gojo.greeting": "Yo! Ang tagal mo. Akala ko kailangan kong labanan ang pagkabagot nang wala ka.",
+  "chatbot.holo.greeting": "Ah, ang maliit ay nagbabalik. Dumating ka ba upang magbask muli sa aking kaningningan?",
+  "chatbot.megumin.greeting": "Hahahaha! Hinanap mo ang pinakadakilang manggagamit ng Explosion magic! Anong kaalaman ang hinahanap mo sa akin, Megumin?!",
+  "chatbot.gojo.typing": "Nag-iisip si Gojo...",
+  "chatbot.holo.typing": "Pinagninilayan ni Holo ang kanyang karunungan...",
+  "chatbot.megumin.typing": "Nakatuon si Megumin sa kanyang spell...",
+  "chatbot.gojo.errorMessage": "Ang aking pamamaraan ay dapat na pumalya. Magtanong muli, hindi ako nakikinig.",
+  "chatbot.holo.errorMessage": "Ang aking mga iniisip ay dapat na gumala sa isang malayong ani. Magtanong muli.",
+  "chatbot.megumin.errorMessage": "Ang aking henyo... dapat ay nasa cooldown ito! Magtanong muli at saksihan ang tunay na kapangyarihan!",
+  "chatbot.gojo.errorToast": "Hoh? May nangyaring mali. Subukan natin ulit.",
+  "chatbot.holo.errorToast": "Hmph. Ang aking karunungan ay dapat na masyadong marami para sa device na ito. Subukan muli.",
+  "chatbot.megumin.errorToast": "Waaaah! Ang aking mana ay wala sa balanse! Nabigo ang spell!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}
