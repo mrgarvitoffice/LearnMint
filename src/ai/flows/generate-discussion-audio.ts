@@ -2,6 +2,7 @@
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
+ * This flow now auto-detects the language from the input content.
  *
  * - generateDiscussionAudio - A function that handles the discussion generation process.
  * - GenerateDiscussionAudioInput - The input type for this function.
@@ -14,9 +15,9 @@ import { aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
+// Input schema no longer requires languageName.
 const GenerateDiscussionAudioInputSchema = z.object({
   content: z.string().describe('The content to be turned into a discussion.'),
-  languageName: z.string().describe('The language for the output dialogue (e.g., "English", "日本語").'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -42,32 +43,31 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// Prompt to generate the dialogue script
+// Updated prompt to self-determine the language and be more robust.
 const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
-    input: { schema: z.object({ content: z.string(), languageName: z.string() }) },
+    input: { schema: z.object({ content: z.string() }) },
     output: { schema: z.object({ dialogue: z.string() }) },
-    prompt: `You are a scriptwriter. Your task is to convert the following text content into a natural-sounding, two-person dialogue script between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner).
+    prompt: `You are an expert scriptwriter. Your primary task is to convert the given text content into a natural-sounding, two-person dialogue script.
 
-The dialogue should discuss and explain the key points from the provided content. Speaker1 should present the information, and Speaker2 should ask clarifying questions or make comments to guide the conversation.
+    1.  **Analyze the Language**: First, determine the primary language of the provided "Content to convert".
+    2.  **Write the Script**: Write a dialogue script in that *same language* between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner). The dialogue should discuss and explain the key points from the content.
+    3.  **Strict Formatting**: The output MUST be ONLY the script, formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
+        Speaker1: [First line of dialogue]
+        Speaker2: [Second line of dialogue]
+        ...and so on.
 
-The dialogue MUST be in the following language: {{{languageName}}}.
+    **CRITICAL**: Do NOT add any introductory text, closing remarks, summaries, or any text other than the dialogue lines themselves. The entire output must begin directly with "Speaker1:" or "Speaker2:".
 
-IMPORTANT: The output MUST be a script formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
-Speaker1: [First line of dialogue]
-Speaker2: [Second line of dialogue]
-...and so on.
+    Content to convert:
+    ---
+    {{{content}}}
+    ---
 
-Do not add any other text, introductions, or summaries. The entire output should be just the dialogue script.
-
-Content to convert:
----
-{{{content}}}
----
-
-Please provide the dialogue script below.`
+    Please provide the dialogue script below.`,
 });
+
 
 // The main Genkit flow
 const generateDiscussionAudioFlow = aiForTTS.defineFlow(
@@ -78,14 +78,30 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
   },
   async (input) => {
     // 1. Generate the dialogue script from the input content
-    console.log(`[AI Flow - Discussion Audio] Generating dialogue script in ${input.languageName}...`);
-    const { output: dialogueOutput } = await dialoguePrompt({ content: input.content, languageName: input.languageName });
-    const dialogueScript = dialogueOutput?.dialogue;
+    console.log(`[AI Flow - Discussion Audio] Generating dialogue script, auto-detecting language...`);
+    const { output } = await dialoguePrompt({ content: input.content });
+    let dialogueScript = output?.dialogue;
 
-    if (!dialogueScript) {
+    if (!dialogueScript || dialogueScript.trim() === '') {
       throw new Error("Failed to generate a dialogue script from the content.");
     }
     console.log('[AI Flow - Discussion Audio] Dialogue script generated successfully.');
+    
+    // Safeguard: Clean up potential model verbosity by stripping any text before the first speaker tag.
+    const firstSpeaker1 = dialogueScript.indexOf('Speaker1:');
+    const firstSpeaker2 = dialogueScript.indexOf('Speaker2:');
+    
+    let startIndex = -1;
+    if (firstSpeaker1 === -1) startIndex = firstSpeaker2;
+    else if (firstSpeaker2 === -1) startIndex = firstSpeaker1;
+    else startIndex = Math.min(firstSpeaker1, firstSpeaker2);
+
+    if (startIndex > 0) {
+        console.warn(`[AI Flow - Discussion Audio] Cleaning up unexpected preamble from dialogue script.`);
+        dialogueScript = dialogueScript.substring(startIndex);
+    } else if (startIndex === -1) {
+        throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
+    }
 
     // 2. Generate multi-speaker audio from the script
     console.log('[AI Flow - Discussion Audio] Generating multi-speaker TTS...');
