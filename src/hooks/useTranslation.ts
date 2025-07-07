@@ -13,44 +13,42 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let active = true;
-    setIsReady(false);
-    setTranslations(null); // Reset translations on language change
 
-    const loadTranslations = async (lang: string) => {
-      try {
-        const module = await import(`@/locales/${lang}.json`);
-        if (active && module.default && Object.keys(module.default).length > 0) {
-          setTranslations(module.default);
-          setIsReady(true); // Set ready only after successful load
-        } else {
-            throw new Error(`Translations for ${lang} are empty or invalid.`);
-        }
-      } catch (error) {
-        console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
+    const loadTranslations = async () => {
+      setIsReady(false);
+      const langCode = appLanguage.split('-')[0] || 'en';
+      
+      const loadFile = async (lang: string): Promise<Record<string, string> | null> => {
         try {
-          const fallbackModule = await import(`@/locales/en.json`);
-          if (active && fallbackModule.default && Object.keys(fallbackModule.default).length > 0) {
-            setTranslations(fallbackModule.default);
-            setIsReady(true); // Set ready after successful fallback load
-          } else {
-            console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
-            if (active) {
-                setTranslations({}); // Prevent crashes
-                setIsReady(true); // Still need to unblock the UI, even if translations are broken
-            }
+          const module = await import(`@/locales/${lang}.json`);
+          // This handles both `export default {...}` and `module.exports = {...}`
+          const data = module.default || module;
+          if (data && Object.keys(data).length > 0) {
+            return data;
           }
-        } catch (fallbackError) {
-          console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) {
-             setTranslations({});
-             setIsReady(true);
-          }
+          console.error(`Translations for ${lang} are empty or invalid.`);
+          return null;
+        } catch (error) {
+          console.warn(`Could not load translations for language: ${lang}.`, error);
+          return null;
         }
+      };
+
+      let loadedTranslations = await loadFile(langCode);
+
+      if (active && !loadedTranslations && langCode !== 'en') {
+        // If the selected language failed, try falling back to English
+        console.warn(`Falling back to English translations.`);
+        loadedTranslations = await loadFile('en');
+      }
+
+      if (active) {
+        setTranslations(loadedTranslations || {}); // Use loaded translations or an empty object if all fails
+        setIsReady(true);
       }
     };
 
-    const langCode = appLanguage.split('-')[0] || 'en';
-    loadTranslations(langCode);
+    loadTranslations();
 
     return () => {
       active = false;
@@ -58,30 +56,27 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // If translations are not ready, return an empty string. The UI components
-    // should be showing a loading skeleton based on the `isReady` flag.
+    // Return the key as a fallback if translations are not ready or missing.
+    // This prevents showing 'undefined' or crashing, making debugging easier.
     if (!isReady || !translations) {
-      return "";
+      return key;
     }
     
     const translation = translations[key];
 
-    // If a specific key is missing from the loaded JSON file, it's a data error.
-    // Log a warning for debugging and return the key itself so it's visible in the UI.
     if (translation === undefined) {
+        // Log a warning for developers about the missing key.
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
     }
 
     let finalTranslation = translation;
-
     if (options) {
       Object.keys(options).forEach(optionKey => {
         const regex = new RegExp(`{{${optionKey}}}`, 'g');
         finalTranslation = finalTranslation.replace(regex, String(options[optionKey]));
       });
     }
-
     return finalTranslation;
   }, [translations, isReady, appLanguage]);
 
