@@ -1,4 +1,3 @@
-
 // This file defines constants used throughout the LearnMint application.
 // It includes navigation items, application name, and static data for features like the library and news.
 
@@ -115,7 +114,7 @@ export const OTHER_RESOURCES = [
 
 
 // --- Math Facts Fallback Data (for Library page) ---
-// Used if the live Math Fact API fails.
+// This is no longer used as the primary source, but kept as a last resort fallback.
 export const MATH_FACTS_FALLBACK = [
   "The number 0 is the only number that cannot be represented by Roman numerals.",
   "Pi (π) is an irrational number, meaning its decimal representation never ends and never repeats.",

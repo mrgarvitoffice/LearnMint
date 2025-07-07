@@ -2,24 +2,18 @@
 "use server";
 import type { MathFact } from './types';
 import { MATH_FACTS_FALLBACK } from './constants';
+import { getTranslatedMathFact } from './actions/fact-actions';
 
-// Using Numbers API as a simple example. Could be swapped for another.
-const MATH_FACT_API_URL = "http://numbersapi.com/random/math?json";
-
+/**
+ * @deprecated This function is deprecated and will be removed in a future version.
+ * Use getTranslatedMathFact from 'lib/actions/fact-actions' instead.
+ */
 export async function fetchMathFact(): Promise<MathFact> {
+  console.warn("DEPRECATED: fetchMathFact is deprecated. Use getTranslatedMathFact instead.");
   try {
-    const response = await fetch(MATH_FACT_API_URL, { cache: 'no-store' }); // Prevent caching for random facts
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    const data = await response.json();
-    // Numbers API returns data in a specific format, adapt if using a different API
-    return {
-      text: data.text || "A fascinating math fact!",
-      number: data.number,
-      found: data.found,
-      type: data.type,
-    };
+    // Call the new, correct function with a default language
+    const fact = await getTranslatedMathFact('en');
+    return fact;
   } catch (error) {
     console.warn("Failed to fetch live math fact, using fallback:", error);
     // Return a random fallback fact

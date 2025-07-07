@@ -6,13 +6,13 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MATH_FACTS_FALLBACK, OTHER_RESOURCES } from '@/lib/constants';
-import { fetchMathFact } from '@/lib/math-fact-api';
+import { OTHER_RESOURCES } from '@/lib/constants';
+import { getTranslatedMathFact } from '@/lib/actions/fact-actions';
 import type { MathFact, YoutubeVideoItem, GoogleBookItem, QueryError, YoutubeSearchInput, GoogleBooksSearchInput, YoutubeSearchOutput, GoogleBooksSearchOutput } from '@/lib/types';
 import { ResourceCard } from '@/components/features/library/ResourceCard';
 import { YoutubeVideoResultItem } from '@/components/features/library/YoutubeVideoResultItem';
 import { BookResultItem } from '@/components/features/library/BookResultItem';
-import { BookMarked, Search, Youtube, Lightbulb, BookOpen, Brain, ExternalLink, Loader2, Quote, Video, X, Mic } from 'lucide-react';
+import { BookMarked, Search, Youtube, Lightbulb, BookOpen, Brain, ExternalLink, Loader2, Quote, Video, X, Mic, AlertTriangle } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
 import { directYoutubeSearch, directGoogleBooksSearch } from '@/lib/actions'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,12 +21,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 import { useSound } from '@/hooks/useSound';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSettings } from '@/contexts/SettingsContext';
+
 
 export default function LibraryPage() {
   const [youtubeSearchTerm, setYoutubeSearchTerm] = useState('');
   const [googleBooksSearchTerm, setGoogleBooksSearchTerm] = useState('');
-  const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
-
+  
   const [youtubeResults, setYoutubeResults] = useState<YoutubeVideoItem[]>([]);
   const [selectedYoutubeVideo, setSelectedYoutubeVideo] = useState<YoutubeVideoItem | null>(null);
 
@@ -39,6 +40,7 @@ export default function LibraryPage() {
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
   const { t, isReady } = useTranslation();
+  const { appLanguage } = useSettings();
 
   const { isListening, transcript, startListening, stopListening, error: voiceError, browserSupportsSpeechRecognition } = useVoiceRecognition();
   const [voiceSearchTarget, setVoiceSearchTarget] = useState<'youtube' | 'books' | null>(null);
@@ -82,17 +84,13 @@ export default function LibraryPage() {
     }
   };
 
-  const { data: mathFact, isLoading: isLoadingMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
-    queryKey: ['mathFact'], queryFn: fetchMathFact, staleTime: Infinity, gcTime: Infinity, refetchOnWindowFocus: false,
+  const { data: mathFact, isLoading: isLoadingMathFact, isError: isErrorMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
+    queryKey: ['mathFact', appLanguage],
+    queryFn: () => getTranslatedMathFact(appLanguage),
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 65,
+    refetchOnWindowFocus: false,
   });
-
-  useEffect(() => {
-    if (mathFact) setCurrentMathFact(mathFact);
-    else if (!isLoadingMathFact) {
-      const randomIndex = Math.floor(Math.random() * MATH_FACTS_FALLBACK.length);
-      setCurrentMathFact({ text: MATH_FACTS_FALLBACK[randomIndex] });
-    }
-  }, [mathFact, isLoadingMathFact]);
 
   const handleRefreshMathFact = () => {
     playClickSound(); refetchMathFact();
@@ -192,16 +190,17 @@ export default function LibraryPage() {
             <Quote className="h-7 w-7 text-orange-500/80 group-hover:text-orange-600 transition-colors" />
             <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">{t('library.mathFact.title')}</CardTitle>
           </div>
-          {isLoadingMathFact && !currentMathFact ? (
+          {isLoadingMathFact ? (
             <div className="flex items-center space-x-2 text-muted-foreground py-3"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
-            ) : currentMathFact ? (
+          ) : isErrorMathFact ? (
+             <div className="flex items-center space-x-2 text-destructive py-3"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
+          ) : mathFact ? (
             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3">
-              "{currentMathFact.text}"
+              "{mathFact.text}"
             </CardDescription>
-            ) : (
+          ) : (
             <CardDescription className="text-lg text-muted-foreground py-3">{t('library.mathFact.error')}</CardDescription>
-            )
-          }
+          )}
         </CardHeader>
         <CardFooter className="pt-2 pb-4">
           <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">

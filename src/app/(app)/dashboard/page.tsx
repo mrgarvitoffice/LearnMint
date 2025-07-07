@@ -4,7 +4,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Brain, CheckCircle, FileText, TestTubeDiagonal, Newspaper, Sparkles, BookHeart, History, Users, Quote, Loader2 } from "lucide-react";
+import { ArrowRight, Brain, CheckCircle, FileText, TestTubeDiagonal, Newspaper, Sparkles, BookHeart, History, Users, Quote, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useTTS } from '@/hooks/useTTS';
 import { useSound } from '@/hooks/useSound';
@@ -17,11 +17,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useQuests } from '@/contexts/QuestContext';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMathFact } from '@/lib/math-fact-api';
+import { getTranslatedMathFact } from '@/lib/actions/fact-actions';
 import type { MathFact } from '@/lib/types';
-import { MATH_FACTS_FALLBACK } from '@/lib/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import { TotalUsers } from '@/components/features/dashboard/TotalUsers';
+import { useSettings } from '@/contexts/SettingsContext';
 
 const ActionCard = ({ titleKey, descriptionKey, buttonTextKey, href, icon: Icon }: { titleKey: string, descriptionKey: string, buttonTextKey: string, href: string, icon: React.ElementType }) => {
     const { t } = useTranslation();
@@ -83,28 +83,19 @@ export default function DashboardPage() {
     const router = useRouter();
     const { quests } = useQuests();
     const { user } = useAuth();
+    const { appLanguage } = useSettings();
     
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
-    const [currentMathFact, setCurrentMathFact] = useState<MathFact | null>(null);
     const pageTitleSpokenRef = useRef(false);
 
-    const { data: mathFact, isLoading: isLoadingMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
-        queryKey: ['mathFactDashboard'],
-        queryFn: fetchMathFact,
-        staleTime: 1000 * 60 * 60,
+    const { data: mathFact, isLoading: isLoadingMathFact, isError: isErrorMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
+        queryKey: ['mathFact', appLanguage],
+        queryFn: () => getTranslatedMathFact(appLanguage),
+        staleTime: 1000 * 60 * 60, // 1 hour
         gcTime: 1000 * 60 * 65,
         refetchOnWindowFocus: false,
     });
     
-    useEffect(() => {
-        if (mathFact) {
-            setCurrentMathFact(mathFact);
-        } else if (!isLoadingMathFact) {
-            const randomIndex = Math.floor(Math.random() * MATH_FACTS_FALLBACK.length);
-            setCurrentMathFact({ text: MATH_FACTS_FALLBACK[randomIndex] });
-        }
-    }, [mathFact, isLoadingMathFact]);
-
     const handleRefreshMathFact = () => {
         playClickSound();
         refetchMathFact();
@@ -213,11 +204,13 @@ export default function DashboardPage() {
                             <Quote className="h-7 w-7 text-orange-500/80 group-hover:text-orange-600 transition-colors" />
                             <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500">{t('dashboard.dailyMotivation.title')}</CardTitle>
                         </div>
-                        {isLoadingMathFact && !currentMathFact ? (
+                        {isLoadingMathFact ? (
                             <div className="flex items-center space-x-2 text-muted-foreground py-3 h-[4.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
-                        ) : currentMathFact ? (
+                        ) : isErrorMathFact ? (
+                            <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
+                        ) : mathFact ? (
                             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[4.5rem] flex items-center justify-center">
-                            "{currentMathFact.text}"
+                            "{mathFact.text}"
                             </CardDescription>
                         ) : (
                             <CardDescription className="text-lg text-muted-foreground py-3 h-[4.5rem] flex items-center justify-center">{t('library.mathFact.error')}</CardDescription>

@@ -26,5 +26,4 @@ import '@/ai/flows/generate-image-from-prompt';
 import '@/ai/flows/generate-audio-flashcards';
 import '@/ai/flows/generate-audio-summary';
 import '@/ai/flows/generate-discussion-audio';
-
-    
+import '@/ai/flows/generate-math-fact';
