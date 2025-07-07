@@ -608,5 +608,8 @@
   "audioFactory.image.errorDesc": "يرجى تحميل صورة أولاً.",
   "audioFactory.pdf.errorTitle": "لم يتم تحديد PDF",
   "audioFactory.pdf.errorDesc": "يرجى تحميل واستخراج نص من ملف PDF أولاً.",
-  "audioFactory.pdf.extracting": "يتم استخراج النص من PDF..."
+  "audioFactory.pdf.extracting": "يتم استخراج النص من PDF...",
+  "auth.profileErrorTitle": "خطأ في الملف الشخصي",
+  "auth.profileErrorDesc": "لا يمكن حفظ بيانات ملفك الشخصي. قد تكون لديك قواعد أمان مقيدة في Firestore.",
+  "auth.emailPlaceholder": "your@email.com"
 }

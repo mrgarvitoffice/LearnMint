@@ -16,6 +16,7 @@ import wav from 'wav';
 
 const GenerateDiscussionAudioInputSchema = z.object({
   content: z.string().describe('The content to be turned into a discussion.'),
+  languageName: z.string().describe('The language for the output dialogue (e.g., "English", "日本語").'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -45,11 +46,13 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
-    input: { schema: z.object({ content: z.string() }) },
+    input: { schema: z.object({ content: z.string(), languageName: z.string() }) },
     output: { schema: z.object({ dialogue: z.string() }) },
     prompt: `You are a scriptwriter. Your task is to convert the following text content into a natural-sounding, two-person dialogue script between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner).
 
 The dialogue should discuss and explain the key points from the provided content. Speaker1 should present the information, and Speaker2 should ask clarifying questions or make comments to guide the conversation.
+
+The dialogue MUST be in the following language: {{{languageName}}}.
 
 IMPORTANT: The output MUST be a script formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
 Speaker1: [First line of dialogue]
@@ -75,8 +78,8 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
   },
   async (input) => {
     // 1. Generate the dialogue script from the input content
-    console.log('[AI Flow - Discussion Audio] Generating dialogue script...');
-    const { output: dialogueOutput } = await dialoguePrompt({ content: input.content });
+    console.log(`[AI Flow - Discussion Audio] Generating dialogue script in ${input.languageName}...`);
+    const { output: dialogueOutput } = await dialoguePrompt({ content: input.content, languageName: input.languageName });
     const dialogueScript = dialogueOutput?.dialogue;
 
     if (!dialogueScript) {
@@ -117,5 +120,3 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
     };
   }
 );
-
-    

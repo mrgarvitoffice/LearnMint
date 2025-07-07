@@ -24,6 +24,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useTTS } from '@/hooks/useTTS';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
+import { useSettings } from '@/contexts/SettingsContext';
+import { APP_LANGUAGES } from '@/lib/constants';
+
 
 // Sub-component for Audio Flashcards
 function AudioFlashcardsGenerator() {
@@ -32,6 +35,7 @@ function AudioFlashcardsGenerator() {
   const [numFlashcards, setNumFlashcards] = useState(10);
   const [generatedContent, setGeneratedContent] = useState<GenerateAudioFlashcardsOutput | null>(null);
   const [discussionAudio, setDiscussionAudio] = useState<string | null>(null);
+  const { appLanguage } = useSettings();
   
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
@@ -98,7 +102,8 @@ function AudioFlashcardsGenerator() {
     playActionSound();
     if (!generatedContent || generatedContent.flashcards.length === 0) return;
     const textToConvert = generatedContent.flashcards.map(fc => `${t('audioFactory.flashcards.speakTerm')}: ${fc.term}. ${t('audioFactory.flashcards.speakDefinition')}: ${fc.definition}`).join('\n\n');
-    generateDiscussion({ content: textToConvert });
+    const languageName = APP_LANGUAGES.find(lang => lang.value === appLanguage)?.label || 'English';
+    generateDiscussion({ content: textToConvert, languageName });
   }
 
   const handlePlaybackControl = () => {
@@ -196,6 +201,7 @@ function AudioSummarizer({
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const [generatedContent, setGeneratedContent] = useState<GenerateAudioSummaryOutput | null>(null);
   const [discussionAudio, setDiscussionAudio] = useState<string | null>(null);
+  const { appLanguage } = useSettings();
 
   const { speak, cancelTTS, isSpeaking, isPaused, pauseTTS, resumeTTS, isLoading: isTTSLoading } = useTTS();
   
@@ -237,7 +243,8 @@ function AudioSummarizer({
   const handleGenerateDiscussion = () => {
     if (!generatedContent?.summary) return;
     playActionSound();
-    generateDiscussion({ content: generatedContent.summary });
+    const languageName = APP_LANGUAGES.find(lang => lang.value === appLanguage)?.label || 'English';
+    generateDiscussion({ content: generatedContent.summary, languageName });
   };
   
   const handlePlaybackControl = () => {

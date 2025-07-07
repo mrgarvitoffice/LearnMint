@@ -298,7 +298,7 @@ export async function generateAudioSummaryAction(input: GenerateAudioSummaryInpu
  */
 export async function generateDiscussionAudioAction(input: GenerateDiscussionAudioInput): Promise<GenerateDiscussionAudioOutput> {
   const actionName = "generateDiscussionAudioAction";
-  console.log(`[Server Action] ${actionName} called.`);
+  console.log(`[Server Action] ${actionName} called for language: ${input.languageName}`);
 
   try {
     const result = await generateDiscussionAudio(input);
