@@ -18,6 +18,7 @@ import type { GenerateAudioSummaryOutput } from '@/lib/types';
 const GenerateAudioSummaryInputSchema = z.object({
   text: z.string().optional().describe("Text content to be summarized."),
   imageDataUri: z.string().optional().describe("An image (as a data URI) to be described and summarized."),
+  language: z.string().optional().describe("The requested full language name for the summary, e.g., 'English', 'Japanese'.")
 }).refine(data => data.text || data.imageDataUri, {
   message: "Either text or an image data URI must be provided.",
 });
@@ -39,29 +40,40 @@ const summaryPrompt = aiForNotes.definePrompt({
   model: 'googleai/gemini-1.5-flash-latest', 
   input: { schema: z.object({ content: z.string() }) },
   output: { schema: z.object({ summary: z.string() }) },
-  prompt: `You are an expert summarizer. Your task is to provide a clear, concise, and informative summary of the provided text content. The summary should capture the main points and be easy to understand when read aloud.
+  prompt: `You are an expert multilingual summarizer. Your task is to provide a clear, concise, and informative summary of the provided text content.
 
-  Content to Summarize:
-  ---
-  {{{content}}}
-  ---
+**Crucial Instruction:** First, analyze the content to determine the user's intent.
+- If the user explicitly asks for the summary to be in a specific language (e.g., "Summarize this in Japanese: ..."), you **MUST** provide the summary in that requested language.
+- Otherwise, provide the summary in the same language as the main body of the provided text.
+
+The summary should capture the main points and be easy to understand when read aloud.
+
+Content to Summarize:
+---
+{{{content}}}
+---
   
-  Please provide your summary below.`,
+Please provide your summary below.`,
 });
 
 // Define a new, dedicated prompt for summarizing an IMAGE.
-// This is a more robust approach than a direct .generate() call.
 const imageSummaryPrompt = aiForTTS.definePrompt({ // Using aiForTTS as it appears to have working vision permissions
   name: 'generateSummaryFromImagePrompt',
   model: 'googleai/gemini-1.5-flash-latest',
-  input: { schema: z.object({ imageDataUri: z.string() }) },
+  input: { schema: z.object({ imageDataUri: z.string(), language: z.string().optional() }) },
   output: { schema: z.object({ summary: z.string() }) },
   prompt: `You are an expert at describing and summarizing images. Your task is to provide a clear, concise, and informative summary of the provided image. The summary should capture the main subjects, actions, and environment, and be easy to understand when read aloud.
 
-  Image to Summarize:
-  {{media url=imageDataUri}}
+{{#if language}}
+**Crucial Instruction**: The summary **MUST** be in {{{language}}}.
+{{else}}
+The summary should be in English.
+{{/if}}
+
+Image to Summarize:
+{{media url=imageDataUri}}
   
-  Please provide your summary below.`,
+Please provide your summary below.`,
 });
 
 
@@ -77,8 +89,11 @@ const generateAudioSummaryFlow = aiForNotes.defineFlow(
 
     // Step 1: If an image is provided, use the new dedicated image summarization prompt.
     if (input.imageDataUri) {
-      console.log("[AI Flow - Audio Summary] Summarizing provided image directly using dedicated prompt...");
-      const { output: imageSummaryOutput } = await imageSummaryPrompt({ imageDataUri: input.imageDataUri });
+      console.log(`[AI Flow - Audio Summary] Summarizing provided image directly using dedicated prompt in language: ${input.language || 'default'}...`);
+      const { output: imageSummaryOutput } = await imageSummaryPrompt({
+        imageDataUri: input.imageDataUri,
+        language: input.language,
+      });
       summaryText = imageSummaryOutput?.summary;
 
       if (!summaryText) {
@@ -107,5 +122,3 @@ const generateAudioSummaryFlow = aiForNotes.defineFlow(
     };
   }
 );
-
-    

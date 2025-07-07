@@ -334,6 +334,7 @@ function TextAudioSummarizer() {
 
 function ImageAudioSummarizer() {
   const { t } = useTranslation();
+  const { appLanguage } = useSettings();
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
@@ -362,7 +363,10 @@ function ImageAudioSummarizer() {
          }
          return true;
       }}
-      generateAction={(generate) => generate({ imageDataUri: imageData })}
+      generateAction={(generate) => generate({
+        imageDataUri: imageData,
+        language: APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English'
+      })}
     >
       <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
       <Button onClick={() => fileInputRef.current?.click()} variant="outline"><ImageIcon className="mr-2 h-4 w-4" /> {t('audioFactory.uploadImage')}</Button>

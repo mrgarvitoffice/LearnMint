@@ -1,4 +1,3 @@
-
 // For AI Generated Content
 export interface QuizQuestion {
   question: string;
@@ -71,6 +70,7 @@ export type GenerateAudioFlashcardsOutput = {
 export interface GenerateAudioSummaryInput {
   text?: string;
   imageDataUri?: string;
+  language?: string; // e.g., 'English', 'Japanese'
 }
 export interface GenerateAudioSummaryOutput {
   summary: string;

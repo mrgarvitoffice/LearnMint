@@ -40,20 +40,25 @@ const generateFlashcardsPrompt = aiForQuizzes.definePrompt({
   model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateFlashcardsInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an expert educator specializing in creating effective flashcards for students.
-  Given the topic: {{{topic}}}, generate a list of {{numFlashcards}} flashcards.
-  {{#if image}}
-  The user has also provided an image for additional context. Analyze the image and incorporate relevant information from it into the flashcards.
-  User's Image: {{media url=image}}
-  {{/if}}
-  
-  Each flashcard must have a key 'term' (for the front) and its corresponding 'definition' (for the back).
-  The 'term' should be a specific keyword, concept, or a short question.
-  The 'definition' should be concise and clear. For more complex definitions, use 2-3 bullet points to break down the information. If the term involves a formula crucial for quick recall, include it in the definition in a clear, simple format.
-  The flashcards should cover the most important vocabulary, formulas, and core concepts of the topic suitable for quick recall and study.
+  prompt: `You are an expert educator specializing in creating multilingual study materials.
+Your primary task is to generate a list of {{numFlashcards}} flashcards based on the provided topic.
 
-  Format the output as a JSON object with a "flashcards" array, conforming to this schema:
-  {{{outputSchema}}}
+**Crucial Instruction:** First, analyze the topic "{{{topic}}}" to determine if a specific output language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター").
+- If a language is specified, you **MUST** generate both the 'term' and 'definition' for all flashcards in that language.
+- If no language is specified, generate the flashcards in English.
+
+{{#if image}}
+The user has also provided an image for additional context. Analyze the image and incorporate relevant information from it into the flashcards, respecting the language instruction above.
+User's Image: {{media url=image}}
+{{/if}}
+  
+Each flashcard must have a key 'term' (for the front) and its corresponding 'definition' (for the back).
+The 'term' should be a specific keyword, concept, or a short question.
+The 'definition' should be concise and clear. For more complex definitions, use 2-3 bullet points to break down the information. If the term involves a formula crucial for quick recall, include it in the definition in a clear, simple format.
+The flashcards should cover the most important vocabulary, formulas, and core concepts of the topic suitable for quick recall and study.
+
+Format the output as a JSON object with a "flashcards" array, conforming to this schema:
+{{{outputSchema}}}
   `,
   config: {
      safetySettings: [
@@ -102,5 +107,3 @@ export async function generateFlashcards(input: GenerateFlashcardsInput): Promis
     throw new Error(clientErrorMessage);
   }
 }
-
-    
