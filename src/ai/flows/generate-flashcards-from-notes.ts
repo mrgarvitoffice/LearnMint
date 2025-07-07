@@ -38,7 +38,7 @@ export async function generateFlashcardsFromNotes(input: GenerateFlashcardsFromN
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateFlashcardsFromNotesPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateFlashcardsFromNotesInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an expert multilingual educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes.
