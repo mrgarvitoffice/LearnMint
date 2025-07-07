@@ -43,8 +43,8 @@ const generateFlashcardsPrompt = aiForQuizzes.definePrompt({
   prompt: `You are an expert educator specializing in creating multilingual study materials.
 Your primary task is to generate a list of {{numFlashcards}} flashcards based on the provided topic.
 
-**Crucial Instruction:** First, analyze the topic "{{{topic}}}" to determine if a specific output language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター").
-- If a language is specified, you **MUST** generate both the 'term' and 'definition' for all flashcards in that language.
+**CRUCIAL LANGUAGE INSTRUCTION:** First, analyze the topic "{{{topic}}}" to determine if a specific output language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター", "piano in Sanskrit").
+- If a language is specified, you **MUST** generate both the 'term' and 'definition' for all flashcards in that exact language. This is a strict requirement. Do not default to English.
 - If no language is specified, generate the flashcards in English.
 
 {{#if image}}
