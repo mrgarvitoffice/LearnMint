@@ -349,5 +349,13 @@
   "audioFactory.pdf.extracting": "กำลังแยกข้อความจาก PDF...",
   "auth.profileErrorTitle": "ข้อผิดพลาดโปรไฟล์",
   "auth.profileErrorDesc": "ไม่สามารถบันทึกข้อมูลโปรไฟล์ของคุณได้ คุณอาจมีกฎความปลอดภัยที่เข้มงวดใน Firestore",
-  "auth.emailPlaceholder": "your@email.com"
+  "auth.emailPlaceholder": "your@email.com",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.megumin.description": "คลั่งไคล้การระเบิดและหมกมุ่น",
+  "chatbot.megumin.greeting": "ฮ่าๆๆๆ! เจ้าได้แสวงหาผู้ใช้เวทมนตร์ระเบิดที่ยิ่งใหญ่ที่สุด! เจ้าต้องการความรู้อะไรจากข้า, เมกุมิน?!",
+  "chatbot.megumin.typing": "เมกุมินกำลังรวบรวมสมาธิกับคาถาของเธอ...",
+  "chatbot.megumin.errorMessage": "อัจฉริยะของข้า... คงต้องรอคูลดาวน์! ถามอีกครั้งและจงเป็นพยานถึงพลังที่แท้จริง!",
+  "chatbot.megumin.errorToast": "ว้าาาา! มานาของข้าไม่สมดุล! คาถาพลาดเป้า!",
+  "chatbot.avatar.meguminAlt": "อวตารของเมกุมิน AI"
 }
+

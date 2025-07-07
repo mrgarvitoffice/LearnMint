@@ -1,3 +1,4 @@
+
 {
   "dashboard.welcome": "Benvingut a LearnMint!",
   "dashboard.description": "El teu assistent d'aprenentatge amb IA per a notes, qüestionaris, exàmens i més.",
@@ -21,3 +22,4 @@
   "chatbot.megumin.errorToast": "Waaaah! El meu mana està desequilibrat! L'encanteri ha fallat!",
   "chatbot.avatar.meguminAlt": "Avatar de Megumin AI"
 }
+

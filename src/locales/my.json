@@ -1,3 +1,4 @@
+
 {
   "dashboard.welcome": "LearnMint သို့ကြိုဆို합니다!",
   "dashboard.description": "မှတ်စုများ၊ ပဟေဠိများ၊ စာမေးပွဲများနှင့် အခြားအရာများအတွက် သင်၏ AI-စွမ်းအားသုံး သင်ယူမှုအထောက်အကူ။",
@@ -21,3 +22,4 @@
   "chatbot.megumin.errorToast": "Waaaah! ငါ့ရဲ့မာနာက ဟန်ချက်မညီဘူး! စာလုံးပေါင်းက ကျရှုံးသွားပြီ!",
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
+

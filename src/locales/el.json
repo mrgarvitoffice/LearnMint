@@ -214,7 +214,7 @@
   "studyHub.notes.unavailable": "Δεν υπάρχουν διαθέσιμες σημειώσεις. Δοκιμάστε να ανανεώσετε ή να δημιουργήσετε για ένα διαφορετικό θέμα.",
   "studyHub.quiz.empty": "Το κουίζ επεξεργάστηκε, αλλά δεν επεστράφησαν ερωτήσεις για αυτό το θέμα. Δοκιμάστε να ανανεώσετε ή ένα διαφορετικό θέμα.",
   "studyHub.quiz.unavailable": "Τα δεδομένα του κουίζ δεν μπόρεσαν να φορτωθούν. Παρακαλώ δοκιμάστε να ανανεώσετε.",
-  "studyHub.flashcards.empty": "Οι κάρτες flash επεξεργάστηκαν, αλλά δεν επεστράφησαν κάρτες για αυτό το θέμα. Δοκιμάστε να ανανεώσετε ή ένα διαφορετικό θέμα.",
+  "studyHub.flashcards.empty": "Οι κάρτες flash επεξεργάστηκαν, αλλά δεν επεστράφηκαν κάρτες για αυτό το θέμα. Δοκιμάστε να ανανεώσετε ή ένα διαφορετικό θέμα.",
   "studyHub.flashcards.unavailable": "Τα δεδομένα των καρτών flash δεν μπόρεσαν να φορτωθούν. Παρακαλώ δοκιμάστε να ανανεώσετε.",
   "studyHub.loading.title": "Φόρτωση Κέντρου Μελέτης...",
   "studyHub.toast.refreshingTitle": "Ανανέωση Όλου του Περιεχομένου",
@@ -350,5 +350,13 @@
   "audioFactory.pdf.errorTitle": "Δεν Επιλέχθηκε PDF",
   "audioFactory.pdf.errorDesc": "Παρακαλώ ανεβάστε και εξάγετε κείμενο από ένα PDF πρώτα.",
   "audioFactory.pdf.extracting": "Εξαγωγή κειμένου από PDF...",
-  "auth.emailPlaceholder": "your@email.com"
+  "auth.emailPlaceholder": "your@email.com",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.megumin.description": "Τρελή για εκρήξεις και παθιασμένη.",
+  "chatbot.megumin.greeting": "Χαχαχα! Έψαξες για την καλύτερη χρήστη μαγείας Έκρηξης! Τι γνώση ζητάς από εμένα, τη Megumin;",
+  "chatbot.megumin.typing": "Η Megumin συγκεντρώνεται στο ξόρκι της...",
+  "chatbot.megumin.errorMessage": "Η ιδιοφυΐα μου... πρέπει να ξεκουράζεται! Ρώτα ξανά και θα δεις πραγματική δύναμη!",
+  "chatbot.megumin.errorToast": "Waaaah! Η μάνα μου είναι εκτός ισορροπίας! Το ξόρκι απέτυχε!",
+  "chatbot.avatar.meguminAlt": "Avatar της Megumin AI"
 }
+

@@ -349,5 +349,13 @@
   "audioFactory.pdf.errorTitle": "לא נבחר PDF",
   "audioFactory.pdf.errorDesc": "אנא העלה וחלץ טקסט מ-PDF תחילה.",
   "audioFactory.pdf.extracting": "מחלץ טקסט מ-PDF...",
-  "auth.emailPlaceholder": "your@email.com"
+  "auth.emailPlaceholder": "your@email.com",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.megumin.description": "משוגעת על פיצוצים ואובססיבית.",
+  "chatbot.megumin.greeting": "חהחהחה! חיפשת את המשתמשת הגדולה ביותר בקסם הפיצוץ! איזה ידע אתה מחפש ממני, מגומין?!",
+  "chatbot.megumin.typing": "מגומין מתרכזת בכישוף שלה...",
+  "chatbot.megumin.errorMessage": "הגאונות שלי... בטח בקירור! שאל שוב ותהיה עד לכוח אמיתי!",
+  "chatbot.megumin.errorToast": "וואאאא! המאנה שלי לא מאוזנת! הכישוף נכשל!",
+  "chatbot.avatar.meguminAlt": "אווטאר של מגומין AI"
 }
+

@@ -1,3 +1,4 @@
+
 {
   "dashboard.welcome": "Tere tulemast LearnMinti!",
   "dashboard.description": "Teie AI-põhine õpiabiline märkmete, viktoriinide, testide ja muu jaoks.",
@@ -21,3 +22,4 @@
   "chatbot.megumin.errorToast": "Waaaah! Minu mana on tasakaalust väljas! Loits ebaõnnestus!",
   "chatbot.avatar.meguminAlt": "Megumin AI Avatari"
 }
+
