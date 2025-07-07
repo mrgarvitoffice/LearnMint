@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Tere tulemast LearnMinti!",
+  "dashboard.description": "Teie AI-põhine õpiabiline märkmete, viktoriinide, testide ja muu jaoks.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Austatud on siin, et aidata.",
+  "chatbot.holo.description": "Yoitsu tark hunt.",
+  "chatbot.megumin.description": "Plahvatustest hull ja kinnisideeline.",
+  "chatbot.gojo.greeting": "Yo! Sul kulus kaua aega. Arvasin, et pean ilma sinuta igavusega võitlema.",
+  "chatbot.holo.greeting": "Ah, väike tuleb tagasi. Kas tulid jälle minu säras peesitama?",
+  "chatbot.megumin.greeting": "Hahahaha! Sa oled otsinud suurimat Plahvatusmaagia kasutajat! Milliseid teadmisi sa minult, Meguminilt, otsid?!",
+  "chatbot.gojo.typing": "Gojo mõtiskleb...",
+  "chatbot.holo.typing": "Holo mõtiskleb oma tarkuse üle...",
+  "chatbot.megumin.typing": "Megumin keskendub oma loitsule...",
+  "chatbot.gojo.errorMessage": "Minu tehnika pidi ebaõnnestuma. Küsi uuesti, ma ei pööranud tähelepanu.",
+  "chatbot.holo.errorMessage": "Minu mõtted pidid olema eksinud kaugele saagikoristusele. Küsi uuesti.",
+  "chatbot.megumin.errorMessage": "Minu geniaalsus... see peab jahtuma! Küsi uuesti ja ole tunnistajaks tõelisele väele!",
+  "chatbot.gojo.errorToast": "Hoh? Midagi läks valesti. Proovime uuesti.",
+  "chatbot.holo.errorToast": "Hmph. Minu tarkus pidi olema selle seadme jaoks liiga palju. Proovi uuesti.",
+  "chatbot.megumin.errorToast": "Waaaah! Minu mana on tasakaalust väljas! Loits ebaõnnestus!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatari"
+}

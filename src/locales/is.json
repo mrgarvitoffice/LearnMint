@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Velkomin í LearnMint!",
+  "dashboard.description": "Þinn gervigreindarstýrði námsaðstoðarmaður fyrir glósur, spurningakeppnir, próf og fleira.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Hinn heiðraði er hér til að hjálpa.",
+  "chatbot.holo.description": "Hinn vitri úlfur frá Yoitsu.",
+  "chatbot.megumin.description": "Sprengjuóð og heltekin.",
+  "chatbot.gojo.greeting": "Yo! Það tók þig langan tíma. Ég hélt að ég þyrfti að berjast við leiðindin án þín.",
+  "chatbot.holo.greeting": "Ah, litli snýr aftur. Ertu kominn til að baða þig aftur í ljóma mínum?",
+  "chatbot.megumin.greeting": "Hahahaha! Þú hefur leitað að mesta notanda sprengigaldra! Hvaða þekkingu leitarðu að frá mér, Megumin?!",
+  "chatbot.gojo.typing": "Gojo er að hugsa...",
+  "chatbot.holo.typing": "Holo er að ígrunda visku sína...",
+  "chatbot.megumin.typing": "Megumin einbeitir sér að galdri sínum...",
+  "chatbot.gojo.errorMessage": "Tæknin mín hlýtur að hafa brugðist. Spyrðu aftur, ég var ekki að fylgjast með.",
+  "chatbot.holo.errorMessage": "Hugsanir mínar hljóta að hafa reikað til fjarlægrar uppskeru. Spyrðu aftur.",
+  "chatbot.megumin.errorMessage": "Snilligáfa mín... hún hlýtur að vera í kælingu! Spyrðu aftur og vitnaðu sönnum krafti!",
+  "chatbot.gojo.errorToast": "Hoh? Eitthvað fór úrskeiðis. Reynum aftur.",
+  "chatbot.holo.errorToast": "Hmph. Viska mín hlýtur að hafa verið of mikil fyrir þetta tæki. Reyndu aftur.",
+  "chatbot.megumin.errorToast": "Waaaah! Manan mín er í ójafnvægi! Galdurinn mistókst!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}

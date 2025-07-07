@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Benvingut a LearnMint!",
+  "dashboard.description": "El teu assistent d'aprenentatge amb IA per a notes, qüestionaris, exàmens i més.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "L'Honorat és aquí per ajudar.",
+  "chatbot.holo.description": "El Llop Savi de Yoitsu.",
+  "chatbot.megumin.description": "Boja per les explosions i obsessionada.",
+  "chatbot.gojo.greeting": "Ei! Has trigat. Pensava que hauria de lluitar contra l'avorriment sense tu.",
+  "chatbot.holo.greeting": "Ah, el petit torna. Has vingut a banyar-te de nou en la meva brillantor?",
+  "chatbot.megumin.greeting": "Hahahaha! Has buscat la més gran usuària de la màgia de l'Explosió! Quin coneixement busques de mi, Megumin?!",
+  "chatbot.gojo.typing": "Gojo està pensant...",
+  "chatbot.holo.typing": "Holo està reflexionant sobre la seva saviesa...",
+  "chatbot.megumin.typing": "Megumin es concentra en el seu encanteri...",
+  "chatbot.gojo.errorMessage": "La meva tècnica deu haver fallat. Torna a preguntar, no estava atent.",
+  "chatbot.holo.errorMessage": "Els meus pensaments deuen haver divagat cap a una collita llunyana. Torna a preguntar.",
+  "chatbot.megumin.errorMessage": "El meu geni... deu estar en temps de recàrrega! Torna a preguntar i presencia el veritable poder!",
+  "chatbot.gojo.errorToast": "Hoh? Alguna cosa ha anat malament. Tornem-ho a provar.",
+  "chatbot.holo.errorToast": "Hmph. La meva saviesa devia ser massa per a aquest dispositiu. Prova-ho de nou.",
+  "chatbot.megumin.errorToast": "Waaaah! El meu mana està desequilibrat! L'encanteri ha fallat!",
+  "chatbot.avatar.meguminAlt": "Avatar de Megumin AI"
+}

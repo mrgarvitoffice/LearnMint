@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Sveiki atvykę į LearnMint!",
+  "dashboard.description": "Jūsų AI pagrįstas mokymosi asistentas pastaboms, viktorinoms, testams ir kt.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Gerbiamasis yra čia, kad padėtų.",
+  "chatbot.holo.description": "Išmintingas Vilkas iš Yoitsu.",
+  "chatbot.megumin.description": "Pamišusi dėl sprogimų ir apsėsta.",
+  "chatbot.gojo.greeting": "Yo! Užtrukai. Maniau, kad turėsiu kovoti su nuoboduliu be tavęs.",
+  "chatbot.holo.greeting": "Ak, mažylis grįžta. Ar atėjai vėl pasikaitinti mano spindesyje?",
+  "chatbot.megumin.greeting": "Hahahaha! Tu ieškojai didžiausios sprogimų magijos naudotojos! Kokios žinios ieškai iš manęs, Megumin?!",
+  "chatbot.gojo.typing": "Gojo svarsto...",
+  "chatbot.holo.typing": "Holo apmąsto savo išmintį...",
+  "chatbot.megumin.typing": "Megumin koncentruojasi į savo burtą...",
+  "chatbot.gojo.errorMessage": "Mano technika turbūt sugedo. Paklausk dar kartą, aš nekreipiau dėmesio.",
+  "chatbot.holo.errorMessage": "Mano mintys turbūt nuklydo į tolimą derlių. Paklausk dar kartą.",
+  "chatbot.megumin.errorMessage": "Mano genialumas... jis turbūt vėsta! Paklausk dar kartą ir pamatyk tikrąją galią!",
+  "chatbot.gojo.errorToast": "Hoh? Kažkas nutiko ne taip. Pabandome dar kartą.",
+  "chatbot.holo.errorToast": "Hmph. Mano išmintis turbūt buvo per didelė šiam įrenginiui. Bandyk dar kartą.",
+  "chatbot.megumin.errorToast": "Waaaah! Mano mana nesubalansuota! Burtas nepavyko!",
+  "chatbot.avatar.meguminAlt": "Megumin AI avataras"
+}

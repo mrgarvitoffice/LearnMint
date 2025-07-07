@@ -111,7 +111,7 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "kn", label: "ಕನ್ನಡ (Kannada)", bcp47: "kn-IN" },
   { value: "ml", label: "മലയാളം (Malayalam)", bcp47: "ml-IN" },
   { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)", bcp47: "pa-IN" },
-  { value: "ur", label: "اردو (Urdu)", bcp47: "ur-IN" },
+  { value: "ur", label: "اردو (Urdu)", bcp47: "ur-PK" },
   { value: "uk", label: "Українська (Ukrainian)", bcp47: "uk-UA" },
   { value: "fa", label: "فارسی (Persian)", bcp47: "fa-IR" },
   { value: "ro", label: "Română (Romanian)", bcp47: "ro-RO" },
@@ -123,6 +123,18 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "ms", label: "Bahasa Melayu (Malay)", bcp47: "ms-MY" },
   { value: "fil", label: "Filipino", bcp47: "fil-PH" },
   { value: "sw", label: "Kiswahili (Swahili)", bcp47: "sw-KE" },
+  { value: "sr", label: "Српски (Serbian)", bcp47: "sr-RS" },
+  { value: "bg", label: "Български (Bulgarian)", bcp47: "bg-BG" },
+  { value: "ca", label: "Català (Catalan)", bcp47: "ca-ES" },
+  { value: "hr", label: "Hrvatski (Croatian)", bcp47: "hr-HR" },
+  { value: "sk", label: "Slovenčina (Slovak)", bcp47: "sk-SK" },
+  { value: "sl", label: "Slovenščina (Slovenian)", bcp47: "sl-SI" },
+  { value: "lt", label: "Lietuvių (Lithuanian)", bcp47: "lt-LT" },
+  { value: "lv", label: "Latviešu (Latvian)", bcp47: "lv-LV" },
+  { value: "et", label: "Eesti (Estonian)", bcp47: "et-EE" },
+  { value: "is", label: "Íslenska (Icelandic)", bcp47: "is-IS" },
+  { value: "my", label: "မြန်မာ (Burmese)", bcp47: "my-MM" },
+  { value: "km", label: "ភាសាខ្មែរ (Khmer)", bcp47: "km-KH" },
 ];
 
 
@@ -177,8 +189,8 @@ export const NEWS_COUNTRIES: { value: string; label: string }[] = [
   { value: "eg", label: "Egypt" },
   { value: "ng", label: "Nigeria" },
   { value: "mx", label: "Mexico" },
-  { value: "ru", label: "Russia" },
-  { value: "ae", label: "United Arab Emirates" },
+  { value: "ru", "label": "Russia" },
+  { value: "ae", "label": "United Arab Emirates" },
 ];
 
 // --- US States (for News page, State/Region filter when US is selected) ---

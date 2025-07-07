@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Добре дошли в LearnMint!",
+  "dashboard.description": "Вашият AI-асистент за учене на бележки, тестове, изпити и други.",
+  "chatbot.gojo.name": "Годжо AI",
+  "chatbot.holo.name": "Холо AI",
+  "chatbot.megumin.name": "Мегумин AI",
+  "chatbot.gojo.description": "Почитаемият е тук, за да помогне.",
+  "chatbot.holo.description": "Мъдрият вълк от Йоицу.",
+  "chatbot.megumin.description": "Луда по експлозии и обсебена.",
+  "chatbot.gojo.greeting": "Йо! Отне ти доста време. Мислех, че ще трябва да се боря със скуката без теб.",
+  "chatbot.holo.greeting": "А, малкият се връща. Дойде ли пак да се насладиш на блясъка ми?",
+  "chatbot.megumin.greeting": "Хахаха! Ти потърси най-великия потребител на магията на експлозията! Какво знание търсиш от мен, Мегумин?!",
+  "chatbot.gojo.typing": "Годжо обмисля...",
+  "chatbot.holo.typing": "Холо обмисля мъдростта си...",
+  "chatbot.megumin.typing": "Мегумин се концентрира върху заклинанието си...",
+  "chatbot.gojo.errorMessage": "Техниката ми сигурно е дала фира. Питай пак, не внимавах.",
+  "chatbot.holo.errorMessage": "Мислите ми сигурно са се заблудили до далечна реколта. Питай пак.",
+  "chatbot.megumin.errorMessage": "Моят гений... трябва да е на охлаждане! Питай пак и стани свидетел на истинска сила!",
+  "chatbot.gojo.errorToast": "Хох? Нещо се обърка. Да опитаме отново.",
+  "chatbot.holo.errorToast": "Хмф. Моята мъдрост сигурно е била твърде голяма за това устройство. Опитай отново.",
+  "chatbot.megumin.errorToast": "Уаааа! Маната ми е в дисбаланс! Заклинанието се провали!",
+  "chatbot.avatar.meguminAlt": "Аватар на Мегумин AI"
+}

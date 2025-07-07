@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Laipni lūdzam LearnMint!",
+  "dashboard.description": "Jūsu AI darbināts mācību palīgs piezīmēm, viktorīnām, testiem un daudz kam citam.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Godātais ir šeit, lai palīdzētu.",
+  "chatbot.holo.description": "Gudrais Vilks no Yoitsu.",
+  "chatbot.megumin.description": "Traks pēc sprādzieniem un apsēsts.",
+  "chatbot.gojo.greeting": "Yo! Tev ilga laika. Domāju, ka man būs jācīnās ar garlaicību bez tevis.",
+  "chatbot.holo.greeting": "Ak, mazais atgriežas. Vai atkal atnāci gozēties manā spožumā?",
+  "chatbot.megumin.greeting": "Hahahaha! Tu esi meklējis lielāko Sprādziena maģijas lietotāju! Kādas zināšanas tu meklē no manis, Megumin?!",
+  "chatbot.gojo.typing": "Gojo domā...",
+  "chatbot.holo.typing": "Holo pārdomā savu gudrību...",
+  "chatbot.megumin.typing": "Megumin koncentrējas uz savu burvestību...",
+  "chatbot.gojo.errorMessage": "Mana tehnika noteikti neizdevās. Pajautā vēlreiz, es nebiju uzmanīgs.",
+  "chatbot.holo.errorMessage": "Manas domas noteikti aizklīda uz tālu ražu. Pajautā vēlreiz.",
+  "chatbot.megumin.errorMessage": "Mans ģēnijs... tam noteikti ir jāatdziest! Pajautā vēlreiz un redzi īstu spēku!",
+  "chatbot.gojo.errorToast": "Hoh? Kaut kas nogāja greizi. Mēģināsim vēlreiz.",
+  "chatbot.holo.errorToast": "Hmph. Mana gudrība noteikti bija par daudz šai ierīcei. Mēģini vēlreiz.",
+  "chatbot.megumin.errorToast": "Waaaah! Mana mana nav līdzsvarā! Burvestība neizdevās!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatārs"
+}

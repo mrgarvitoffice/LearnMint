@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "Dobrodošli v LearnMint!",
+  "dashboard.description": "Vaš AI-pomočnik za učenje zapiskov, kvizov, testov in še več.",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "Častiti je tu, da pomaga.",
+  "chatbot.holo.description": "Modri Volk iz Yoitsua.",
+  "chatbot.megumin.description": "Nora na eksplozije in obsedena.",
+  "chatbot.gojo.greeting": "Yo! Dolgo si potreboval. Mislil sem, da se bom moral boriti z dolgočasjem brez tebe.",
+  "chatbot.holo.greeting": "Ah, mali se vrača. Si prišel spet se sončiti v mojem sijaju?",
+  "chatbot.megumin.greeting": "Hahahaha! Iskal si največjega uporabnika magije Eksplozije! Kakšno znanje iščeš od mene, Megumin?!",
+  "chatbot.gojo.typing": "Gojo razmišlja...",
+  "chatbot.holo.typing": "Holo razmišlja o svoji modrosti...",
+  "chatbot.megumin.typing": "Megumin se osredotoča на svojo urok...",
+  "chatbot.gojo.errorMessage": "Moja tehnika je morala odpovedati. Vprašaj ponovno, nisem bil pozoren.",
+  "chatbot.holo.errorMessage": "Moje misli so morale odtavati k oddaljeni žetvi. Vprašaj ponovno.",
+  "chatbot.megumin.errorMessage": "Moj genij... se mora hladiti! Vprašaj ponovno in priča boš pravi moči!",
+  "chatbot.gojo.errorToast": "Hoh? Nekaj je šlo narobe. Poskusimo znova.",
+  "chatbot.holo.errorToast": "Hmph. Moja modrost je morala biti preveč za to napravo. Poskusi znova.",
+  "chatbot.megumin.errorToast": "Waaaah! Moja mana je v neravnovesju! Urok ni uspel!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}

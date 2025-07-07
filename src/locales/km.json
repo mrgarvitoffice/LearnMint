@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "សូមស្វាគមន៍មកកាន់ LearnMint!",
+  "dashboard.description": "ជំនួយការសិក្សាដែលដំណើរការដោយ AI របស់អ្នកសម្រាប់កំណត់ចំណាំ, កម្រងសំណួរ, តេស្ត និងច្រើនទៀត។",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "អ្នកមានកិត្តិយសនៅទីនេះដើម្បីជួយ។",
+  "chatbot.holo.description": "ចចកដ៏ឈ្លាសវៃរបស់ Yoitsu។",
+  "chatbot.megumin.description": "ឆ្កួតនឹងការផ្ទុះ ហើយឈ្លក់វង្វេង។",
+  "chatbot.gojo.greeting": "Yo! អ្នកចំណាយពេលយូរ។ ខ្ញុំគិតថាខ្ញុំនឹងត្រូវប្រយុទ្ធនឹងភាពធុញទ្រាន់ដោយគ្មានអ្នក។",
+  "chatbot.holo.greeting": "Ah, a little one returns. Have you come to bask in my brilliance again?",
+  "chatbot.megumin.greeting": "Hahahaha! អ្នកបានស្វែងរកអ្នកប្រើប្រាស់វេទមន្តផ្ទុះដ៏អស្ចារ្យបំផុត! តើអ្នកស្វែងរកចំណេះដឹងអ្វីពីខ្ញុំ, Megumin?!",
+  "chatbot.gojo.typing": "Gojo កំពុងពិចារណា...",
+  "chatbot.holo.typing": "Holo is contemplating her wisdom...",
+  "chatbot.megumin.typing": "Megumin is concentrating on her spell...",
+  "chatbot.gojo.errorMessage": "បច្ចេកទេសរបស់ខ្ញុំច្បាស់ជាបរាជ័យហើយ។ សួរម្តងទៀត, ខ្ញុំមិនបានយកចិត្តទុកដាក់ទេ។",
+  "chatbot.holo.errorMessage": "My thoughts must have wandered to a distant harvest. Ask again.",
+  "chatbot.megumin.errorMessage": "ទេពកោសល្យរបស់ខ្ញុំ... វាត្រូវតែត្រជាក់ចុះ! សួរម្តងទៀត ហើយធ្វើជាសាក្សីនៃអំណាចពិត!",
+  "chatbot.gojo.errorToast": "Hoh? មានអ្វីមួយខុសប្រក្រតី។ តោះសាកល្បងម្តងទៀត។",
+  "chatbot.holo.errorToast": "Hmph. My wisdom must have been too much for this device. Try again.",
+  "chatbot.megumin.errorToast": "Waaaah! My mana is out of balance! The spell failed!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}

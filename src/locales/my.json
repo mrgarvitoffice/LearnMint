@@ -1,0 +1,23 @@
+{
+  "dashboard.welcome": "LearnMint သို့ကြိုဆို합니다!",
+  "dashboard.description": "မှတ်စုများ၊ ပဟေဠိများ၊ စာမေးပွဲများနှင့် အခြားအရာများအတွက် သင်၏ AI-စွမ်းအားသုံး သင်ယူမှုအထောက်အကူ။",
+  "chatbot.gojo.name": "Gojo AI",
+  "chatbot.holo.name": "Holo AI",
+  "chatbot.megumin.name": "Megumin AI",
+  "chatbot.gojo.description": "ဂုဏ်သရေရှိသူသည် ကူညီရန် ဤနေရာတွင် ရှိနေသည်။",
+  "chatbot.holo.description": "Yoitsu မှ ပညာရှိဝံပုလွေ။",
+  "chatbot.megumin.description": "ပေါက်ကွဲမှုဖြင့် ရူးသွပ်ပြီး စွဲလမ်းနေသည်။",
+  "chatbot.gojo.greeting": "Yo! မင်းကြာတယ်။ မင်းမရှိရင် ငြီးငွေ့မှုနဲ့ တိုက်ခိုက်ရတော့မယ်လို့ ထင်ခဲ့တာ။",
+  "chatbot.holo.greeting": "အာ၊ ကလေးလေး ပြန်လာပြီ။ ငါ့ရဲ့တောက်ပမှုထဲမှာ ပြန်နေပူစာလာတာလား။",
+  "chatbot.megumin.greeting": "ဟားဟားဟား! မင်းက ပေါက်ကွဲမှုမှော်ပညာရဲ့ အကြီးမြတ်ဆုံးအသုံးပြုသူကို ရှာဖွေခဲ့တယ်။ မင်းငါ့ဆီက ဘာအသိပညာကို ရှာဖွေနေတာလဲ၊ Megumin？！",
+  "chatbot.gojo.typing": "Gojo စဉ်းစားနေသည်...",
+  "chatbot.holo.typing": "Holo သူမ၏ဉာဏ်ပညာကို ဆင်ခြင်နေသည်...",
+  "chatbot.megumin.typing": "Megumin သူမ၏စာလုံးပေါင်းကို အာရုံစိုက်နေသည်...",
+  "chatbot.gojo.errorMessage": "ငါ့နည်းစနစ်က ကျရှုံးသွားမှာပဲ။ ထပ်မေးပါ၊ ငါအာရုံမစိုက်ဘူး။",
+  "chatbot.holo.errorMessage": "ငါ့အတွေးတွေက ဝေးလံတဲ့ရိတ်သိမ်းချိန်ဆီကို လွင့်ပါသွားမှာပဲ။ ထပ်မေးပါ။",
+  "chatbot.megumin.errorMessage": "ငါ့ရဲ့ဉာဏ်ကြီးရှင်... အအေးခံနေရမှာပဲ! ထပ်မေးပြီး စစ်မှန်တဲ့စွမ်းအားကို မျက်မြင်တွေ့လိုက်ပါ!",
+  "chatbot.gojo.errorToast": "Hoh? တစ်ခုခုမှားသွားပြီ။ ထပ်ကြိုးစားကြည့်ရအောင်။",
+  "chatbot.holo.errorToast": "Hmph။ ငါ့ရဲ့ဉာဏ်ပညာက ဒီစက်အတွက် အရမ်းများသွားမှာပဲ။ ထပ်ကြိုးစားပါ။",
+  "chatbot.megumin.errorToast": "Waaaah! ငါ့ရဲ့မာနာက ဟန်ချက်မညီဘူး! စာလုံးပေါင်းက ကျရှုံးသွားပြီ!",
+  "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
+}
