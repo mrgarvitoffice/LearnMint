@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Maligayang pagdating sa LearnMint!",
   "dashboard.description": "Ang iyong AI-powered na katulong sa pag-aaral para sa mga tala, pagsusulit, pagsusulit, at higit pa.",
-  "dashboard.generateMaterials.title": "Gumawa ng mga Materyales sa Pag-aaral",
-  "dashboard.generateMaterials.description": "Hayaan ang AI na lumikha ng mga kumpletong tala, pagsusulit, at flashcard para sa anumang paksa.",
-  "dashboard.customTest.title": "Gumawa ng Pasadyang Pagsusulit",
-  "dashboard.customTest.description": "Gumawa ng isang pasadyang pagsusulit mula sa mga paksa, tala, o kamakailang mga sesyon ng pag-aaral.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
 
+  

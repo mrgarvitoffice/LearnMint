@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Vítejte v LearnMint!",
   "dashboard.description": "Váš AI-poháněný studijní asistent pro poznámky, kvízy, testy a další.",
-  "dashboard.generateMaterials.title": "Generovat studijní materiály",
-  "dashboard.generateMaterials.description": "Nechte AI vytvořit komplexní poznámky, kvízy a kartičky pro jakékoli téma.",
-  "dashboard.customTest.title": "Vytvořit vlastní test",
-  "dashboard.customTest.description": "Sestavte si přizpůsobený test z témat, poznámek nebo nedávných studijních sezení.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
 
+  

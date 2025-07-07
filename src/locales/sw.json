@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Karibu LearnMint!",
   "dashboard.description": "Msaidizi wako wa kujifunza anayetumiwa na AI kwa madokezo, maswali, majaribio, na zaidi.",
-  "dashboard.generateMaterials.title": "Tengeneza Vifaa vya Kujifunza",
-  "dashboard.generateMaterials.description": "Acha AI itengeneze madokezo ya kina, maswali, na kadi za kumbukumbu kwa mada yoyote.",
-  "dashboard.customTest.title": "Unda Jaribio Maalum",
-  "dashboard.customTest.description": "Jenga jaribio lililobinafsishwa kutoka kwa mada, madokezo, au vipindi vya hivi karibuni vya kujifunza.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Avatar ya Megumin AI"
 }
 
+  

@@ -13,7 +13,7 @@
   "chatbot.megumin.greeting": "Hahahaha! Iskal si največjega uporabnika magije Eksplozije! Kakšno znanje iščeš od mene, Megumin?!",
   "chatbot.gojo.typing": "Gojo razmišlja...",
   "chatbot.holo.typing": "Holo razmišlja o svoji modrosti...",
-  "chatbot.megumin.typing": "Megumin se osredotoča на svojo urok...",
+  "chatbot.megumin.typing": "Megumin se osredotoča na svojo urok...",
   "chatbot.gojo.errorMessage": "Moja tehnika je morala odpovedati. Vprašaj ponovno, nisem bil pozoren.",
   "chatbot.holo.errorMessage": "Moje misli so morale odtavati k oddaljeni žetvi. Vprašaj ponovno.",
   "chatbot.megumin.errorMessage": "Moj genij... se mora hladiti! Vprašaj ponovno in priča boš pravi moči!",
@@ -23,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
 
+  

@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Tervetuloa LearnMintiin!",
   "dashboard.description": "Tekoälypohjainen opiskeluavustajasi muistiinpanoihin, tietokilpailuihin, kokeisiin ja muuhun.",
-  "dashboard.generateMaterials.title": "Luo oppimateriaaleja",
-  "dashboard.generateMaterials.description": "Anna tekoälyn luoda kattavat muistiinpanot, tietokilpailut ja muistikortit mihin tahansa aiheeseen.",
-  "dashboard.customTest.title": "Luo mukautettu koe",
-  "dashboard.customTest.description": "Rakenna räätälöity koe aiheista, muistiinpanoista tai viimeaikaisista opiskelusessioista.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI -avatari"
 }
 
+  

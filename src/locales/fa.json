@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "به LearnMint خوش آمدید!",
   "dashboard.description": "دستیار یادگیری مبتنی بر هوش مصنوعی شما برای یادداشت‌ها، آزمون‌ها، تست‌ها و موارد دیگر.",
-  "dashboard.generateMaterials.title": "تولید مواد آموزشی",
-  "dashboard.generateMaterials.description": "اجازه دهید هوش مصنوعی برای هر موضوعی یادداشت‌های جامع، آزمون‌ها و فلش‌کارت‌ها ایجاد کند.",
-  "dashboard.customTest.title": "ایجاد آزمون سفارشی",
-  "dashboard.customTest.description": "یک آزمون متناسب با موضوعات، یادداشت‌ها یا جلسات مطالعه اخیر بسازید.",
   "chatbot.gojo.name": "هوش مصنوعی گوجو",
   "chatbot.holo.name": "هوش مصنوعی هولو",
   "chatbot.megumin.name": "هوش مصنوعی مگومین",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "آواتار هوش مصنوعی مگومین"
 }
 
+  

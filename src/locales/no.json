@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Velkommen til LearnMint!",
   "dashboard.description": "Din AI-drevne studieassistent for notater, quizer, tester og mer.",
-  "dashboard.generateMaterials.title": "Generer studiemateriell",
-  "dashboard.generateMaterials.description": "La AI lage omfattende notater, quizer og flashcards for ethvert emne.",
-  "dashboard.customTest.title": "Lag tilpasset test",
-  "dashboard.customTest.description": "Bygg en skreddersydd test fra emner, notater eller nylige studieøkter.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
 
+  

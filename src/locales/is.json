@@ -1,3 +1,4 @@
+
 {
   "dashboard.welcome": "Velkomin í LearnMint!",
   "dashboard.description": "Þinn gervigreindarstýrði námsaðstoðarmaður fyrir glósur, spurningakeppnir, próf og fleira.",
@@ -21,3 +22,5 @@
   "chatbot.megumin.errorToast": "Waaaah! Manan mín er í ójafnvægi! Galdurinn mistókst!",
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
+
+  

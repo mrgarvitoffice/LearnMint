@@ -2,10 +2,6 @@
 {
   "dashboard.welcome": "Bun venit la LearnMint!",
   "dashboard.description": "Asistentul tău de învățare bazat pe AI pentru notițe, chestionare, teste și multe altele.",
-  "dashboard.generateMaterials.title": "Generează materiale de studiu",
-  "dashboard.generateMaterials.description": "Lasă AI să creeze notițe complete, chestionare și fișe de memorare pentru orice subiect.",
-  "dashboard.customTest.title": "Creează test personalizat",
-  "dashboard.customTest.description": "Construiește un test personalizat din subiecte, notițe sau sesiuni de studiu recente.",
   "chatbot.gojo.name": "Gojo AI",
   "chatbot.holo.name": "Holo AI",
   "chatbot.megumin.name": "Megumin AI",
@@ -27,3 +23,4 @@
   "chatbot.avatar.meguminAlt": "Avatar Megumin AI"
 }
 
+  
