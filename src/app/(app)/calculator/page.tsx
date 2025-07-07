@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -23,7 +24,7 @@ export default function CalculatorPage() {
   const [isRadians, setIsRadians] = useState(true); 
   const [justEvaluated, setJustEvaluated] = useState(false);
 
-  const { playSound } = useSound('/sounds/ting.mp3', 0.2);
+  const { playSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { speak, setVoicePreference } = useTTS();
   const { t, isReady } = useTranslation();
   const pageTitleSpokenRef = useRef(false);
@@ -104,7 +105,7 @@ export default function CalculatorPage() {
 
   const handleButtonClick = (value: string, type: CalculatorButtonConfig['type'], action?: string) => {
     playSound();
-    if (visualExpression.startsWith(t('calculator.error.general'))) {
+    if (visualExpression.startsWith(t('calculator.error.prefix'))) {
       setVisualExpression(''); setInternalExpression(''); setPreviousCalculation('');
     }
     if (justEvaluated && type !== 'operator' && type !== 'equals') {
@@ -211,7 +212,7 @@ export default function CalculatorPage() {
             <CalculatorDisplay 
               mainDisplay={visualExpression} 
               historyDisplay={previousCalculation}
-              mode={isRadians ? 'RAD' : 'DEG'}
+              mode={isRadians ? t('calculator.buttons.rad') : t('calculator.buttons.deg')}
             />
             <div className="grid grid-cols-4 gap-2 mt-3">
               {scientificButtonsConfig.map(btn => <CalculatorButton key={btn.label} config={btn} onClick={handleButtonClick} isModeActive={!isRadians && btn.action === 'toggleMode'} />)}

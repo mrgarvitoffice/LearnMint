@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -18,6 +19,7 @@ import wav from 'wav';
 // Input schema no longer requires languageName.
 const GenerateDiscussionAudioInputSchema = z.object({
   content: z.string().describe('The content to be turned into a discussion.'),
+  languageName: z.string().optional().describe('The full language name for the audio output (e.g., "Japanese", "Spanish"). If not provided, the language will be auto-detected from the content.'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -47,13 +49,19 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
-    input: { schema: z.object({ content: z.string() }) },
+    input: { schema: GenerateDiscussionAudioInputSchema },
     output: { schema: z.object({ dialogue: z.string() }) },
     prompt: `You are an expert scriptwriter. Your primary task is to convert the given text content into a natural-sounding, two-person dialogue script.
 
-    1.  **Analyze the Language**: First, determine the primary language of the provided "Content to convert".
-    2.  **Write the Script**: Write a dialogue script in that *same language* between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner). The dialogue should discuss and explain the key points from the content.
-    3.  **Strict Formatting**: The output MUST be ONLY the script, formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
+    1.  **Analyze the Language**: 
+        {{#if languageName}}
+        The user has explicitly requested the output language to be **{{{languageName}}}**. You **MUST** write the entire script in this language.
+        {{else}}
+        First, determine the primary language of the provided "Content to convert". Then, write a dialogue script in that *same language* between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner).
+        {{/if}}
+        The dialogue should discuss and explain the key points from the content.
+
+    2.  **Strict Formatting**: The output MUST be ONLY the script, formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
         Speaker1: [First line of dialogue]
         Speaker2: [Second line of dialogue]
         ...and so on.
@@ -78,8 +86,8 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
   },
   async (input) => {
     // 1. Generate the dialogue script from the input content
-    console.log(`[AI Flow - Discussion Audio] Generating dialogue script, auto-detecting language...`);
-    const { output } = await dialoguePrompt({ content: input.content });
+    console.log(`[AI Flow - Discussion Audio] Generating dialogue script in ${input.languageName || 'auto-detected language'}...`);
+    const { output } = await dialoguePrompt(input);
     let dialogueScript = output?.dialogue;
 
     if (!dialogueScript || dialogueScript.trim() === '') {

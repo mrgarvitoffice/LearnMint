@@ -477,7 +477,7 @@
   "library.books.readInApp": "Leer en la App",
   "library.books.viewOnGoogle": "Ver en Google Libros",
   "library.books.moreInfo": "Más Información",
-  "library.books.toast.successTitle": "Búsqueda en Google Libros Completada",
+  "library.books.toast.successTitle": "Búsqueda en Google Livros Concluída",
   "library.books.toast.successDesc": "{{count}} libros encontrados.",
   "library.books.toast.noResultsTitle": "No se Encontraron Libros",
   "library.books.toast.noResultsDesc": "Prueba con otro término de búsqueda. Asegúrate de que tu GOOGLE_BOOKS_API_KEY es válida y que la API de Google Libros está habilitada.",

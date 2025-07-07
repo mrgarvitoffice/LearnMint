@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -43,7 +44,7 @@ export type GenerateQuizQuestionsOutput = z.infer<typeof GenerateQuizQuestionsOu
 
 const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   name: 'generateQuizQuestionsPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizQuestionsInputSchema},
   output: {schema: GenerateQuizQuestionsOutputSchema},
   prompt: `You are an expert quiz designer for educational content.

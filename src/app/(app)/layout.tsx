@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -15,10 +16,12 @@ import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function MainAppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // If auth state has been checked and there is no user, redirect to the sign-in page.
@@ -33,7 +36,7 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
      return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">Verifying your session...</p>
+        <p className="mt-3 text-lg">{t('auth.verifying')}</p>
       </div>
     );
   }
@@ -49,9 +52,7 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="mt-3 text-lg">Redirecting...</p>
+      <p className="mt-3 text-lg">{t('auth.redirecting')}</p>
     </div>
   );
 }
-
-    
