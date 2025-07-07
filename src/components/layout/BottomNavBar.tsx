@@ -10,7 +10,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 export function BottomMobileNav() {
   const pathname = usePathname();
-  const { playSound } = useSound('/sounds/ting.mp3', 0.2);
+  const { playSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { t } = useTranslation();
 
   return (

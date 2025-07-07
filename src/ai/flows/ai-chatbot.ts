@@ -1,4 +1,5 @@
 
+'use server';
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -8,8 +9,6 @@
  * - GojoChatbotInput - The input type for the gojoChatbot function.
  * - GojoChatbotOutput - The return type for the gojoChatbot function.
  */
-
-'use server';
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -89,7 +88,12 @@ const gojoChatbotFlow = aiForChatbot.defineFlow(
     const {output} = await gojoChatbotPrompt(input);
     if (!output || typeof output.response !== 'string' || output.response.trim() === '') {
       console.error("[AI Flow Error - Chatbot] AI returned empty or invalid response:", output);
-      return { response: "Hm? My brain must've taken a quick nap. Or maybe the question wasn't interesting enough to wake it up. Try asking again, make it good." };
+      const errorMessage = `Hm? My brain must've taken a quick nap. Or maybe the question wasn't interesting enough to wake it up. Try asking again, make it good. (Language: ${input.language || 'English'})`;
+      const { output: errorOutput } = await aiForChatbot.generate({
+          prompt: `You are Satoru Gojo. Your previous attempt to answer failed. Respond with the following message, translated into the language "${input.language || 'English'}": "${errorMessage}"`,
+          output: { schema: GojoChatbotOutputSchema },
+      });
+      return errorOutput || { response: errorMessage };
     }
     return output;
   }

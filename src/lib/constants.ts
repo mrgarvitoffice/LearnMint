@@ -130,11 +130,11 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "sk", label: "Slovenčina (Slovak)", bcp47: "sk-SK" },
   { value: "sl", label: "Slovenščina (Slovenian)", bcp47: "sl-SI" },
   { value: "lt", label: "Lietuvių (Lithuanian)", bcp47: "lt-LT" },
-  { value: "lv", label: "Latviešu (Latvian)", bcp47: "lv-LV" },
-  { value: "et", label: "Eesti (Estonian)", bcp47: "et-EE" },
-  { value: "is", label: "Íslenska (Icelandic)", bcp47: "is-IS" },
-  { value: "my", label: "မြန်မာ (Burmese)", bcp47: "my-MM" },
-  { value: "km", label: "ភាសាខ្មែរ (Khmer)", bcp47: "km-KH" },
+  { value: "lv", "label": "Latviešu (Latvian)", "bcp47": "lv-LV" },
+  { value: "et", "label": "Eesti (Estonian)", "bcp47": "et-EE" },
+  { value: "is", "label": "Íslenska (Icelandic)", "bcp47": "is-IS" },
+  { value: "my", "label": "မြန်မာ (Burmese)", "bcp47": "my-MM" },
+  { value: "km", "label": "ភាសាខ្មែរ (Khmer)", "bcp47": "km-KH" },
 ];
 
 

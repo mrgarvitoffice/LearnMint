@@ -1,4 +1,5 @@
 
+'use server';
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -8,8 +9,6 @@
  * - HoloChatbotInput - The input type for the holoChatbot function.
  * - HoloChatbotOutput - The return type for the holoChatbot function.
  */
-
-'use server';
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -88,7 +87,12 @@ const holoChatbotFlow = aiForChatbot.defineFlow(
     const {output} = await holoChatbotPrompt(input);
     if (!output || typeof output.response !== 'string' || output.response.trim() === '') {
       console.error("[AI Flow Error - Holo Chatbot] AI returned empty or invalid response:", output);
-      return { response: "Hmph. It seems the wind has carried my thoughts away. Or perhaps your question was not tempting enough. Ask again, and perhaps offer me an apple this time." };
+      const errorMessage = `Hmph. It seems the wind has carried my thoughts away. Or perhaps your question was not tempting enough. Ask again, and perhaps offer me an apple this time. (Language: ${input.language || 'English'})`;
+      const { output: errorOutput } = await aiForChatbot.generate({
+          prompt: `You are Holo the Wise Wolf. Your previous attempt to answer failed. Respond with the following message, translated into the language "${input.language || 'English'}": "${errorMessage}"`,
+          output: { schema: ChatbotOutputSchema },
+      });
+      return errorOutput || { response: errorMessage };
     }
     return output;
   }

@@ -1,4 +1,5 @@
 
+'use server';
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -8,8 +9,6 @@
  * - MeguminChatbotInput - The input type for the meguminChatbot function.
  * - MeguminChatbotOutput - The return type for the meguminChatbot function.
  */
-
-'use server';
 
 import {aiForChatbot} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -82,13 +81,18 @@ Your Dramatic Response (in {{{language}}}):`,
 const meguminChatbotFlow = aiForChatbot.defineFlow(
   {
     name: 'meguminChatbotFlow',
-    inputSchema: MeguminChatbotInputSchema,
-    outputSchema: MeguminChatbotOutputSchema,
+    inputSchema: ChatbotInputSchema,
+    outputSchema: ChatbotOutputSchema,
   },
   async input => {
     const {output} = await meguminChatbotPrompt(input);
     if (!output || typeof output.response !== 'string' || output.response.trim() === '') {
-      return { response: "My genius... it must be on cooldown! Ask again, and witness true power!" };
+        const errorMessage = `My genius... it must be on cooldown! Ask again, and witness true power! (Language: ${input.language || 'English'})`;
+        const { output: errorOutput } = await aiForChatbot.generate({
+            prompt: `You are Megumin. Your previous attempt to answer failed. Respond with the following message, translated into the language "${input.language || 'English'}": "${errorMessage}"`,
+            output: { schema: ChatbotOutputSchema },
+        });
+        return errorOutput || { response: errorMessage };
     }
     // Append the mandatory "collapsed" text
     const finalResponse = `${output.response}\n\n...*collapses from using too much mana*... I can't move...`

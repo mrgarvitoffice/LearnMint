@@ -62,7 +62,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
       return key;
     }
     
-    const translation = translations[key];
+    let translation = key.split('.').reduce<any>((obj, k) => obj?.[k], translations);
 
     if (translation === undefined) {
         // Log a warning for developers about the missing key.
@@ -70,14 +70,13 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         return key; 
     }
 
-    let finalTranslation = translation;
     if (options) {
       Object.keys(options).forEach(optionKey => {
         const regex = new RegExp(`{{${optionKey}}}`, 'g');
-        finalTranslation = finalTranslation.replace(regex, String(options[optionKey]));
+        translation = translation.replace(regex, String(options[optionKey]));
       });
     }
-    return finalTranslation;
+    return translation;
   }, [translations, isReady, appLanguage]);
 
   return { t, isReady };

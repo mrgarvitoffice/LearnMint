@@ -9,12 +9,23 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Logo } from '../icons/Logo';
 import { motion } from 'framer-motion';
-import { Header } from './Header'; // This now includes settings and the avatar.
+import { Header } from './Header'; // This now includes settings and the user avatar.
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '../ui/button';
+import { User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import SettingsMenuContent from './SettingsMenuContent';
+import ProfileMenuContent from './ProfileMenuContent';
 
 export function TopMobileNav() {
   const pathname = usePathname();
   const { playSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 md:hidden border-b bg-background/90 backdrop-blur-lg">
@@ -30,8 +41,19 @@ export function TopMobileNav() {
             </Link>
         </motion.div>
         
-        {/* Header now includes the settings dropdown AND the user avatar */}
-        <Header />
+        <div className="flex items-center gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    { user ? <User className="h-5 w-5" /> : <User className="h-5 w-5" /> }
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8}>
+                    <ProfileMenuContent />
+                    <SettingsMenuContent />
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
       </div>
       
       {/* Restored secondary navigation bar */}
@@ -53,7 +75,7 @@ export function TopMobileNav() {
                 )}
               >
                 <Icon className="h-6 w-6 transition-transform duration-200 group-hover:scale-110" />
-                <span className="text-[10px] font-medium leading-snug text-center break-words">{title}</span>
+                <span className="text-[10px] font-medium leading-tight text-center break-words">{title}</span>
               </Link>
             );
           })}
