@@ -31,7 +31,7 @@ export function TotalUsers() {
     return (
        <div className="flex items-center justify-center gap-2 text-sm text-destructive mt-4" title={error.message}>
           <AlertTriangle className="h-4 w-4" />
-          <span>Could not load learner count.</span>
+          <span>{t('dashboard.totalLearnersError')}</span>
       </div>
     );
   }

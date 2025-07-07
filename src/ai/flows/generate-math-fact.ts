@@ -27,14 +27,18 @@ const generateMathFactPrompt = ai.definePrompt({
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: GenerateMathFactInputSchema },
     output: { schema: GenerateMathFactOutputSchema },
-    prompt: `You are a helpful assistant that provides interesting, concise facts about mathematics.
-    Your task is to generate ONE interesting math fact suitable for a general audience.
-    The fact MUST be written in the following language: {{{languageName}}}.
-    
-    Do not add any extra text, introductions, or conversational filler. Output only the fact itself.
-    
-    Example for "Español": "El número 0 es el único número que no se puede representar con números romanos."
-    Example for "English": "A 'googol' is the number 1 followed by 100 zeros."
+    prompt: `You are an expert multilingual assistant that provides interesting, concise facts about mathematics.
+Your task is to generate ONE interesting math fact suitable for a general audience.
+The fact MUST be written in the following language: {{{languageName}}}. This is a strict requirement.
+
+CRITICAL INSTRUCTIONS:
+1.  Analyze the language name "{{{languageName}}}" and provide the fact ONLY in that language.
+2.  Do NOT add any extra text, introductions, or conversational filler. Output only the single fact itself.
+3.  The fact should be a complete sentence.
+
+Example for "Español": "El número 0 es el único número que no se puede representar con números romanos."
+Example for "English": "There are more possible games of chess than atoms in the observable universe."
+Example for "हिन्दी": "शून्य एकमात्र ऐसी संख्या है जिसे रोमन अंकों द्वारा दर्शाया नहीं जा सकता है।"
     `,
 });
 
