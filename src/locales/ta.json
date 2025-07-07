@@ -20,7 +20,7 @@
   "dashboard.recentTopics.title": "சமீபத்திய தலைப்புகள்",
   "dashboard.recentTopics.description": "உங்கள் சமீபத்திய ஆய்வு அமர்வுகளுக்கு விரைவாகத் திரும்புங்கள்.",
   "dashboard.recentTopics.empty": "சமீபத்திய தலைப்புகள் இல்லை. వాటిని ఇక్కడ చూడటానికి కొన్ని అధ్యయన సామగ్రిని సృష్టించండి!",
-  "dashboard.madeBy": "உருவாக்கியவர்",
+  "dashboard.madeBy": "உருவாக்கியவர் MrGarvit",
   "dashboard.totalLearnersGuestMessage": "சமூக புள்ளிவிவரங்களைப் பார்க்க பதிவுபெறுக!",
   "sidebar.dashboard": "டாஷ்போர்டு",
   "sidebar.aiChat": "AI அரட்டை",
@@ -233,6 +233,7 @@
   "notesView.speak.toast.noContent": "உள்ளடக்கம் இல்லை",
   "notesView.speak.toast.noContentDesc": "பேச எதுவும் இல்லை.",
   "notesView.visualAid.title": "பார்வை உதவி பரிந்துரைக்கப்பட்டது",
+  "notesView.visualAid.searchButton": "Google படங்களில் தேடு",
   "quizView.title": "{{topic}}-ஐப் பற்றிய வினாடி வினா",
   "quizView.unavailable": "வினாடி வினா கேள்விகள் எதுவும் இல்லை.",
   "quizView.loading": "கேள்வியை ஏற்றுகிறது...",
@@ -286,7 +287,7 @@
   "auth.signInErrorTitle": "உள்நுழைவு தோல்வியடைந்தது",
   "auth.googleWelcome": "வரவேற்கிறோம்!",
   "auth.googleWelcomeDesc": "நீங்கள் இப்போது Google உடன் உள்நுழைந்துள்ளீர்கள்.",
-  "auth.accountExistsError": "ஒரே மின்னஞ்சல் முகவரியுடன் ஒரு கணக்கு ஏற்கனவே உள்ளது, ஆனால் வெவ்வேறு உள்நுழைவுச் சான்றுகளுடன்.",
+  "auth.accountExistsError": "ഒരേ ഇമെയിൽ വിലാസമുള്ള ഒരു അക്കൗണ്ട് ഇതിനകം നിലവിലുണ്ട്, പക്ഷേ വ്യത്യസ്ത സൈൻ-ഇൻ ക്രെഡൻഷ്യലുകളോടെ.",
   "auth.googleErrorTitle": "Google உள்நுழைவு தோல்வியடைந்தது",
   "auth.upgradeWelcome": "வரவேற்கிறோம், {{name}}!",
   "auth.upgradeWelcomeDesc": "உங்கள் கணக்கு மேம்படுத்தப்பட்டு சேமிக்கப்பட்டுள்ளது.",
@@ -305,6 +306,11 @@
   "profile.guestUnlockDesc": "உங்கள் முன்னேற்றத்தை நிரந்தரமாகச் சேமிக்க பதிவுபெறுக.",
   "profile.guestSignUpButton": "இப்போது பதிவுபெறு",
   "profile.sendFeedback": "பின்னூட்டம் அனுப்பு",
+  "auth.profileErrorTitle": "சுயவிவரப் பிழை",
+  "auth.profileErrorDesc": "మీ ప్రొఫైల్ డేటాను సేవ్ చేయడం సాధ్యపడలేదు. మీకు ఫైర్‌స్టోర్‌లో పరిమిత భద్రతా నియమాలు ఉండవచ్చు.",
+  "auth.verifying": "அங்கீகாரத்தைச் சரிபார்க்கிறது...",
+  "auth.redirecting": "மீண்டும் திசைதிருப்பப்படுகிறது...",
+  "dashboard.loading": "டாஷ்போர்டை ஏற்றுகிறது...",
   "auth.signInWelcomeBack": "மீண்டும் வருக!",
   "auth.signInDescription": "உங்கள் LearnMint டாஷ்போர்டை அணுக உள்நுழைக.",
   "auth.continueAsGuest": "விருந்தினராகத் தொடரவும்",
@@ -346,7 +352,7 @@
   "audioFactory.pdf.errorTitle": "PDF எதுவும் தேர்ந்தெடுக்கப்படவில்லை",
   "audioFactory.pdf.errorDesc": "దయచేసి మొదట PDFని అప్‌లోడ్ చేసి, టెక్స్ట్‌ను సంగ్రహించండి.",
   "audioFactory.pdf.extracting": "PDF-லிருந்து உரையைப் பிரித்தெடுக்கிறது...",
-  "auth.profileErrorTitle": "சுயவிவரப் பிழை",
-  "auth.profileErrorDesc": "మీ ప్రొఫైల్ డేటాను సేవ్ చేయడం సాధ్యపడలేదు. మీకు ఫైర్‌స్టోర్‌లో పరిమిత భద్రతా నియమాలు ఉండవచ్చు.",
   "auth.emailPlaceholder": "your@email.com"
 }
+
+    

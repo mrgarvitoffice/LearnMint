@@ -3,7 +3,6 @@
   "dashboard.welcome": "مرحبًا بك في LearnMint!",
   "dashboard.description": "مساعدك التعليمي المدعوم بالذكاء الاصطناعي للملاحظات والاختبارات القصيرة والامتحانات والمزيد.",
   "dashboard.totalLearners": "{{count}} متعلم انضموا",
-  "dashboard.totalLearnersError": "تعذر تحميل عدد المتعلمين.",
   "dashboard.generateMaterials.title": "إنشاء مواد دراسية",
   "dashboard.generateMaterials.description": "دع الذكاء الاصطناعي ينشئ ملاحظات شاملة واختبارات قصيرة وبطاقات تعليمية لأي موضوع.",
   "dashboard.generateMaterials.button": "ابدأ الإنشاء",
@@ -310,6 +309,9 @@
   "profile.sendFeedback": "أرسل ملاحظات",
   "auth.profileErrorTitle": "خطأ في الملف الشخصي",
   "auth.profileErrorDesc": "لا يمكن حفظ بيانات ملفك الشخصي. قد تكون لديك قواعد أمان مقيدة في Firestore.",
+  "auth.verifying": "يتم التحقق من المصادقة...",
+  "auth.redirecting": "إعادة توجيه...",
+  "dashboard.loading": "يتم تحميل لوحة التحكم...",
   "auth.signInWelcomeBack": "مرحبًا بك مرة أخرى!",
   "auth.signInDescription": "قم بتسجيل الدخول للوصول إلى لوحة تحكم LearnMint الخاصة بك.",
   "auth.continueAsGuest": "متابعة كضيف",
@@ -550,12 +552,12 @@
   "customTest.pageDescription": "قم بتكوين معلمات الاختبار الخاصة بك. قم بإنشاء أسئلة من المواضيع أو الملاحظات أو جلسات الدراسة الحديثة.",
   "customTest.pageTitle": "تكوين اختبار متقدم",
   "audioFactory.pdf.extracting": "يتم استخراج النص من PDF...",
-  "audioFactory.pdf.errorDesc": "يرجى تحميل واستخراج نص من ملف PDF أولاً.",
   "audioFactory.pdf.errorTitle": "لم يتم تحديد PDF",
-  "audioFactory.image.errorDesc": "يرجى تحميل صورة أولاً.",
+  "audioFactory.pdf.errorDesc": "يرجى تحميل واستخراج نص من ملف PDF أولاً.",
   "audioFactory.image.errorTitle": "لم يتم تحديد صورة",
-  "audioFactory.text.errorDesc": "يرجى تقديم 50 حرفًا على الأقل للتلخيص.",
+  "audioFactory.image.errorDesc": "يرجى تحميل صورة أولاً.",
   "audioFactory.text.errorTitle": "نص غير كافٍ",
+  "audioFactory.text.errorDesc": "يرجى تقديم 50 حرفًا على الأقل للتلخيص.",
   "audioFactory.text.placeholder": "الصق مقالة أو ملاحظات هنا (50 حرفًا على الأقل)",
   "audioFactory.text.yourText": "النص الخاص بك",
   "audioFactory.text.description": "الصق أي نص للحصول على ملخص صوتي موجز.",
@@ -611,6 +613,7 @@
   "chatbot.controls.pause": "إيقاف الكلام مؤقتًا",
   "chatbot.controls.play": "تشغيل آخر رسالة",
   "chatbot.megumin.errorMessage": "عبقريتي... يجب أن تكون في فترة راحة! اسأل مرة أخرى وشاهد القوة الحقيقية!",
+  "chatbot.holo.errorMessage": "لا بد أن أفكاري قد تاهت إلى حصاد بعيد. اسأل مرة أخرى.",
   "chatbot.gojo.errorMessage": "لا بد أن تقنيتي قد فشلت. اسأل مرة أخرى، لم أكن أنتبه.",
   "chatbot.megumin.errorToast": "واااا! مانا الخاص بي غير متوازن! فشلت التعويذة!",
   "chatbot.holo.errorToast": "همف. لا بد أن حكمتي كانت أكثر من اللازم على هذا الجهاز. حاول مرة أخرى.",
@@ -626,4 +629,4 @@
   "chatbot.gojo.greeting": "يو! لقد استغرقت وقتًا طويلاً. ظننت أنني سأضطر إلى محاربة الملل بدونك."
 }
 
-  
+    

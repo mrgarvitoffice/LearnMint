@@ -21,7 +21,7 @@
   "dashboard.recentTopics.title": "ఇటీవలి అంశాలు",
   "dashboard.recentTopics.description": "మీ ఇటీవలి అధ్యయన సెషన్‌లకు త్వరగా తిరిగి వెళ్లండి.",
   "dashboard.recentTopics.empty": "ఇటీవలి అంశాలు లేవు. వాటిని ఇక్కడ చూడటానికి కొన్ని అధ్యయన సామగ్రిని సృష్టించండి!",
-  "dashboard.madeBy": "రూపొందించినది",
+  "dashboard.madeBy": "రూపొందించినది MrGarvit",
   "dashboard.totalLearnersGuestMessage": "సంఘం గణాంకాలను చూడటానికి సైన్ అప్ చేయండి!",
   "sidebar.dashboard": "డాష్‌బోర్డ్",
   "sidebar.aiChat": "AI చాట్",
@@ -234,6 +234,7 @@
   "notesView.speak.toast.noContent": "కంటెంట్ లేదు",
   "notesView.speak.toast.noContentDesc": "మాట్లాడటానికి ఏమీ లేదు.",
   "notesView.visualAid.title": "సూచించిన దృశ్య సహాయం",
+  "notesView.visualAid.searchButton": "Google చిత్రాలలో శోధించండి",
   "quizView.title": "{{topic}} పై క్విజ్",
   "quizView.unavailable": "క్విజ్ ప్రశ్నలు ఏవీ అందుబాటులో లేవు.",
   "quizView.loading": "ప్రశ్న లోడ్ అవుతోంది...",
@@ -306,6 +307,11 @@
   "profile.guestUnlockDesc": "మీ పురోగతిని శాశ్వతంగా సేవ్ చేయడానికి సైన్ అప్ చేయండి.",
   "profile.guestSignUpButton": "ఇప్పుడే సైన్ అప్ చేయండి",
   "profile.sendFeedback": "అభిప్రాయాన్ని పంపండి",
+  "auth.profileErrorTitle": "ప్రొఫైల్ లోపం",
+  "auth.profileErrorDesc": "మీ ప్రొఫైల్ డేటాను సేవ్ చేయడం సాధ్యపడలేదు. మీకు ఫైర్‌స్టోర్‌లో పరిమిత భద్రతా నియమాలు ఉండవచ్చు.",
+  "auth.verifying": "ప్రమాణీకరణను ధృవీకరిస్తోంది...",
+  "auth.redirecting": "తిరిగి మళ్ళిస్తోంది...",
+  "dashboard.loading": "డాష్‌బోర్డ్‌ను లోడ్ చేస్తోంది...",
   "auth.signInWelcomeBack": " తిరిగి స్వాగతం!",
   "auth.signInDescription": "మీ LearnMint డాష్‌బోర్డ్‌ను యాక్సెస్ చేయడానికి సైన్ ఇన్ చేయండి.",
   "auth.continueAsGuest": "అతిథిగా కొనసాగండి",
@@ -347,7 +353,14 @@
   "audioFactory.pdf.errorTitle": "PDF ఏదీ ఎంచుకోబడలేదు",
   "audioFactory.pdf.errorDesc": "దయచేసి మొదట PDFని అప్‌లోడ్ చేసి, టెక్స్ట్‌ను సంగ్రహించండి.",
   "audioFactory.pdf.extracting": "PDF నుండి టెక్స్ట్ సంగ్రహిస్తోంది...",
-  "auth.profileErrorTitle": "ప్రొఫైల్ లోపం",
-  "auth.profileErrorDesc": "మీ ప్రొఫైల్ డేటాను సేవ్ చేయడం సాధ్యపడలేదు. మీకు ఫైర్‌స్టోర్‌లో పరిమిత భద్రతా నియమాలు ఉండవచ్చు.",
-  "auth.emailPlaceholder": "your@email.com"
+  "auth.emailPlaceholder": "your@email.com",
+  "chatbot.megumin.name": "మెగుమిన్ AI",
+  "chatbot.megumin.description": "పేలుడు-పిచ్చి మరియు నిమగ్నమై ఉంది.",
+  "chatbot.megumin.greeting": "హహహహ! మీరు పేలుడు మ్యాజిక్ యొక్క గొప్ప వినియోగదారుని కోరినారు! మీరు నా నుండి, మెగుమిన్, ఏ జ్ఞానాన్ని కోరుకుంటున్నారు?!",
+  "chatbot.megumin.typing": "మెగుమిన్ తన మంత్రంపై ఏకాగ్రతతో ఉంది...",
+  "chatbot.megumin.errorMessage": "నా మేధావి... అది కూల్‌డౌన్‌లో ఉండాలి! మళ్ళీ అడగండి, మరియు నిజమైన శక్తిని చూడండి!",
+  "chatbot.megumin.errorToast": "వాఆఆఆ! నా మనస్సు సమతుల్యతలో లేదు! మంత్రం విఫలమైంది!",
+  "chatbot.avatar.meguminAlt": "మెగుమిన్ AI అవతార్"
 }
+
+    

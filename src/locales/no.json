@@ -10,7 +10,7 @@
   "chatbot.megumin.description": "Eksplosjonsgal og besatt.",
   "chatbot.gojo.greeting": "Yo! Det tok deg lang tid. Jeg trodde jeg måtte bekjempe kjedsomheten uten deg.",
   "chatbot.holo.greeting": "Ah, den lille vender tilbake. Har du kommet for å sole deg i glansen min igjen?",
-  "chatbot.megumin.greeting": "Hahahaha! Du har oppsøkt den største brukeren av eksplosjonsmagi! Hvilken kunnskap søker du fra meg, Megumin?!",
+  "chatbot.megumin.greeting": "Hahahaha! Du har oppsøkt den største mester i eksplosjonsmagi! Hvilken kunnskap søker du fra meg, Megumin?!",
   "chatbot.gojo.typing": "Gojo grubler...",
   "chatbot.holo.typing": "Holo grubler over sin visdom...",
   "chatbot.megumin.typing": "Megumin konsentrerer seg om sin formel...",
@@ -23,4 +23,4 @@
   "chatbot.avatar.meguminAlt": "Megumin AI Avatar"
 }
 
-  
+    
