@@ -80,7 +80,11 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     let isMounted = true;
     
     const loadTranslations = async (lang: string) => {
-      setState({ translations: null, isReady: false });
+      // Set loading state immediately to prevent rendering with stale data
+      if (isMounted) {
+        setState(s => ({ ...s, isReady: false }));
+      }
+      
       const langCode = lang.split('-')[0] || 'en';
       const loader = localeLoaders[langCode as keyof typeof localeLoaders] || localeLoaders.en;
 
@@ -114,11 +118,9 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   const t: TFunction = useCallback((key, options) => {
     if (!state.isReady || !state.translations) {
-      return key;
+      return key; 
     }
     
-    // **FIXED LOGIC**: Perform a direct lookup on the flat JSON object
-    // instead of trying to parse a nested key.
     const translation = state.translations[key];
 
     if (translation === undefined) {
