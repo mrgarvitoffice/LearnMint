@@ -12,7 +12,7 @@
 
 'use server';
 
-import { aiForTTS } from '@/ai/genkit';
+import { aiForNotes, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -45,7 +45,8 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 }
 
 // Updated prompt to be more robust and handle explicit language requests.
-const dialoguePrompt = aiForTTS.definePrompt({
+// This prompt now uses `aiForNotes` to ensure it uses a general-purpose text model API key.
+const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
@@ -78,7 +79,7 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
     outputSchema: GenerateDiscussionAudioOutputSchema,
   },
   async (input) => {
-    // 1. Generate the dialogue script from the input content
+    // 1. Generate the dialogue script from the input content using the text-focused client
     console.log(`[AI Flow - Discussion Audio] Generating dialogue script in auto-detected language...`);
     const { output } = await dialoguePrompt(input);
     let dialogueScript = output?.dialogue;
@@ -104,7 +105,7 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
         throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
     }
 
-    // 2. Generate multi-speaker audio from the script
+    // 2. Generate multi-speaker audio from the script using the TTS-focused client
     console.log('[AI Flow - Discussion Audio] Generating multi-speaker TTS...');
     const { media } = await aiForTTS.generate({
       model: 'googleai/gemini-2.5-flash-preview-tts',
