@@ -33,10 +33,21 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
     return { fact: factToTranslate };
   }
 
-  // 2. Find and clean the language name for the AI prompt.
-  const languageLabel = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
-  // Clean the language name by removing parenthetical English translations, e.g., "Español (Spanish)" -> "Español"
-  const targetLanguageName = languageLabel.split('(')[0].trim();
+  // 2. Find the English name for the target language to use in the prompt.
+  const languageInfo = APP_LANGUAGES.find(lang => lang.value === languageCode);
+  
+  // Default to "English" if the language code is not found, although this shouldn't happen with valid codes.
+  let targetLanguageName = "English"; 
+  if (languageInfo) {
+    // Extract the English name, assuming format "Native (English)" or just "English".
+    // This is more robust for the LLM.
+    const match = languageInfo.label.match(/\(([^)]+)\)/);
+    if (match) {
+      targetLanguageName = match[1]; // e.g., "Spanish" from "Español (Spanish)"
+    } else {
+      targetLanguageName = languageInfo.label; // e.g., "English"
+    }
+  }
   
   // 3. Call the AI flow to translate the selected fact.
   try {
@@ -46,9 +57,10 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
         targetLanguageName 
     });
     
-    // The flow now has a fallback, but we double-check here.
-    if (!result || !result.fact || result.fact.trim() === '') {
-        console.warn(`[Action - Math Fact] AI did not return a valid translation. Falling back to English.`);
+    // The flow has a fallback, but we double-check here.
+    // Also, if the model just returns the English text, it's a failure.
+    if (!result || !result.fact || result.fact.trim() === '' || result.fact.trim().toLowerCase() === factToTranslate.toLowerCase()) {
+        console.warn(`[Action - Math Fact] AI did not return a valid translation for ${targetLanguageName}. Falling back to English.`);
         return { fact: factToTranslate };
     }
     
