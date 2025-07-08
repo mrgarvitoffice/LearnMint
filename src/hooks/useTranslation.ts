@@ -71,12 +71,16 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
+    // If translations are not ready, return an empty string. The UI components
+    // should be showing a loading skeleton based on the `isReady` flag.
     if (!isReady || !translations) {
       return "";
     }
     
     const translation = translations[key];
 
+    // If a specific key is missing from the loaded JSON file, it's a data error.
+    // Log a warning for debugging and return the key itself so it's visible in the UI.
     if (translation === undefined) {
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 

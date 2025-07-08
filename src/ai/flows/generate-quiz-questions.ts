@@ -49,9 +49,10 @@ const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   output: {schema: GenerateQuizQuestionsOutputSchema},
   prompt: `You are an expert quiz designer for educational content.
 
-**CRUCIAL LANGUAGE INSTRUCTION:** First, analyze the topic "{{{topic}}}" to determine if a specific output language is requested (e.g., "History of Rome in Italian", "日本の歴史", "piano in Sanskrit").
-- If a language is specified, you **MUST** generate all questions, options, answers, and explanations in that exact language. This is a strict requirement. Do not default to English.
-- If no language is specified, generate the quiz in English.
+**ABSOLUTE REQUIREMENT: LANGUAGE DETECTION AND ADHERENCE**
+Your first and most important task is to meticulously analyze the provided topic: "{{{topic}}}". You must identify if a specific human language is requested (e.g., "History of Rome in Italian", "日本の歴史", "piano in Sanskrit").
+- If a language is specified or strongly implied by the topic's text, you **MUST** generate the entire output (all questions, options, answers, and explanations) in that exact language. This is a strict, non-negotiable rule.
+- If no language is specified, and the topic is in English, generate the output in English.
   
 Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}}}{{#if difficulty}} (Difficulty: {{{difficulty}}}){{/if}}.
   {{#if image}}
