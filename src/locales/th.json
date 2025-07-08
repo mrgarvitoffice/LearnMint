@@ -151,7 +151,7 @@
   "customTest.settings.timer.error.negative": "ตัวจับเวลาไม่สามารถเป็นค่าลบได้",
   "customTest.settings.perQuestionTimer.label": "เวลาต่อคำถาม (วินาที, 0 สำหรับไม่มี)",
   "customTest.settings.perQuestionTimer.error.negative": "เวลาต่อคำถามไม่สามารถเป็นค่าลบได้",
-  "customTest.settings.perQuestionTimer.description": "ตัวจับเวลาต่อคำถามจะเลื่อนไปข้างหน้าโดยอัตโนมัติหากหมดเวลา",
+  "customTest.settings.perQuestionTimer.description": "เวลาต่อคำถามจะเลื่อนไปข้างหน้าโดยอัตโนมัติหากหมดเวลา",
   "customTest.settings.markingScheme": "การให้คะแนน: +4 ถูก, -1 ผิด (สำหรับคำถามที่ตอบแล้ว)",
   "customTest.generateButton.default": "สร้างแบบทดสอบ",
   "customTest.generateButton.loading": "กำลังสร้างแบบทดสอบที่กำหนดเอง โปรดรอสักครู่",
