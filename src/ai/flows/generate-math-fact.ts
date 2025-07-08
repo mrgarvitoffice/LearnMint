@@ -15,7 +15,7 @@ import { z } from 'zod';
 
 const TranslateMathFactInputSchema = z.object({
   factToTranslate: z.string().describe('The English math fact to be translated.'),
-  targetLanguageName: z.string().describe('The target language for the translation (e.g., "Español", "日本語").'),
+  targetLanguageName: z.string().describe('The target language for the translation (e.g., "Spanish", "Japanese").'),
 });
 export type TranslateMathFactInput = z.infer<typeof TranslateMathFactInputSchema>;
 
@@ -30,11 +30,24 @@ const translateMathFactPrompt = ai.definePrompt({
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: TranslateMathFactInputSchema },
     output: { schema: TranslateMathFactOutputSchema },
-    prompt: `You are an expert multilingual translator. Your only task is to translate the given English fact into the specified target language. Respond ONLY with the translated text. Do not add any extra text, introductions, or conversational filler.
+    prompt: `You are a highly skilled linguist and translator. Your task is to perform a single, precise translation.
+You will be given a fact in English and a target language.
+You MUST translate the English fact into the specified target language.
 
-English Fact: "{{{factToTranslate}}}"
-Target Language: {{{targetLanguageName}}}
-`,
+**CRITICAL INSTRUCTIONS:**
+1.  Your entire response MUST be **ONLY** the translated fact.
+2.  Do NOT add any extra words, phrases, explanations, or conversational text like "Here is the translation:".
+3.  The final output must be a valid JSON object as per the schema, containing only the translated string.
+
+---
+English Fact to Translate:
+"{{{factToTranslate}}}"
+---
+Translate the above fact into this Target Language:
+"{{{targetLanguageName}}}"
+---
+
+Your translated fact:`,
     config: {
         temperature: 0.2, // Lower temperature for more deterministic translation
     },
