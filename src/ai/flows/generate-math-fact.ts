@@ -11,9 +11,6 @@
 import { aiForNotes } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Note: The function names in this file are kept similar to the original for compatibility,
-// but the functionality has been changed from 'generation' to 'translation' for reliability.
-
 const TranslateMathFactInputSchema = z.object({
   factToTranslate: z.string().describe('The English math fact to be translated.'),
   targetLanguageName: z.string().describe('The target language for the translation (e.g., "Spanish", "Japanese").'),
@@ -30,27 +27,14 @@ const translateMathFactPrompt = aiForNotes.definePrompt({
     name: 'translateMathFactPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: TranslateMathFactInputSchema },
-    output: { schema: TranslateMathFactOutputSchema },
-    prompt: `You are a highly skilled linguist and translator. Your task is to perform a single, precise translation.
-You will be given a fact in English and a target language.
-You MUST translate the English fact into the specified target language.
-
-**CRITICAL INSTRUCTIONS:**
-1.  Your entire response MUST be **ONLY** the translated fact.
-2.  Do NOT add any extra words, phrases, explanations, or conversational text like "Here is the translation:".
-3.  The final output must be a valid JSON object as per the schema, containing only the translated string.
-
----
-English Fact to Translate:
-"{{{factToTranslate}}}"
----
-Translate the above fact into this Target Language:
-"{{{targetLanguageName}}}"
----
-
-Your translated fact:`,
+    // Simplified Output: Expect a raw string, not a JSON object.
+    output: { format: 'text' },
+    // Simplified Prompt: A direct, imperative command.
+    prompt: `Translate the following English fact into {{{targetLanguageName}}}.
+Fact: "{{{factToTranslate}}}"
+**CRITICAL**: Your entire response MUST be ONLY the translated text of the fact. Do NOT add any extra words, explanations, or quotation marks.`,
     config: {
-        temperature: 0.2, // Lower temperature for more deterministic translation
+        temperature: 0.1, // Lower temperature for more deterministic, direct translation.
     },
 });
 
@@ -62,15 +46,21 @@ const translateMathFactFlow = aiForNotes.defineFlow(
   },
   async (input) => {
     try {
-      const { output } = await translateMathFactPrompt(input);
-      if (!output || !output.fact || output.fact.trim() === '') {
-          console.error(`[AI Flow Error - Translate Math Fact] AI returned an empty or invalid translation for language "${input.targetLanguageName}".`);
-          // Fallback to English if translation fails
+      // Call the prompt and get the raw text response.
+      const llmResponse = await translateMathFactPrompt(input);
+      const translatedText = llmResponse.text;
+      
+      if (!translatedText || translatedText.trim() === '') {
+          console.error(`[AI Flow Error - Translate Math Fact] AI returned an empty translation for language "${input.targetLanguageName}".`);
+          // Fallback to English if translation is empty.
           return { fact: input.factToTranslate };
       }
-      return output;
+      
+      // Return the translated text wrapped in the expected output schema.
+      return { fact: translatedText.trim() };
+
     } catch(e) {
-        console.error(`[AI Flow Error - Translate Math Fact] Failed for language "${input.targetLanguageName}":`, e);
+        console.error(`[AI Flow Error - Translate Math Fact] Flow failed for language "${input.targetLanguageName}":`, e);
         // If the entire flow fails, fall back to the original English fact to ensure something is always displayed.
         return { fact: input.factToTranslate };
     }
