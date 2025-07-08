@@ -82,7 +82,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       // Set loading state immediately to prevent rendering with stale data
       if (isMounted) {
-        setState(s => ({ ...s, isReady: false }));
+        setState({ translations: null, isReady: false });
       }
       
       const langCode = lang.split('-')[0] || 'en';
@@ -98,7 +98,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         try {
           const fallbackModule = await localeLoaders.en();
           if (isMounted) {
-            setState({ translations: fallbackModule.default, isReady: true });
+             setState({ translations: fallbackModule.default, isReady: true });
           }
         } catch (fallbackError) {
            console.error("CRITICAL: The fallback 'en.json' translation file could not be loaded.", fallbackError);
@@ -121,6 +121,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
       return key; 
     }
     
+    // Corrected logic: Look for the full key directly.
     const translation = state.translations[key];
 
     if (translation === undefined) {

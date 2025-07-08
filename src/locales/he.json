@@ -583,7 +583,6 @@
   "news.filters.regionSelectTooltip": "בחר מדינה/אזור",
   "news.filters.regionTypePlaceholder": "לדוגמה, קליפורניה",
   "news.filters.regionTypeDisabledTooltip": "בחר מדינה כדי להפעיל חיפוש מילות מפתח למדינה/אזור",
-  "news.filters.regionTypeTooltip": "הזן מדינה/אזור כדי לצמצם את החיפוש",
   "news.filters.cityLabel": "עיר",
   "news.filters.cityPlaceholder": "לדוגמה, לונדון",
   "news.filters.cityDisabledTooltip": "בחר מדינה כדי להפעיל חיפוש מילות מפתח לעיר",

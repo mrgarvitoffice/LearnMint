@@ -583,7 +583,6 @@
   "news.filters.regionSelectTooltip": "Изберете щат/регион",
   "news.filters.regionTypePlaceholder": "напр. Калифорния",
   "news.filters.regionTypeDisabledTooltip": "Изберете държава, за да активирате търсенето по ключови думи за Щат/Регион",
-  "news.filters.regionTypeTooltip": "Въведете щат/регион, за да прецизирате търсенето",
   "news.filters.cityLabel": "Град",
   "news.filters.cityPlaceholder": "напр. Лондон",
   "news.filters.cityDisabledTooltip": "Изберете държава, за да активирате търсенето по ключови думи за град",

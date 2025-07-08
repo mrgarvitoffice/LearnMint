@@ -583,7 +583,6 @@
   "news.filters.regionSelectTooltip": "Seleccioneu estat/regió",
   "news.filters.regionTypePlaceholder": "ex: Califòrnia",
   "news.filters.regionTypeDisabledTooltip": "Seleccioneu un país per habilitar la cerca per paraula clau d'Estat/Regió",
-  "news.filters.regionTypeTooltip": "Introduïu estat/regió per refinar la cerca",
   "news.filters.cityLabel": "Ciutat",
   "news.filters.cityPlaceholder": "ex: Londres",
   "news.filters.cityDisabledTooltip": "Seleccioneu un país per habilitar la cerca per paraula clau de Ciutat",
