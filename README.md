@@ -1,4 +1,3 @@
-
 # LearnMint: AI-Powered Learning Toolkit
 
 <p align="center">
@@ -22,12 +21,7 @@
 *   [Overview & Design Philosophy](#-overview--design-philosophy)
 *   [🔥 Key Features](#-key-features)
 *   [🛠️ Tech Stack](#️-tech-stack)
-*   [🚀 Getting Started: Setup Guide](#-getting-started-setup-guide)
-    *   [1. Prerequisites](#1-prerequisites)
-    *   [2. Configure Firebase](#2-configure-firebase)
-    *   [3. Environment Variables (.env)](#3-environment-variables-env)
-    *   [4. Install Dependencies](#4-install-dependencies)
-    *   [5. Run the Application](#5-run-the-application)
+*   [🚀 Local Development & Setup](#-local-development--setup)
 *   [☁️ Deployment](#️-deployment)
 *   [🎨 Customization](#-customization)
 
@@ -81,9 +75,12 @@ LearnMint leverages a modern, robust tech stack:
 
 ---
 
-## 🚀 Getting Started: Setup Guide
+## 🚀 Local Development & Setup
 
-Follow these steps carefully to run LearnMint locally.
+To run LearnMint on your local machine, follow the setup guide below.
+
+<details>
+<summary><strong>Click to expand the Setup Guide</strong></summary>
 
 ### 1. Prerequisites
 
@@ -91,9 +88,7 @@ Follow these steps carefully to run LearnMint locally.
 *   `npm` or `yarn`
 
 ### 2. Configure Firebase
-
 This is a common point of failure. You must configure Firebase correctly for authentication to work.
-
 1.  **Go to the Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2.  **Select your project**: Find the project with the ID that matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in your `.env` file.
 3.  Navigate to **Authentication** (in the Build section on the left sidebar).
@@ -102,8 +97,8 @@ This is a common point of failure. You must configure Firebase correctly for aut
 6.  **Authorize Domains**: While in Authentication, go to the **Settings** tab and select **Authorized domains**.
 7.  Click **Add domain** and add `localhost` (for local development) and your Firebase auth domain (e.g., `your-project-id.firebaseapp.com`).
 
-### 3. Environment Variables (.env)
 
+### 3. Environment Variables (.env)
 Create a file named `.env` in the root of the project and populate it with your API keys. The application will not work without this file.
 
 <details>
@@ -137,11 +132,9 @@ YOUTUBE_API_KEY=AIzaSy...
 GOOGLE_BOOKS_API_KEY=AIzaSy...
 ```
 **Important:** After creating or modifying `.env`, you must restart your development server.
-
 </details>
 
 ### 4. Install Dependencies
-
 ```bash
 npm install
 # or
@@ -162,22 +155,30 @@ yarn install
     ```
     Access the Genkit inspection UI at `http://localhost:4000`.
 
+</details>
+
 ---
 
 ## ☁️ Deployment
 
-This application is optimized for deployment on **Firebase Hosting**.
+This application is optimized for deployment on **Firebase Hosting**. For a seamless deployment experience, follow these steps:
+
+<details>
+<summary><strong>Click to expand the Deployment Guide</strong></summary>
 
 1.  **Install Firebase CLI**: `npm install -g firebase-tools`.
 2.  **Login to Firebase**: `firebase login`.
-3.  **Initialize Firebase**: `firebase init hosting`.
+3.  **Initialize Firebase**: `firebase init hosting`. When prompted, connect it to your Firebase project and configure it as a single-page app. Use `out` as the public directory if you export the site, or the default if you're using Next.js build outputs.
 4.  **Build the Project**: `npm run build`.
 5.  **Deploy**: `firebase deploy --only hosting`.
+
+</details>
 
 ---
 
 ## 🎨 Customization
 
+The application is designed to be easily customizable:
 *   **Styling & Theme**: Modify colors and styles in `src/app/globals.css` and `tailwind.config.ts`.
 *   **AI Prompts**: Tweak the behavior of the AI features by editing the prompt files in `src/ai/flows/`.
 *   **Fonts**: Change the application font in `src/app/layout.tsx`.
