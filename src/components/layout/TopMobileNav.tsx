@@ -9,15 +9,13 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Logo } from '../icons/Logo';
 import { motion } from 'framer-motion';
-import { Header } from './Header'; // This now includes settings and the user avatar.
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { User } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Settings } from 'lucide-react';
 import SettingsMenuContent from './SettingsMenuContent';
 import ProfileMenuContent from './ProfileMenuContent';
 
@@ -25,7 +23,6 @@ export function TopMobileNav() {
   const pathname = usePathname();
   const { playSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { t } = useTranslation();
-  const { user } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 md:hidden border-b bg-background/90 backdrop-blur-lg">
@@ -45,7 +42,7 @@ export function TopMobileNav() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon">
-                    { user ? <User className="h-5 w-5" /> : <User className="h-5 w-5" /> }
+                    <Settings className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" sideOffset={8}>
@@ -70,7 +67,7 @@ export function TopMobileNav() {
                 href={item.href}
                 onClick={playSound}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 p-1 w-16 text-muted-foreground transition-colors hover:text-primary group",
+                  "flex flex-col items-center justify-center gap-1 p-1 w-16 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-primary group",
                   isActive && "text-primary [text-shadow:0_0_8px_hsl(var(--primary))]"
                 )}
               >
