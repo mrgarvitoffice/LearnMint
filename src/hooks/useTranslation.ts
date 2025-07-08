@@ -6,20 +6,26 @@ import { useSettings } from '@/contexts/SettingsContext';
 
 type TFunction = (key: string, options?: { [key: string]: string | number }) => string;
 
+interface TranslationState {
+  translations: Record<string, any> | null;
+  isReady: boolean;
+}
+
 export function useTranslation(): { t: TFunction, isReady: boolean } {
   const { appLanguage } = useSettings();
-  const [translations, setTranslations] = useState<Record<string, any> | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [state, setState] = useState<TranslationState>({
+    translations: null,
+    isReady: false,
+  });
 
   useEffect(() => {
     let isMounted = true;
-    // Immediately mark as not ready when the language changes.
-    setIsReady(false); 
+    // Reset state to loading on language change
+    setState({ translations: null, isReady: false }); 
 
     const loadTranslations = async (lang: string) => {
       let loadedTranslations: Record<string, any> | null = null;
       try {
-        // Attempt to load the requested language file.
         const module = await import(`@/locales/${lang}.json`);
         loadedTranslations = module.default;
         if (!loadedTranslations || typeof loadedTranslations !== 'object' || Object.keys(loadedTranslations).length === 0) {
@@ -39,10 +45,8 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
       }
 
       if (isMounted) {
-        // Only update state if the component is still mounted.
-        setTranslations(loadedTranslations);
-        // CRITICAL: Mark as ready only AFTER the translations state has been set.
-        setIsReady(true); 
+        // Atomically update both translations and readiness state
+        setState({ translations: loadedTranslations, isReady: true });
       }
     };
 
@@ -56,14 +60,13 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // If translations are not ready or available, return the key as a fallback.
-    // The UI should ideally show a loading state until isReady is true.
-    if (!isReady || !translations) {
+    // This guard is now robust because isReady and translations are set together.
+    if (!state.isReady || !state.translations) {
       return key;
     }
     
     // Using a simple lookup for flat JSON structure.
-    const translation = translations[key];
+    const translation = state.translations[key];
 
     if (translation === undefined) {
         // Warn developer in console if a key is missing.
@@ -82,7 +85,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     }
 
     return finalTranslation;
-  }, [translations, isReady, appLanguage]);
+  }, [state.translations, state.isReady, appLanguage]);
 
-  return { t, isReady };
+  return { t, isReady: state.isReady };
 }
