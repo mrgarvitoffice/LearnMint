@@ -1,19 +1,18 @@
-
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
- * This flow now has simplified prompting and more robust error handling.
+ * This flow is now re-architected for maximum reliability.
  */
 
 'use server';
 
-import { ai, aiForTTS } from '@/ai/genkit';
+import { aiForNotes, aiForTTS } from '@/ai/genkit'; // Using aiForNotes for text, aiForTTS for audio
 import { z } from 'zod';
 import wav from 'wav';
 
 const GenerateDiscussionAudioInputSchema = z.object({
-  content: z.string().describe('The content to be turned into a discussion.'),
+  content: z.string().min(20, "Content must be at least 20 characters.").describe('The content to be turned into a discussion.'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -22,24 +21,10 @@ const GenerateDiscussionAudioOutputSchema = z.object({
 });
 export type GenerateDiscussionAudioOutput = z.infer<typeof GenerateDiscussionAudioOutputSchema>;
 
-// This function is exported and called from a server action.
+// This function is the main entry point called by the server action.
 export async function generateDiscussionAudio(input: GenerateDiscussionAudioInput): Promise<GenerateDiscussionAudioOutput> {
-  try {
-    return await generateDiscussionAudioFlow(input);
-  } catch (error: any) {
-    console.error(`[AI Action Error - Discussion Audio] Flow failed:`, error);
-    let errorMessage = "Failed to generate discussion audio. Please try again.";
-    if (error.message) {
-      if (error.message.includes("API key") || error.message.includes("permission denied")) {
-        errorMessage = "Discussion Audio: API key issue. Check that GOOGLE_API_KEY (for text) and GOOGLE_API_KEY_TTS are correctly configured and have the necessary permissions.";
-      } else if (error.message.includes("Invalid format from LLM")) {
-        errorMessage = "Discussion Audio: The AI failed to generate a valid script. This can happen with very complex or unusual content. Please try again.";
-      } else {
-        errorMessage = `Discussion Audio: ${error.message}`;
-      }
-    }
-    throw new Error(errorMessage);
-  }
+  // The main try-catch block is now in the server action for better UI feedback.
+  return await generateDiscussionAudioFlow(input);
 }
 
 // Helper to convert PCM data to WAV Base64
@@ -55,15 +40,15 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// Simplified and more robust prompt for dialogue generation.
-const dialoguePrompt = ai.definePrompt({
+// STEP 1: Define a prompt to generate the dialogue script.
+// This uses aiForNotes to ensure the correct API key (GOOGLE_API_KEY_NOTES or GOOGLE_API_KEY) is used.
+const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
     output: { schema: z.object({ dialogue: z.string() }) },
-    prompt: `You are an expert scriptwriter. Your task is to convert the provided text content into a natural-sounding, two-person dialogue script in the same language as the source content.
-
-The dialogue should be between "Speaker1" (a knowledgeable expert) and "Speaker2" (an inquisitive learner). It should discuss and explain the key points from the provided content.
+    prompt: `You are a scriptwriter. Convert the following content into a natural-sounding, two-person dialogue script.
+The dialogue should be between "Speaker1" and "Speaker2". It should discuss and explain the key points from the provided content.
 
 **CRITICAL FORMATTING RULE**: The entire output MUST be ONLY the script. Each line must start with "Speaker1:" or "Speaker2:". Do NOT add any introductory text, closing remarks, or summaries.
 
@@ -88,25 +73,26 @@ Please provide the dialogue script below.`,
 });
 
 
-// The main Genkit flow, defined with the general `ai` client.
-const generateDiscussionAudioFlow = ai.defineFlow(
+// STEP 2: Define the main flow that orchestrates the process.
+// Using aiForNotes for the flow definition to maintain consistency for the text part.
+const generateDiscussionAudioFlow = aiForNotes.defineFlow(
   {
     name: 'generateDiscussionAudioFlow',
     inputSchema: GenerateDiscussionAudioInputSchema,
     outputSchema: GenerateDiscussionAudioOutputSchema,
   },
   async (input) => {
-    // 1. Generate the dialogue script from the input content
+    // 1. Generate the dialogue script using the text-generation prompt.
     console.log(`[AI Flow - Discussion Audio] Generating dialogue script...`);
     const { output } = await dialoguePrompt(input);
     let dialogueScript = output?.dialogue;
 
     if (!dialogueScript || dialogueScript.trim() === '') {
-      throw new Error("Failed to generate a dialogue script from the content.");
+      throw new Error("AI failed to generate a dialogue script from the content.");
     }
     console.log('[AI Flow - Discussion Audio] Dialogue script generated successfully.');
     
-    // Safeguard: Clean up potential model verbosity
+    // Safeguard: Clean up potential model verbosity to ensure script starts correctly.
     const firstSpeaker1 = dialogueScript.indexOf('Speaker1:');
     const firstSpeaker2 = dialogueScript.indexOf('Speaker2:');
     
@@ -122,7 +108,7 @@ const generateDiscussionAudioFlow = ai.defineFlow(
         throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
     }
 
-    // 2. Generate multi-speaker audio from the script
+    // 2. Generate multi-speaker audio from the script using the dedicated TTS client.
     console.log('[AI Flow - Discussion Audio] Generating multi-speaker TTS...');
     const { media } = await aiForTTS.generate({
       model: 'googleai/gemini-2.5-flash-preview-tts',
@@ -145,7 +131,7 @@ const generateDiscussionAudioFlow = ai.defineFlow(
     }
     console.log('[AI Flow - Discussion Audio] TTS audio data received.');
 
-    // 3. Convert PCM audio to WAV format
+    // 3. Convert PCM audio to WAV format.
     const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
     const wavBase64 = await toWav(audioBuffer);
     console.log('[AI Flow - Discussion Audio] Audio converted to WAV successfully.');

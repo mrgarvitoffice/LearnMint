@@ -309,10 +309,16 @@ export async function generateDiscussionAudioAction(input: GenerateDiscussionAud
   } catch (error: any) {
     console.error(`[Server Action Error - ${actionName}] Error generating discussion audio:`, error);
     let clientErrorMessage = "Failed to generate discussion audio. Please try again.";
-    if (error.message && (error.message.includes("GOOGLE_API_KEY") || error.message.includes("API key is invalid"))) {
-        clientErrorMessage = "Audio Discussion: Failed due to an API key or configuration issue. Please check the GOOGLE_API_KEY_TTS key.";
-    } else if (error.message) {
-        clientErrorMessage = `Audio Discussion: Failed. Error: ${error.message.substring(0, 150)}.`;
+    if (error.message) {
+        if (error.message.includes("API key") || error.message.includes("permission denied")) {
+          clientErrorMessage = "Discussion Audio: API key issue. Check that GOOGLE_API_KEY_NOTES (for text generation) and GOOGLE_API_KEY_TTS (for audio) are correctly configured and have the necessary permissions.";
+        } else if (error.message.includes("Invalid format from LLM")) {
+          clientErrorMessage = "Discussion Audio: The AI failed to generate a valid script. This can happen with very complex or unusual content. Please try again.";
+        } else if (error.message.includes("model not found") || error.message.includes("access")) {
+           clientErrorMessage = "Discussion Audio: The AI model could not be accessed. This is likely a permissions issue with your API key. Please ensure the project associated with GOOGLE_API_KEY_NOTES (or its fallback, GOOGLE_API_KEY) has the 'Generative Language API' enabled.";
+        } else {
+          clientErrorMessage = `Discussion Audio: ${error.message}`;
+        }
     }
     throw new Error(clientErrorMessage);
   }
