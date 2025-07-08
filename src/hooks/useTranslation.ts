@@ -13,45 +13,38 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let active = true;
-    setIsReady(false);
-    setTranslations(null); // Reset translations on language change
 
     const loadTranslations = async (lang: string) => {
+      setIsReady(false);
       try {
         const module = await import(`@/locales/${lang}.json`);
-        
-        // This is the robust fix. It checks if module.default is a non-empty object.
-        // If not, it falls back to the module itself. This handles build inconsistencies.
-        const translationData = (module.default && Object.keys(module.default).length > 0) ? module.default : module;
+        // This robust logic handles different ways modules can be structured.
+        const translationData = module.default || module;
 
         if (active && translationData && Object.keys(translationData).length > 0) {
           setTranslations(translationData);
-          setIsReady(true); // Set ready only after successful load
         } else {
-            throw new Error(`Translations for ${lang} are empty or invalid.`);
+          // If the primary language fails, immediately try the fallback.
+          throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          const fallbackTranslationData = (fallbackModule.default && Object.keys(fallbackModule.default).length > 0) ? fallbackModule.default : fallbackModule;
-
-          if (active && fallbackTranslationData && Object.keys(fallbackTranslationData).length > 0) {
-            setTranslations(fallbackTranslationData);
-            setIsReady(true); // Set ready after successful fallback load
+          const fallbackData = fallbackModule.default || fallbackModule;
+          if (active && fallbackData && Object.keys(fallbackData).length > 0) {
+            setTranslations(fallbackData);
           } else {
             console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
-            if (active) {
-                setTranslations({}); // Prevent crashes
-                setIsReady(true); // Still need to unblock the UI, even if translations are broken
-            }
+            if (active) setTranslations({}); // Prevent crashes, UI will show keys
           }
         } catch (fallbackError) {
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) {
-             setTranslations({});
-             setIsReady(true);
-          }
+          if (active) setTranslations({}); // Prevent crashes
+        }
+      } finally {
+        if (active) {
+          setIsReady(true); // Always become ready, even if translations failed (to unblock UI)
         }
       }
     };
