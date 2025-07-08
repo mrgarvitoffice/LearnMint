@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,38 +13,46 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let active = true;
-    setIsReady(false);
-    setTranslations(null); // Reset translations on language change
 
     const loadTranslations = async (lang: string) => {
+      // Always reset loading state at the start of an effect run
+      if (active) {
+        setIsReady(false);
+      }
+
       try {
         const module = await import(`@/locales/${lang}.json`);
-        if (active && module.default && Object.keys(module.default).length > 0) {
-          setTranslations(module.default);
-          setIsReady(true); // Set ready only after successful load
+        // The imported JSON can be the module itself or under a `default` property.
+        const data = module.default || module;
+
+        if (active && data && typeof data === 'object' && Object.keys(data).length > 0) {
+          setTranslations(data);
         } else {
-            throw new Error(`Translations for ${lang} are empty or invalid.`);
+          // This error will be caught and handled by the fallback logic.
+          throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
+        // Attempt to load the English fallback if the primary language fails.
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          if (active && fallbackModule.default && Object.keys(fallbackModule.default).length > 0) {
-            setTranslations(fallbackModule.default);
-            setIsReady(true); // Set ready after successful fallback load
+          const fallbackData = fallbackModule.default || fallbackModule;
+          if (active && fallbackData && typeof fallbackData === 'object' && Object.keys(fallbackData).length > 0) {
+            setTranslations(fallbackData);
           } else {
+            // This is a critical failure if even English cannot be loaded.
             console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
-            if (active) {
-                setTranslations({}); // Prevent crashes
-                setIsReady(true); // Still need to unblock the UI, even if translations are broken
-            }
+            if (active) setTranslations({}); // Set to empty object to prevent app crash
           }
         } catch (fallbackError) {
-          console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) {
-             setTranslations({});
-             setIsReady(true);
-          }
+          console.error("CRITICAL: Error loading fallback English translations.", fallbackError);
+          if (active) setTranslations({}); // Prevent app crash
+        }
+      } finally {
+        // Crucially, always set isReady to true after attempting to load.
+        // This unblocks the UI even if all translation attempts fail.
+        if (active) {
+          setIsReady(true);
         }
       }
     };
@@ -51,22 +60,21 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const langCode = appLanguage.split('-')[0] || 'en';
     loadTranslations(langCode);
 
+    // Cleanup function to prevent state updates on unmounted components
     return () => {
       active = false;
     };
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // If translations are not ready, return an empty string. The UI components
-    // should be showing a loading skeleton based on the `isReady` flag.
+    // If not ready or if translations failed to load, return the key itself.
+    // This makes debugging much easier than returning an empty string.
     if (!isReady || !translations) {
-      return "";
+      return key;
     }
     
     const translation = translations[key];
 
-    // If a specific key is missing from the loaded JSON file, it's a data error.
-    // Log a warning for debugging and return the key itself so it's visible in the UI.
     if (translation === undefined) {
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
