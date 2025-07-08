@@ -69,12 +69,12 @@ export default function SignInPage() {
           <div className="space-y-2">
             <Label htmlFor="email">{t('auth.emailLabel')}</Label>
             <Input id="email" type="email" placeholder={t('auth.emailPlaceholder')} {...register('email')} disabled={loading} />
-            {errors.email && <p className="text-sm text-destructive">{t(errors.email.message || '')}</p>}
+            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
-            <Input id="password" type="password" {...register('password')} disabled={loading} />
-            {errors.password && <p className="text-sm text-destructive">{t(errors.password.message || '')}</p>}
+            <Input id="password" type="password" {...register('password')} disabled={loading} placeholder={t('auth.passwordLabel')} />
+            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}

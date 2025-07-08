@@ -697,7 +697,7 @@ export default function CustomTestPage() {
                   <CardContent className="text-sm space-y-1 px-4 pb-4">
                     <p>{t('customTest.results.yourAnswer', { answer: '' })} <span className="font-medium">{q.userAnswer || t('customTest.results.notAnswered')}</span></p>
                     {!q.isCorrect && <p>{t('customTest.results.correctAnswer', { answer: '' })} <span className="font-medium text-green-600 dark:text-green-500">{q.answer}</span></p>}
-                    {q.explanation && (<Alert variant="default" className="mt-2 bg-accent/10 border-accent/30 p-3"><Lightbulb className="h-4 w-4 text-accent-foreground/80" /><AlertTitle className="text-accent-foreground/90 text-xs font-semibold">{t('customTest.results.explanation')}</AlertTitle><AlertDescription className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground"><ReactMarkdown>{q.explanation}</ReactMarkdown></AlertDescription></Alert>)}
+                    {q.explanation && (<Alert variant="default" className="mt-2 bg-accent/10 border-accent/30 p-3"><Lightbulb className="h-4 w-4 text-accent-foreground/80" /><AlertTitle className="text-xs font-semibold">{t('customTest.results.explanation')}</AlertTitle><AlertDescription className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground"><ReactMarkdown>{q.explanation}</ReactMarkdown></AlertDescription></Alert>)}
                   </CardContent>
                 </Card>
               ))}

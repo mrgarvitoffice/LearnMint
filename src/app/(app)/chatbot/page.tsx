@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -165,10 +166,12 @@ export default function ChatbotPage() {
         }
         messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;
       }
+      
+      const languageLabel = APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English';
 
       const input: GojoChatbotInput | HoloChatbotInput | MeguminChatbotInput = {
         message: messageForAI,
-        language: APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English',
+        language: languageLabel,
         image,
         audio,
         video,
@@ -295,7 +298,7 @@ export default function ChatbotPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-primary/30">
-                  <AvatarImage src={charData.avatar} alt={`${t(charData.nameKey)} avatar`} data-ai-hint={charData.hint} />
+                  <AvatarImage src={charData.avatar} alt={t(charData.nameKey)} data-ai-hint={charData.hint} />
                   <AvatarFallback>{charData.fallback}</AvatarFallback>
                 </Avatar>
                 <div>

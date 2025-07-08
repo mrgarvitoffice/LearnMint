@@ -21,7 +21,7 @@
   "dashboard.recentTopics.title": "Recent Topics",
   "dashboard.recentTopics.description": "Quickly jump back into your recent study sessions.",
   "dashboard.recentTopics.empty": "No recent topics. Generate some study materials to see them here!",
-  "dashboard.madeBy": "Made by MrGarvit",
+  "dashboard.madeBy": "Made by {{name}}",
   "dashboard.totalLearnersGuestMessage": "Sign up to see community stats!",
   "sidebar.dashboard": "Dashboard",
   "sidebar.aiChat": "AI Chat",
@@ -91,7 +91,7 @@
   "audioFactory.imageTooLarge": "Image is too large. Please upload an image under 2MB.",
   "audioFactory.pdfTooLarge": "PDF is too large. Please upload a file under 5MB.",
   "audioFactory.invalidFileType": "Invalid file type.",
-  "audioFactory.pdfExtractError": "Could not extract text from PDF.",
+  "audioFactory.pdfExtractError": "Could not extract text from the PDF.",
   "customTest.pageTitle": "Advanced Test Configuration",
   "customTest.pageDescription": "Configure your test parameters. Generate questions from topics, notes, or recent studies.",
   "customTest.sourceTitle": "Test Source",
@@ -410,9 +410,9 @@
   "calculator.converter.selectCategory": "Select category",
   "calculator.converter.from": "From",
   "calculator.converter.to": "To",
-  "calculator.error.prefix": "Error:",
-  "calculator.error.invalidInput": "Invalid input",
-  "calculator.error.general": "Error",
+  "calculator.converter.error.prefix": "Error:",
+  "calculator.converter.error.invalidInput": "Invalid input",
+  "calculator.converter.error.general": "Error",
   "calculator.buttons.ac": "AC",
   "calculator.buttons.sin": "sin",
   "calculator.buttons.cos": "cos",
@@ -630,4 +630,3 @@
   "chatbot.file.unsupportedDesc": "Chat supports image, PDF, audio, and video uploads.",
   "chatbot.voiceError.title": "Voice Input Error"
 }
-

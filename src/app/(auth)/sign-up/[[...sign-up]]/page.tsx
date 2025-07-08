@@ -89,12 +89,12 @@ export default function SignUpPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
-            <Input id="password" type="password" {...register('password')} disabled={loading} />
+            <Input id="password" type="password" {...register('password')} disabled={loading} placeholder={t('auth.passwordLabel')} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t('auth.confirmPasswordLabel')}</Label>
-            <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={loading} />
+            <Input id="confirmPassword" type="password" {...register('confirmPassword')} disabled={loading} placeholder={t('auth.confirmPasswordLabel')} />
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
           </div>
           <div className="space-y-2">
