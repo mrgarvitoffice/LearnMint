@@ -19,8 +19,8 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        // This logic is more robust: check if `default` exists and has content, otherwise use the module itself.
-        const data = (module.default && Object.keys(module.default).length > 0) ? module.default : module;
+        // This simplified logic is more robust for handling JSON module imports.
+        const data = module.default || module;
         
         if (active) {
             if (data && Object.keys(data).length > 0) {
@@ -33,7 +33,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         console.warn(`Could not load translations for language: "${lang}". Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          const fallbackData = (fallbackModule.default && Object.keys(fallbackModule.default).length > 0) ? fallbackModule.default : fallbackModule;
+          const fallbackData = fallbackModule.default || fallbackModule;
 
           if (active) {
             if (fallbackData && Object.keys(fallbackData).length > 0) {
@@ -65,8 +65,10 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
+    // If translations are not ready, return the key as a fallback to avoid showing blank spaces.
+    // The UI should ideally show a loading state until isReady is true.
     if (!isReady || !translations) {
-      return "";
+      return key;
     }
     
     const translation = translations[key];
@@ -90,3 +92,4 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   return { t, isReady };
 }
+
