@@ -23,7 +23,7 @@
   "dashboard.recentTopics.title": "Senaste ämnen",
   "dashboard.recentTopics.description": "Hoppa snabbt tillbaka till dina senaste studiesessioner.",
   "dashboard.recentTopics.empty": "Inga senaste ämnen. Generera studiematerial för att se dem här!",
-  "dashboard.madeBy": "Skapad av {{name}}",
+  "dashboard.madeBy": "Skapad av: {{name}}",
   "sidebar.dashboard": "Översikt",
   "sidebar.aiChat": "AI-chatt",
   "sidebar.generateNotes": "Generera anteckningar",
