@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -18,8 +19,11 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        if (active && module.default && Object.keys(module.default).length > 0) {
-          setTranslations(module.default);
+        // This handles module inconsistencies. Sometimes data is in `module.default`, sometimes it's the module itself.
+        const translationData = module.default || module;
+
+        if (active && translationData && Object.keys(translationData).length > 0) {
+          setTranslations(translationData);
           setIsReady(true); // Set ready only after successful load
         } else {
             throw new Error(`Translations for ${lang} are empty or invalid.`);
@@ -28,8 +32,11 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          if (active && fallbackModule.default && Object.keys(fallbackModule.default).length > 0) {
-            setTranslations(fallbackModule.default);
+          // Also apply the robust check to the fallback.
+          const fallbackTranslationData = fallbackModule.default || fallbackModule;
+
+          if (active && fallbackTranslationData && Object.keys(fallbackTranslationData).length > 0) {
+            setTranslations(fallbackTranslationData);
             setIsReady(true); // Set ready after successful fallback load
           } else {
             console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
