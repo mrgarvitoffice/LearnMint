@@ -19,31 +19,31 @@ import { Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function MainAppLayout({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, isReady: i18nReady } = useTranslation();
+
+  const isLoading = authLoading || !i18nReady;
 
   useEffect(() => {
     // If auth state has been checked and there is no user, redirect to the sign-in page.
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.replace('/sign-in');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  // While checking the auth state, show a full-screen loader to prevent content
-  // flashing and ensure we know the user's status before rendering anything.
-  if (loading) {
+  // While checking auth state or loading translations, show a full-screen loader.
+  if (isLoading) {
      return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{t('auth.verifying')}</p>
+        {/* Use a safe fallback text before i18n is ready */}
+        <p className="mt-3 text-lg">{i18nReady ? t('auth.verifying') : 'Verifying authentication...'}</p>
       </div>
     );
   }
 
   // If loading is complete and a user exists, render the main application layout.
-  // The useEffect hook above handles the redirect case, preventing this from rendering
-  // for a logged-out user.
   if (user) {
     return <AppLayout>{children}</AppLayout>;
   }
@@ -52,7 +52,7 @@ export default function MainAppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="mt-3 text-lg">{t('auth.redirecting')}</p>
+      <p className="mt-3 text-lg">{i18nReady ? t('auth.redirecting') : 'Redirecting...'}</p>
     </div>
   );
 }

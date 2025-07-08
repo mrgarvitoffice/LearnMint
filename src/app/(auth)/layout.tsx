@@ -18,25 +18,26 @@ import { useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, isReady: i18nReady } = useTranslation();
+
+  const isLoading = authLoading || !i18nReady;
 
   useEffect(() => {
     // If auth state is determined and a permanent (non-anonymous) user exists,
     // they should be on the main app, not the auth pages.
-    if (!loading && user && !user.isAnonymous) {
+    if (!authLoading && user && !user.isAnonymous) {
       router.replace('/dashboard');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  // While loading, or if a permanent user exists and is about to be redirected, show a loader.
-  // This prevents the sign-in page from flashing for logged-in users.
-  if (loading || (user && !user.isAnonymous)) {
+  // While loading auth/i18n, or if a permanent user exists and is about to be redirected, show a loader.
+  if (isLoading || (user && !user.isAnonymous)) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-3 text-lg">{t('auth.verifying')}</p>
+        <p className="mt-3 text-lg">{i18nReady ? t('auth.verifying') : 'Verifying authentication...'}</p>
       </div>
     );
   }
