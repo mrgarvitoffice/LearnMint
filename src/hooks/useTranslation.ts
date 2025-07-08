@@ -13,18 +13,19 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let active = true;
+    setIsReady(false);
+    setTranslations(null); // Reset translations on language change
 
     const loadTranslations = async (lang: string) => {
-      setIsReady(false);
       try {
         const module = await import(`@/locales/${lang}.json`);
-        // This robust logic handles different ways modules can be structured.
+        // This is the key change: check module.default, but also the module itself.
         const translationData = module.default || module;
 
         if (active && translationData && Object.keys(translationData).length > 0) {
           setTranslations(translationData);
         } else {
-          // If the primary language fails, immediately try the fallback.
+          // This error will be caught and handled by the fallback logic
           throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
@@ -40,7 +41,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
           }
         } catch (fallbackError) {
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) setTranslations({}); // Prevent crashes
+          if (active) setTranslations({});
         }
       } finally {
         if (active) {
@@ -58,12 +59,16 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
+    // If translations are not ready, return an empty string. The UI components
+    // should be showing a loading skeleton based on the `isReady` flag.
     if (!isReady || !translations) {
       return "";
     }
     
     const translation = translations[key];
 
+    // If a specific key is missing from the loaded JSON file, it's a data error.
+    // Log a warning for debugging and return the key itself so it's visible in the UI.
     if (translation === undefined) {
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
