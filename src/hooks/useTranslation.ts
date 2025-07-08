@@ -11,6 +11,64 @@ interface TranslationState {
   isReady: boolean;
 }
 
+// Map of functions that dynamically import the locales. This helps bundlers like Webpack.
+const localeLoaders = {
+  ar: () => import('@/locales/ar.json'),
+  bg: () => import('@/locales/bg.json'),
+  bn: () => import('@/locales/bn.json'),
+  ca: () => import('@/locales/ca.json'),
+  cs: () => import('@/locales/cs.json'),
+  da: () => import('@/locales/da.json'),
+  de: () => import('@/locales/de.json'),
+  el: () => import('@/locales/el.json'),
+  en: () => import('@/locales/en.json'),
+  es: () => import('@/locales/es.json'),
+  et: () => import('@/locales/et.json'),
+  fa: () => import('@/locales/fa.json'),
+  fi: () => import('@/locales/fi.json'),
+  fil: () => import('@/locales/fil.json'),
+  fr: () => import('@/locales/fr.json'),
+  gu: () => import('@/locales/gu.json'),
+  he: () => import('@/locales/he.json'),
+  hi: () => import('@/locales/hi.json'),
+  hr: () => import('@/locales/hr.json'),
+  hu: () => import('@/locales/hu.json'),
+  id: () => import('@/locales/id.json'),
+  is: () => import('@/locales/is.json'),
+  it: () => import('@/locales/it.json'),
+  ja: () => import('@/locales/ja.json'),
+  km: () => import('@/locales/km.json'),
+  kn: () => import('@/locales/kn.json'),
+  ko: () => import('@/locales/ko.json'),
+  lt: () => import('@/locales/lt.json'),
+  lv: () => import('@/locales/lv.json'),
+  ml: () => import('@/locales/ml.json'),
+  mr: () => import('@/locales/mr.json'),
+  ms: () => import('@/locales/ms.json'),
+  my: () => import('@/locales/my.json'),
+  nl: () => import('@/locales/nl.json'),
+  no: () => import('@/locales/no.json'),
+  pa: () => import('@/locales/pa.json'),
+  pl: () => import('@/locales/pl.json'),
+  pt: () => import('@/locales/pt.json'),
+  ro: () => import('@/locales/ro.json'),
+  ru: () => import('@/locales/ru.json'),
+  sa: () => import('@/locales/sa.json'),
+  sk: () => import('@/locales/sk.json'),
+  sl: () => import('@/locales/sl.json'),
+  sr: () => import('@/locales/sr.json'),
+  sv: () => import('@/locales/sv.json'),
+  sw: () => import('@/locales/sw.json'),
+  ta: () => import('@/locales/ta.json'),
+  te: () => import('@/locales/te.json'),
+  th: () => import('@/locales/th.json'),
+  tr: () => import('@/locales/tr.json'),
+  uk: () => import('@/locales/uk.json'),
+  ur: () => import('@/locales/ur.json'),
+  vi: () => import('@/locales/vi.json'),
+  zh: () => import('@/locales/zh.json'),
+};
+
 export function useTranslation(): { t: TFunction, isReady: boolean } {
   const { appLanguage } = useSettings();
   const [state, setState] = useState<TranslationState>({
@@ -20,63 +78,54 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let isMounted = true;
-    // Reset state to loading on language change
-    setState({ translations: null, isReady: false }); 
+    setState({ translations: null, isReady: false });
 
     const loadTranslations = async (lang: string) => {
-      let loadedTranslations: Record<string, any> | null = null;
+      const langCode = lang.split('-')[0] || 'en';
+      const loader = localeLoaders[langCode as keyof typeof localeLoaders] || localeLoaders.en;
+
       try {
-        const module = await import(`@/locales/${lang}.json`);
-        loadedTranslations = module.default;
-        if (!loadedTranslations || typeof loadedTranslations !== 'object' || Object.keys(loadedTranslations).length === 0) {
-          throw new Error(`Translations for '${lang}' are empty or invalid.`);
+        const module = await loader();
+        if (isMounted) {
+          setState({ translations: module.default, isReady: true });
         }
       } catch (error) {
-        console.warn(`Could not load translations for language: "${lang}". Falling back to English.`, error);
+        console.warn(`Could not load translations for language: "${langCode}". Falling back to English.`, error);
         try {
-          // If the requested language fails, fall back to English.
-          const fallbackModule = await import(`@/locales/en.json`);
-          loadedTranslations = fallbackModule.default;
+          const fallbackModule = await localeLoaders.en();
+          if (isMounted) {
+            setState({ translations: fallbackModule.default, isReady: true });
+          }
         } catch (fallbackError) {
-          console.error("CRITICAL: The fallback 'en.json' translation file could not be loaded.", fallbackError);
-          // As a last resort, use an empty object to prevent a crash.
-          loadedTranslations = {}; 
+           console.error("CRITICAL: The fallback 'en.json' translation file could not be loaded.", fallbackError);
+           if (isMounted) {
+             setState({ translations: {}, isReady: true });
+           }
         }
       }
-
-      if (isMounted) {
-        // Atomically update both translations and readiness state
-        setState({ translations: loadedTranslations, isReady: true });
-      }
     };
-
-    const langCode = appLanguage.split('-')[0] || 'en';
-    loadTranslations(langCode);
+    
+    loadTranslations(appLanguage);
 
     return () => {
-      // Cleanup function to prevent state updates on an unmounted component.
       isMounted = false; 
     };
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // This guard is now robust because isReady and translations are set together.
     if (!state.isReady || !state.translations) {
       return key;
     }
     
-    // Using a simple lookup for flat JSON structure.
     const translation = state.translations[key];
 
     if (translation === undefined) {
-        // Warn developer in console if a key is missing.
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
     }
 
     let finalTranslation = translation;
 
-    // Replace placeholders like {{count}} with values from the options object.
     if (options) {
       Object.keys(options).forEach(optionKey => {
         const regex = new RegExp(`{{${optionKey}}}`, 'g');
