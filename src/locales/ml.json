@@ -137,7 +137,7 @@
   "customTest.generate.toast.successTitle": "ടെസ്റ്റ് സൃഷ്ടിച്ചു!",
   "customTest.generate.toast.successDesc": "നിങ്ങളുടെ ഇഷ്‌ടാനുസൃത ടെസ്റ്റ് ആരംഭിക്കാൻ തയ്യാറാണ്.",
   "customTest.generate.toast.noQuestionsTitle": "ചോദ്യങ്ങളില്ല",
-  "customTest.generate.toast.noQuestionsDesc": "ఈ కాన్ఫిగరేషన్ కోసం AI ఏ ప్రశ్నలను తిరిగి ఇవ్వలేదు.",
+  "customTest.generate.toast.noQuestionsDesc": "ഈ కాన్ఫిగరేషన్ కోసం AI ఏ ప్రశ్నలను తిరిగి ఇవ్వలేదు.",
   "customTest.generate.toast.errorTitle": "പിശക്",
   "customTest.generate.speak.creating": "ഇഷ്‌ടാനുസൃത ടെസ്റ്റ് സൃഷ്‌ടിക്കുന്നു. ദയവായി കാത്തിരിക്കുക.",
   "customTest.generate.speak.success": "ടെസ്റ്റ് സൃഷ്ടിച്ചു!",

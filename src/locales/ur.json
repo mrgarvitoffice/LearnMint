@@ -1,7 +1,7 @@
 
 {
   "dashboard.welcome": "LearnMint میں خوش آمدید!",
-  "dashboard.description": "نوٹس، کوئز، ٹیسٹ اور مزید کے لیے آپ کا AI سے چلنے والا سیکھने کا معاون۔",
+  "dashboard.description": "نوٹس، کوئز، ٹیسٹ اور مزید کے لیے آپ کا AI سے چلنے والا سیکھنے کا معاون۔",
   "dashboard.totalLearners": "{{count}} سیکھنے والے شامل ہوئے",
   "dashboard.totalLearnersGuestMessage": "کمیونٹی کے اعداد و شمار دیکھنے کے لیے سائن اپ کریں!",
   "dashboard.totalLearnersError": "سیکھنے والوں کی تعداد لوڈ نہیں کی جا سکی۔",
