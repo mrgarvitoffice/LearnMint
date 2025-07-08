@@ -40,13 +40,13 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// STEP 1: Define a prompt to generate the dialogue script.
-// This uses aiForNotes to ensure the correct API key (GOOGLE_API_KEY_NOTES or GOOGLE_API_KEY) is used.
+// STEP 1: Define a prompt to generate the dialogue script as plain text.
+// This is more reliable than requesting a JSON object.
 const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
-    output: { schema: z.object({ dialogue: z.string() }) },
+    output: { format: 'text' }, // Requesting plain text is more reliable.
     prompt: `You are a scriptwriter. Convert the following content into a natural-sounding, two-person dialogue script.
 The dialogue should be between "Speaker1" and "Speaker2". It should discuss and explain the key points from the provided content.
 
@@ -72,9 +72,7 @@ Please provide the dialogue script below.`,
     }
 });
 
-
 // STEP 2: Define the main flow that orchestrates the process.
-// Using aiForNotes for the flow definition to maintain consistency for the text part.
 const generateDiscussionAudioFlow = aiForNotes.defineFlow(
   {
     name: 'generateDiscussionAudioFlow',
@@ -84,28 +82,33 @@ const generateDiscussionAudioFlow = aiForNotes.defineFlow(
   async (input) => {
     // 1. Generate the dialogue script using the text-generation prompt.
     console.log(`[AI Flow - Discussion Audio] Generating dialogue script...`);
-    const { output } = await dialoguePrompt(input);
-    let dialogueScript = output?.dialogue;
+    const llmResponse = await dialoguePrompt(input);
+    let dialogueScript = llmResponse.text;
 
     if (!dialogueScript || dialogueScript.trim() === '') {
       throw new Error("AI failed to generate a dialogue script from the content.");
     }
     console.log('[AI Flow - Discussion Audio] Dialogue script generated successfully.');
     
-    // Safeguard: Clean up potential model verbosity to ensure script starts correctly.
+    // SAFEGUARD: Clean up potential model verbosity to ensure script starts correctly.
     const firstSpeaker1 = dialogueScript.indexOf('Speaker1:');
     const firstSpeaker2 = dialogueScript.indexOf('Speaker2:');
     
     let startIndex = -1;
-    if (firstSpeaker1 === -1) startIndex = firstSpeaker2;
-    else if (firstSpeaker2 === -1) startIndex = firstSpeaker1;
-    else startIndex = Math.min(firstSpeaker1, firstSpeaker2);
+    if (firstSpeaker1 === -1 && firstSpeaker2 === -1) {
+        throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
+    }
+    if (firstSpeaker1 !== -1 && firstSpeaker2 !== -1) {
+      startIndex = Math.min(firstSpeaker1, firstSpeaker2);
+    } else if (firstSpeaker1 !== -1) {
+      startIndex = firstSpeaker1;
+    } else {
+      startIndex = firstSpeaker2;
+    }
 
     if (startIndex > 0) {
         console.warn(`[AI Flow - Discussion Audio] Cleaning up unexpected preamble from dialogue script.`);
         dialogueScript = dialogueScript.substring(startIndex);
-    } else if (startIndex === -1) {
-        throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
     }
 
     // 2. Generate multi-speaker audio from the script using the dedicated TTS client.

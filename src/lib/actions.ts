@@ -11,14 +11,14 @@ import { generateStudyNotes, type GenerateStudyNotesInput, type GenerateStudyNot
 import { generateQuizQuestions, type GenerateQuizQuestionsInput, type GenerateQuizQuestionsOutput } from "@/ai/flows/generate-quiz-questions";
 import { generateFlashcards, type GenerateFlashcardsInput, type GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
 import { generateAudioFlashcards, type GenerateAudioFlashcardsInput, type GenerateAudioFlashcardsOutput } from "@/ai/flows/generate-audio-flashcards";
-import { generateAudioSummary, type GenerateAudioSummaryInput, type GenerateAudioSummaryOutput } from "@/ai/flows/generate-audio-summary";
+import { generateAudioSummary, type GenerateAudioSummaryInput } from "@/ai/flows/generate-audio-summary";
 import { generateDiscussionAudio, type GenerateDiscussionAudioInput, type GenerateDiscussionAudioOutput } from "@/ai/flows/generate-discussion-audio";
 import { generateQuizFromNotes, type GenerateQuizFromNotesInput } from "@/ai/flows/generate-quiz-from-notes";
 import { generateFlashcardsFromNotes, type GenerateFlashcardsFromNotesInput } from "@/ai/flows/generate-flashcards-from-notes";
 import { getTotalUsers } from './actions/stats';
 
 
-import type { YoutubeSearchInput, YoutubeSearchOutput, YoutubeVideoItem, GoogleBooksSearchInput, GoogleBooksSearchOutput, GoogleBookItem } from './types';
+import type { YoutubeSearchInput, YoutubeSearchOutput, YoutubeVideoItem, GoogleBooksSearchInput, GoogleBooksSearchOutput, GoogleBookItem, GenerateAudioSummaryOutput as ClientGenerateAudioSummaryOutput } from './types';
 
 /**
  * @interface CombinedStudyMaterialsOutput
@@ -220,11 +220,9 @@ export async function generateFlashcardsAction(input: GenerateFlashcardsInput): 
 
 /**
  * generateAudioFlashcardsAction (Standalone Audio Flashcard Generation)
- *
- * This server action generates flashcards with accompanying audio narration.
- *
+ * NOTE: This action now only generates text. Audio is handled client-side.
  * @param input - Contains the topic and number of flashcards.
- * @returns A promise that resolves to the generated flashcards (text and audio).
+ * @returns A promise that resolves to the generated flashcards (text only).
  * @throws Error if flashcard generation fails or input.topic is not a string.
  */
 export async function generateAudioFlashcardsAction(input: GenerateAudioFlashcardsInput): Promise<GenerateAudioFlashcardsOutput> {
@@ -258,14 +256,14 @@ export async function generateAudioFlashcardsAction(input: GenerateAudioFlashcar
 /**
  * generateAudioSummaryAction
  *
- * This server action takes text OR an image, generates a summary, and converts it to audio.
- * It's the engine for the new features in the Audio Factory.
+ * This server action takes text OR an image and generates a text summary.
+ * The audio part is now handled client-side via Web Speech API.
  *
  * @param input - Contains optional text and/or an image data URI.
- * @returns A promise that resolves to the summary and audio data.
+ * @returns A promise that resolves to the summary text.
  * @throws Error if generation fails.
  */
-export async function generateAudioSummaryAction(input: GenerateAudioSummaryInput): Promise<GenerateAudioSummaryOutput> {
+export async function generateAudioSummaryAction(input: GenerateAudioSummaryInput): Promise<ClientGenerateAudioSummaryOutput> {
   const actionName = "generateAudioSummaryAction";
   console.log(`[Server Action] ${actionName} called with: ${input.text ? 'text input' : 'image input'}`);
 
@@ -274,7 +272,8 @@ export async function generateAudioSummaryAction(input: GenerateAudioSummaryInpu
     if (!result || !result.summary) {
       throw new Error("AI returned empty or invalid audio summary data.");
     }
-    return result;
+    // Note: We only return the summary text now. The audioDataUri is deprecated on the server.
+    return { summary: result.summary, audioDataUri: undefined }; 
   } catch (error: any) {
     console.error(`[Server Action Error - ${actionName}] Error generating audio summary:`, error);
     let clientErrorMessage = "Failed to generate audio summary. Please try again.";
@@ -314,7 +313,7 @@ export async function generateDiscussionAudioAction(input: GenerateDiscussionAud
           clientErrorMessage = "Discussion Audio: API key issue. Check that GOOGLE_API_KEY_NOTES (for text generation) and GOOGLE_API_KEY_TTS (for audio) are correctly configured and have the necessary permissions.";
         } else if (error.message.includes("Invalid format from LLM")) {
           clientErrorMessage = "Discussion Audio: The AI failed to generate a valid script. This can happen with very complex or unusual content. Please try again.";
-        } else if (error.message.includes("model not found") || error.message.includes("access")) {
+        } else if (error.message.toLowerCase().includes("model not found") || error.message.includes("access")) {
            clientErrorMessage = "Discussion Audio: The AI model could not be accessed. This is likely a permissions issue with your API key. Please ensure the project associated with GOOGLE_API_KEY_NOTES (or its fallback, GOOGLE_API_KEY) has the 'Generative Language API' enabled.";
         } else {
           clientErrorMessage = `Discussion Audio: ${error.message}`;
