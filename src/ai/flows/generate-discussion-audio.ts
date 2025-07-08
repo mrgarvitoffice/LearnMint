@@ -2,17 +2,20 @@
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
- * This flow is now re-architected for maximum reliability.
+ *
+ * - generateDiscussionAudio - A function that handles the discussion generation process.
+ * - GenerateDiscussionAudioInput - The input type for this function.
+ * - GenerateDiscussionAudioOutput - The return type for this function.
  */
 
 'use server';
 
-import { aiForNotes, aiForTTS } from '@/ai/genkit'; // Using aiForNotes for text, aiForTTS for audio
+import { aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
 const GenerateDiscussionAudioInputSchema = z.object({
-  content: z.string().min(20, "Content must be at least 20 characters.").describe('The content to be turned into a discussion.'),
+  content: z.string().describe('The content to be turned into a discussion.'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -21,10 +24,8 @@ const GenerateDiscussionAudioOutputSchema = z.object({
 });
 export type GenerateDiscussionAudioOutput = z.infer<typeof GenerateDiscussionAudioOutputSchema>;
 
-// This function is the main entry point called by the server action.
 export async function generateDiscussionAudio(input: GenerateDiscussionAudioInput): Promise<GenerateDiscussionAudioOutput> {
-  // The main try-catch block is now in the server action for better UI feedback.
-  return await generateDiscussionAudioFlow(input);
+  return generateDiscussionAudioFlow(input);
 }
 
 // Helper to convert PCM data to WAV Base64
@@ -40,78 +41,50 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// STEP 1: Define a prompt to generate the dialogue script as plain text.
-// This is more reliable than requesting a JSON object.
-const dialoguePrompt = aiForNotes.definePrompt({
+// Prompt to generate the dialogue script
+const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'gemini-2.5-flash-lite-preview-06-17',
-    input: { schema: GenerateDiscussionAudioInputSchema },
-    output: { format: 'text' }, // Requesting plain text is more reliable.
-    prompt: `You are a scriptwriter. Convert the following content into a natural-sounding, two-person dialogue script.
-The dialogue should be between "Speaker1" and "Speaker2". It should discuss and explain the key points from the provided content.
+    model: 'googleai/gemini-1.5-flash-latest',
+    input: { schema: z.object({ content: z.string() }) },
+    output: { schema: z.object({ dialogue: z.string() }) },
+    prompt: `You are a scriptwriter. Your task is to convert the following text content into a natural-sounding, two-person dialogue script between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner).
 
-**CRITICAL FORMATTING RULE**: The entire output MUST be ONLY the script. Each line must start with "Speaker1:" or "Speaker2:". Do NOT add any introductory text, closing remarks, or summaries.
+The dialogue should discuss and explain the key points from the provided content. Speaker1 should present the information, and Speaker2 should ask clarifying questions or make comments to guide the conversation.
 
-Example Format:
+IMPORTANT: The output MUST be a script formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
 Speaker1: [First line of dialogue]
 Speaker2: [Second line of dialogue]
-Speaker1: [Third line of dialogue]
+...and so on.
+
+Do not add any other text, introductions, or summaries. The entire output should be just the dialogue script.
 
 Content to convert:
 ---
 {{{content}}}
 ---
 
-Please provide the dialogue script below.`,
-    config: {
-        safetySettings: [
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        ],
-        temperature: 0.5,
-    }
+Please provide the dialogue script below.`
 });
 
-// STEP 2: Define the main flow that orchestrates the process.
-const generateDiscussionAudioFlow = aiForNotes.defineFlow(
+// The main Genkit flow
+const generateDiscussionAudioFlow = aiForTTS.defineFlow(
   {
     name: 'generateDiscussionAudioFlow',
     inputSchema: GenerateDiscussionAudioInputSchema,
     outputSchema: GenerateDiscussionAudioOutputSchema,
   },
   async (input) => {
-    // 1. Generate the dialogue script using the text-generation prompt.
-    console.log(`[AI Flow - Discussion Audio] Generating dialogue script...`);
-    const llmResponse = await dialoguePrompt(input);
-    let dialogueScript = llmResponse.text;
+    // 1. Generate the dialogue script from the input content
+    console.log('[AI Flow - Discussion Audio] Generating dialogue script...');
+    const { output: dialogueOutput } = await dialoguePrompt({ content: input.content });
+    const dialogueScript = dialogueOutput?.dialogue;
 
-    if (!dialogueScript || dialogueScript.trim() === '') {
-      throw new Error("AI failed to generate a dialogue script from the content.");
+    if (!dialogueScript) {
+      throw new Error("Failed to generate a dialogue script from the content.");
     }
     console.log('[AI Flow - Discussion Audio] Dialogue script generated successfully.');
-    
-    // SAFEGUARD: Clean up potential model verbosity to ensure script starts correctly.
-    const firstSpeaker1 = dialogueScript.indexOf('Speaker1:');
-    const firstSpeaker2 = dialogueScript.indexOf('Speaker2:');
-    
-    let startIndex = -1;
-    if (firstSpeaker1 === -1 && firstSpeaker2 === -1) {
-        throw new Error("Generated script does not contain 'Speaker1:' or 'Speaker2:'. Invalid format from LLM.");
-    }
-    if (firstSpeaker1 !== -1 && firstSpeaker2 !== -1) {
-      startIndex = Math.min(firstSpeaker1, firstSpeaker2);
-    } else if (firstSpeaker1 !== -1) {
-      startIndex = firstSpeaker1;
-    } else {
-      startIndex = firstSpeaker2;
-    }
 
-    if (startIndex > 0) {
-        console.warn(`[AI Flow - Discussion Audio] Cleaning up unexpected preamble from dialogue script.`);
-        dialogueScript = dialogueScript.substring(startIndex);
-    }
-
-    // 2. Generate multi-speaker audio from the script using the dedicated TTS client.
+    // 2. Generate multi-speaker audio from the script
     console.log('[AI Flow - Discussion Audio] Generating multi-speaker TTS...');
     const { media } = await aiForTTS.generate({
       model: 'googleai/gemini-2.5-flash-preview-tts',
@@ -134,7 +107,7 @@ const generateDiscussionAudioFlow = aiForNotes.defineFlow(
     }
     console.log('[AI Flow - Discussion Audio] TTS audio data received.');
 
-    // 3. Convert PCM audio to WAV format.
+    // 3. Convert PCM audio to WAV format
     const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
     const wavBase64 = await toWav(audioBuffer);
     console.log('[AI Flow - Discussion Audio] Audio converted to WAV successfully.');
