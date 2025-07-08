@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -13,7 +14,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   useEffect(() => {
     let active = true;
     setIsReady(false);
-    setTranslations(null); 
+    setTranslations(null);
 
     const loadTranslations = async (lang: string) => {
       try {
@@ -32,11 +33,10 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
           if (active && fallbackData && Object.keys(fallbackData).length > 0) {
             setTranslations(fallbackData);
           } else {
-            // The original error is the relevant one to log here.
-            console.error("CRITICAL: Fallback English translations are also empty or invalid.", error);
+            console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
             if (active) setTranslations({}); // Prevent crashes
           }
-        } catch (fallbackError) { // This is where `fallbackError` is defined.
+        } catch (fallbackError) {
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
           if (active) setTranslations({});
         }

@@ -49,11 +49,18 @@ const generateMathFactFlow = ai.defineFlow(
     outputSchema: GenerateMathFactOutputSchema,
   },
   async (input) => {
-    const { output } = await generateMathFactPrompt(input);
-    if (!output || !output.fact) {
-        throw new Error("AI failed to generate a math fact.");
+    try {
+      const { output } = await generateMathFactPrompt(input);
+      if (!output || !output.fact || output.fact.trim() === '') {
+          throw new Error("AI returned an empty or invalid fact.");
+      }
+      return output;
+    } catch(e) {
+        console.error(`[AI Flow Error - Math Fact] Failed for language "${input.languageName}":`, e);
+        // Do not return a default fact here; let the caller handle the error.
+        // This ensures the client knows the operation failed and can display an error state.
+        throw new Error(`The AI failed to generate a math fact in ${input.languageName}.`);
     }
-    return output;
   }
 );
 

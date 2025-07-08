@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Brain, CheckCircle, FileText, TestTubeDiagonal, Newspaper, Sparkles, BookHeart, History, Users, Quote, Loader2, AlertTriangle } from "lucide-react";
+import { ArrowRight, Brain, CheckCircle, FileText, TestTubeDiagonal, Newspaper, Sparkles, BookHeart, History, Users, Quote, Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useTTS } from '@/hooks/useTTS';
 import { useSound } from '@/hooks/useSound';
@@ -217,12 +216,12 @@ export default function DashboardPage() {
                             "{mathFact.text}"
                             </CardDescription>
                         ) : (
-                            <CardDescription className="text-lg text-muted-foreground py-3 h-[4.5rem] flex items-center justify-center">{t('library.mathFact.error')}</CardDescription>
+                            <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
                         )}
                     </CardHeader>
                     <CardFooter className="pt-2 pb-4">
                         <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-                            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />} {t('library.mathFact.newButton')}
+                            {isLoadingMathFact ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2"/>} {t('library.mathFact.newButton')}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -290,6 +289,6 @@ export default function DashboardPage() {
             <div className="text-center text-xs text-muted-foreground mt-8 sm:mt-12 py-4 border-t border-border/50">
                 {t('dashboard.madeBy', { name: 'MrGarvit' })}
             </div>
-      </motion.div>
-  );
+        </motion.div>
+    );
 }
