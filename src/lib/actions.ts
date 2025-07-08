@@ -173,7 +173,7 @@ export async function generateQuizAction(input: GenerateQuizQuestionsInput): Pro
     console.error(`[Server Action Error - ${actionName}] Error generating quiz:`, error);
     let clientErrorMessage = "Failed to generate quiz. Please try again.";
      if (error.message && (error.message.includes("GOOGLE_API_KEY") || error.message.includes("API key is invalid") || error.message.includes("API_KEY_INVALID"))) {
-      clientErrorMessage = "Quiz Generation: Failed due to an API key issue. Please check server configuration.";
+      clientErrorMessage = "Quiz Generation: Failed due to an API key or project configuration issue. Please check server configuration.";
     } else if (error.message) {
       clientErrorMessage = `Quiz Generation: Failed. Error: ${error.message.substring(0, 150)}. Check server logs for full details.`;
     }
@@ -247,7 +247,7 @@ export async function generateAudioFlashcardsAction(input: GenerateAudioFlashcar
     console.error(`[Server Action Error - ${actionName}] Error generating audio flashcards:`, error);
     let clientErrorMessage = "Failed to generate audio flashcards. Please try again.";
     if (error.message && (error.message.includes("GOOGLE_API_KEY") || error.message.includes("API key is invalid") || error.message.includes("API_KEY_INVALID"))) {
-      clientErrorMessage = "Audio Flashcard Generation: Failed due to an API key issue. Please check server configuration.";
+      clientErrorMessage = "Audio Flashcard Generation: Failed due to an API key or configuration issue. Please check server configuration.";
     } else if (error.message) {
       clientErrorMessage = `Audio Flashcard Generation: Failed. Error: ${error.message.substring(0, 150)}. Check server logs for full details.`;
     }

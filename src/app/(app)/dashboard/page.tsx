@@ -142,7 +142,11 @@ export default function DashboardPage() {
     };
   
     if (!isReady) {
-        return <div className="flex justify-center items-center h-full"><Sparkles className="animate-spin" /></div>;
+        return (
+            <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </div>
+        );
     }
   
     return (
@@ -284,7 +288,7 @@ export default function DashboardPage() {
             </motion.div>
             
             <div className="text-center text-xs text-muted-foreground mt-8 sm:mt-12 py-4 border-t border-border/50">
-                {t('dashboard.madeBy')} <span className="font-bold text-primary">MrGarvit</span>
+                {t('dashboard.madeBy', { name: 'MrGarvit' })}
             </div>
       </motion.div>
   );
