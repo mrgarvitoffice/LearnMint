@@ -45,7 +45,7 @@
   "header.theme": "ธีม",
   "header.profile.greeting": "สวัสดี, {{name}}!",
   "header.profile.signOut": "ออกจากระบบ",
-  "header.profile.signIn": "เข้าสู่ระบบ / สมัครสมาชิก",
+  "header.profile.signIn": "ลงชื่อเข้าใช้ / สมัครสมาชิก",
   "header.profile.profile": "โปรไฟล์",
   "generate.title": "สร้างสื่อการเรียนรู้",
   "generate.description": "ป้อนหัวข้อทางวิชาการใดก็ได้ LearnMint AI จะสร้างบันทึกย่อ, แบบทดสอบ 30 ข้อ และแฟลชการ์ด 20 ใบ จากนั้นจะนำคุณไปยังศูนย์การเรียนรู้",
