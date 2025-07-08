@@ -81,7 +81,6 @@ export interface GenerateAudioSummaryOutput {
 // For Audio Discussion Generation
 export interface GenerateDiscussionAudioInput {
   content: string;
-  languageName?: string;
 }
 export interface GenerateDiscussionAudioOutput {
   audioDataUri: string;

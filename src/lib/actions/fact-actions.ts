@@ -36,18 +36,8 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
   // 2. Find the English name for the target language to use in the prompt.
   const languageInfo = APP_LANGUAGES.find(lang => lang.value === languageCode);
   
-  // Default to "English" if the language code is not found, although this shouldn't happen with valid codes.
-  let targetLanguageName = "English"; 
-  if (languageInfo) {
-    // Extract the English name, assuming format "Native (English)" or just "English".
-    // This is more robust for the LLM.
-    const match = languageInfo.label.match(/\(([^)]+)\)/);
-    if (match) {
-      targetLanguageName = match[1]; // e.g., "Spanish" from "Español (Spanish)"
-    } else {
-      targetLanguageName = languageInfo.label; // e.g., "English"
-    }
-  }
+  // Default to "English" if the language code is not found or has no specific englishName.
+  const targetLanguageName = languageInfo?.englishName || 'English';
   
   // 3. Call the AI flow to translate the selected fact.
   try {
