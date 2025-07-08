@@ -121,6 +121,12 @@ export interface MathFact {
   fact: string;
 }
 
+// For Motivational Quote
+export interface TranslatedQuote {
+  quote: string;
+  author: string;
+}
+
 // For Calculator
 export type CalculatorButtonType = 
   | 'digit' 

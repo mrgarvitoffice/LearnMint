@@ -159,9 +159,12 @@ export default function LibraryPage() {
   
   const openBookInViewer = (book: GoogleBookItem) => {
     playClickSound();
-    if (book.embeddable) setSelectedBook(book);
+    const bookPreviewUrl = book.previewLink || book.webReaderLink || book.infoLink || `https://books.google.com/books?id=${book.bookId}`;
+    if (book.embeddable) {
+      setSelectedBook(book);
+    }
     else {
-      window.open(book.webReaderLink || book.infoLink || `https://books.google.com/books?id=${book.bookId}`, '_blank', 'noopener,noreferrer');
+      window.open(bookPreviewUrl, '_blank', 'noopener,noreferrer');
       toast({ title: t('library.books.toast.openingExternalTitle'), description: t('library.books.toast.openingExternalDesc') });
     }
   };
@@ -184,27 +187,27 @@ export default function LibraryPage() {
         </CardHeader>
       </Card>
 
-      <Card className="bg-secondary/30 border-orange-500/30 hover:shadow-xl transition-shadow duration-300 group">
+      <Card className="bg-secondary/30 border-secondary-foreground/20 hover:shadow-xl transition-shadow duration-300 group">
         <CardHeader className="pb-2 pt-4">
           <div className="flex items-center gap-3 mb-2">
-            <Quote className="h-7 w-7 text-orange-500/80 group-hover:text-orange-600 transition-colors" />
-            <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">{t('library.mathFact.title')}</CardTitle>
+            <Brain className="h-7 w-7 text-secondary-foreground/80 group-hover:text-primary transition-colors" />
+            <CardTitle className="text-xl font-semibold text-foreground group-hover:text-primary dark:group-hover:text-primary-foreground transition-colors">{t('library.mathFact.title')}</CardTitle>
           </div>
           {isLoadingMathFact ? (
-            <div className="flex items-center space-x-2 text-muted-foreground py-3"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
+            <div className="flex items-center space-x-2 text-muted-foreground py-3 h-[4.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
           ) : isErrorMathFact ? (
-             <div className="flex items-center space-x-2 text-destructive py-3"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
+             <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
           ) : mathFact ? (
-            <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3">
+            <CardDescription className="text-lg text-foreground/90 font-medium pt-1 italic py-3 h-[4.5rem] flex items-center justify-center">
               "{mathFact.fact}"
             </CardDescription>
           ) : (
-            <CardDescription className="text-lg text-muted-foreground py-3">{t('library.mathFact.error')}</CardDescription>
+            <CardDescription className="text-lg text-muted-foreground py-3 h-[4.5rem]">{t('library.mathFact.error')}</CardDescription>
           )}
         </CardHeader>
         <CardFooter className="pt-2 pb-4">
-          <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-            {isLoadingMathFact && <Loader2 className="h-4 w-4 animate-spin mr-2" />} {t('library.mathFact.newButton')}
+          <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-primary/50 group-hover:text-primary transition-colors">
+            {isLoadingMathFact ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 w-4 mr-2"/>} {t('library.mathFact.newButton')}
           </Button>
         </CardFooter>
       </Card>

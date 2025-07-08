@@ -17,8 +17,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useQuests } from '@/contexts/QuestContext';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { getTranslatedMathFact } from '@/lib/actions/fact-actions';
-import type { MathFact } from '@/lib/types';
+import { getTranslatedQuote } from '@/lib/actions/quote-actions';
+import type { TranslatedQuote } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { TotalUsers } from '@/components/features/dashboard/TotalUsers';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -88,17 +88,17 @@ export default function DashboardPage() {
     const [recentTopics, setRecentTopics] = useState<string[]>([]);
     const pageTitleSpokenRef = useRef(false);
 
-    const { data: mathFact, isLoading: isLoadingMathFact, isError: isErrorMathFact, refetch: refetchMathFact } = useQuery<MathFact>({
-        queryKey: ['mathFact', appLanguage],
-        queryFn: () => getTranslatedMathFact(appLanguage),
+    const { data: quote, isLoading: isLoadingQuote, isError: isErrorQuote, refetch: refetchQuote } = useQuery<TranslatedQuote>({
+        queryKey: ['motivationalQuote', appLanguage],
+        queryFn: () => getTranslatedQuote(appLanguage),
         staleTime: 1000 * 60 * 60, // 1 hour
         gcTime: 1000 * 60 * 65,
         refetchOnWindowFocus: false,
     });
     
-    const handleRefreshMathFact = () => {
+    const handleRefreshQuote = () => {
         playClickSound();
-        refetchMathFact();
+        refetchQuote();
     };
 
     useEffect(() => {
@@ -208,21 +208,22 @@ export default function DashboardPage() {
                             <Quote className="h-7 w-7 text-orange-500/80 group-hover:text-orange-600 transition-colors" />
                             <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500">{t('dashboard.dailyMotivation.title')}</CardTitle>
                         </div>
-                        {isLoadingMathFact ? (
+                        {isLoadingQuote ? (
                             <div className="flex items-center space-x-2 text-muted-foreground py-3 h-[4.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
-                        ) : isErrorMathFact ? (
+                        ) : isErrorQuote ? (
                             <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
-                        ) : mathFact ? (
-                            <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[4.5rem] flex items-center justify-center">
-                            "{mathFact.fact}"
+                        ) : quote ? (
+                            <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[4.5rem] flex flex-col items-center justify-center">
+                              <span>"{quote.quote}"</span>
+                              <span className="text-sm not-italic font-sans font-semibold mt-1"> – {quote.author}</span>
                             </CardDescription>
                         ) : (
                             <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
                         )}
                     </CardHeader>
                     <CardFooter className="pt-2 pb-4">
-                        <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-                            {isLoadingMathFact ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 w-4 mr-2"/>} {t('library.mathFact.newButton')}
+                        <Button onClick={handleRefreshQuote} variant="outline" size="sm" disabled={isLoadingQuote} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
+                            {isLoadingQuote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 w-4 mr-2"/>} {t('library.mathFact.newButton')}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -288,7 +289,7 @@ export default function DashboardPage() {
             </motion.div>
             
             <div className="text-center text-xs text-muted-foreground mt-8 sm:mt-12 py-4 border-t border-border/50">
-                {t('dashboard.madeBy', { name: 'MrGarvit' })}
+                {t('dashboard.madeBy', { name: '' })} <span className="font-semibold text-emerald-400 [text-shadow:0_0_8px_theme(colors.emerald.500/0.7)]">MrGarvit</span>
             </div>
         </motion.div>
     );

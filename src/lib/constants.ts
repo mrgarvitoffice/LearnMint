@@ -155,6 +155,21 @@ export const MATH_FACTS_EN = [
   "The spiral shapes of sunflowers and other patterns in nature follow the Fibonacci sequence."
 ];
 
+// --- Motivational Quotes (Primary Source in English) ---
+export const MOTIVATIONAL_QUOTES_EN = [
+  { quote: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+  { quote: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { quote: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+  { quote: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+  { quote: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { quote: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
+  { quote: "I have not failed. I've just found 10,000 ways that won't work.", author: "Thomas A. Edison" },
+  { quote: "The mind is everything. What you think you become.", author: "Buddha" },
+  { quote: "An unexamined life is not worth living.", author: "Socrates" }
+];
+
+
 // --- News API Categories (for News page filters) ---
 // "Top Headlines" + 7 specific categories.
 export const NEWS_CATEGORIES = [

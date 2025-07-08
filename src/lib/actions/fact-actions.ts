@@ -7,7 +7,7 @@
  * uses a predefined list of English facts and a dedicated translation flow for reliability.
  */
 
-import { generateTranslatedMathFact as translateMathFactFlow } from '@/ai/flows/generate-math-fact';
+import { translateText } from '@/ai/flows/translate-text';
 import { APP_LANGUAGES, MATH_FACTS_EN } from '@/lib/constants';
 import type { MathFact } from '@/lib/types';
 
@@ -42,20 +42,19 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
   // 3. Call the AI flow to translate the selected fact.
   try {
     console.log(`[Action - Math Fact] Requesting translation of fact into: ${targetLanguageName}`);
-    const result = await translateMathFactFlow({ 
-        factToTranslate, 
+    const result = await translateText({ 
+        textToTranslate: factToTranslate, 
         targetLanguageName 
     });
     
     // The flow has a fallback, but we double-check here.
-    // Also, if the model just returns the English text, it's a failure.
-    if (!result || !result.fact || result.fact.trim() === '' || result.fact.trim().toLowerCase() === factToTranslate.toLowerCase()) {
+    if (!result || !result.translatedText || result.translatedText.trim() === '') {
         console.warn(`[Action - Math Fact] AI did not return a valid translation for ${targetLanguageName}. Falling back to English.`);
         return { fact: factToTranslate };
     }
     
     console.log(`[Action - Math Fact] Successfully received translated fact.`);
-    return { fact: result.fact };
+    return { fact: result.translatedText };
   } catch (error) {
     console.error(`[Action Error - Math Fact] Translation flow failed for language "${targetLanguageName}":`, error);
     // If the entire action fails catastrophically, fall back to the original English fact to ensure UI doesn't break.
