@@ -18,19 +18,21 @@ import type { MathFact } from '@/lib/types';
  * @throws Will throw an error if the AI operation fails.
  */
 export async function getTranslatedMathFact(languageCode: string): Promise<MathFact> {
-  const language = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
+  // Find the full language label (e.g., "Español (Spanish)") and extract just the primary name.
+  let languageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
+  languageName = languageName.split('(')[0].trim(); // Converts "Español (Spanish)" to "Español" for a cleaner prompt.
 
   try {
-    console.log(`[Action - Math Fact] Requesting fact for language: ${language} (code: ${languageCode})`);
-    const result = await generateTranslatedMathFact({ languageName: language });
+    console.log(`[Action - Math Fact] Requesting fact for language: ${languageName} (code: ${languageCode})`);
+    const result = await generateTranslatedMathFact({ languageName: languageName });
     if (!result || !result.fact) {
       throw new Error("AI did not return a valid math fact.");
     }
-    console.log(`[Action - Math Fact] Successfully received fact in ${language}: "${result.fact.substring(0, 50)}..."`);
+    console.log(`[Action - Math Fact] Successfully received fact in ${languageName}: "${result.fact.substring(0, 50)}..."`);
     return { fact: result.fact };
   } catch (error) {
-    console.error(`[Action Error - Math Fact] Failed for language "${language}":`, error);
+    console.error(`[Action Error - Math Fact] Failed for language "${languageName}":`, error);
     // Re-throw the error to be handled by the calling component's query error state.
-    throw new Error(`Failed to generate a math fact in ${language}. Please try again.`);
+    throw new Error(`Failed to generate a math fact in ${languageName}. Please try again.`);
   }
 }

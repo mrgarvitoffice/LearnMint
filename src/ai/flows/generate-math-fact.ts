@@ -27,19 +27,14 @@ const generateMathFactPrompt = ai.definePrompt({
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: GenerateMathFactInputSchema },
     output: { schema: GenerateMathFactOutputSchema },
-    prompt: `You are an expert multilingual assistant that provides interesting, concise facts about mathematics.
-Your task is to generate ONE interesting math fact suitable for a general audience.
-The fact MUST be written in the following language: {{{languageName}}}. This is a strict requirement.
+    prompt: `You are a multilingual mathematics expert.
+Your one and only task is to generate a single, interesting math fact.
 
-CRITICAL INSTRUCTIONS:
-1.  Analyze the language name "{{{languageName}}}" and provide the fact ONLY in that language.
-2.  Do NOT add any extra text, introductions, or conversational filler. Output only the single fact itself.
-3.  The fact should be a complete sentence.
+CRITICAL: The fact MUST be written in the language named "{{{languageName}}}". Do not use any other language.
+The fact should be a complete sentence, suitable for a general audience.
 
-Example for "Español": "El número 0 es el único número que no se puede representar con números romanos."
-Example for "English": "There are more possible games of chess than atoms in the observable universe."
-Example for "हिन्दी": "शून्य एकमात्र ऐसी संख्या है जिसे रोमन अंकों द्वारा दर्शाया नहीं जा सकता है।"
-    `,
+IMPORTANT: Do NOT add any extra text, introductions, or conversational filler. Your entire response must be ONLY the single fact itself.
+`,
     config: {
         temperature: 0.9,
     },
@@ -55,6 +50,7 @@ const generateMathFactFlow = ai.defineFlow(
     try {
       const { output } = await generateMathFactPrompt(input);
       if (!output || !output.fact || output.fact.trim() === '') {
+          console.error(`[AI Flow Error - Math Fact] AI returned an empty or invalid fact for language "${input.languageName}".`);
           throw new Error("AI returned an empty or invalid fact.");
       }
       return output;
