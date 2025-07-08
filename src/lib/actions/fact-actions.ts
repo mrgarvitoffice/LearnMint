@@ -33,8 +33,7 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
   }
 
   // 2. Find the full, clean language name for the AI prompt.
-  let targetLanguageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
-  targetLanguageName = targetLanguageName.split('(')[0].trim();
+  const targetLanguageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
 
   // 3. Call the AI flow to translate the selected fact.
   try {
@@ -54,7 +53,7 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
     return { fact: result.fact };
   } catch (error) {
     console.error(`[Action Error - Math Fact] Translation flow failed for language "${targetLanguageName}":`, error);
-    // If the entire action fails catastrophically, fall back to English to ensure UI doesn't break.
+    // If the entire action fails catastrophically, fall back to the original English fact to ensure UI doesn't break.
     return { fact: factToTranslate };
   }
 }

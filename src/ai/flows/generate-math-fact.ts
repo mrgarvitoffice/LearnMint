@@ -30,11 +30,10 @@ const translateMathFactPrompt = ai.definePrompt({
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: TranslateMathFactInputSchema },
     output: { schema: TranslateMathFactOutputSchema },
-    prompt: `You are an expert multilingual translator. Your one and only task is to translate the following mathematical fact into the language named '{{{targetLanguageName}}}'.
+    prompt: `You are an expert multilingual translator. Your only task is to translate the given English fact into the specified target language. Respond ONLY with the translated text. Do not add any extra text, introductions, or conversational filler.
 
-Respond with ONLY the translated text, and nothing else. Do not add any extra text, introductions, or conversational filler.
-
-Fact to translate: "{{{factToTranslate}}}"
+English Fact: "{{{factToTranslate}}}"
+Target Language: {{{targetLanguageName}}}
 `,
     config: {
         temperature: 0.2, // Lower temperature for more deterministic translation

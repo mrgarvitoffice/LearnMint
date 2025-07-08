@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +11,7 @@ interface TranslationState {
 }
 
 // Map of functions that dynamically import the locales. This helps bundlers like Webpack.
-const localeLoaders = {
+const localeLoaders: Record<string, () => Promise<{ default: Record<string, any> }>> = {
   ar: () => import('@/locales/ar.json'),
   bg: () => import('@/locales/bg.json'),
   bn: () => import('@/locales/bn.json'),
@@ -78,9 +77,9 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   useEffect(() => {
     let isMounted = true;
-    setState({ translations: null, isReady: false });
-
+    
     const loadTranslations = async (lang: string) => {
+      setState({ translations: null, isReady: false }); // Reset state on language change
       const langCode = lang.split('-')[0] || 'en';
       const loader = localeLoaders[langCode as keyof typeof localeLoaders] || localeLoaders.en;
 
