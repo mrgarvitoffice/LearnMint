@@ -239,7 +239,7 @@
   "quizView.unavailable": "క్విజ్ ప్రశ్నలు ఏవీ అందుబాటులో లేవు.",
   "quizView.loading": "ప్రశ్న లోడ్ అవుతోంది...",
   "quizView.results.title": "క్విజ్ ఫలితాలు",
-  "quizView.results.topic": "అంశం: {{topics}} (కఠినత: {{difficulty}})",
+  "quizView.results.topic": "విషయం: {{topics}} (కఠినత: {{difficulty}})",
   "quizView.results.score": "మీ స్కోరు: {{score}} / {{totalPossibleScore}}",
   "quizView.results.explanation": "వివరణ",
   "quizView.correct": "సరియైనది!",
@@ -362,5 +362,3 @@
   "chatbot.megumin.errorToast": "వాఆఆఆ! నా మనస్సు సమతుల్యతలో లేదు! మంత్రం విఫలమైంది!",
   "chatbot.avatar.meguminAlt": "మెగుమిన్ AI అవతార్"
 }
-
-    
