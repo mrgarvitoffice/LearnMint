@@ -102,19 +102,7 @@ function AudioFlashcardsGenerator() {
     playActionSound();
     if (!generatedContent || generatedContent.flashcards.length === 0) return;
     const textToConvert = generatedContent.flashcards.map(fc => `${t('audioFactory.flashcards.speakTerm')}: ${fc.term}. ${t('audioFactory.flashcards.speakDefinition')}: ${fc.definition}`).join('\n\n');
-    
-    const languageInfo = APP_LANGUAGES.find(l => l.value === appLanguage);
-    let languageNameForAI = "English";
-    if (languageInfo) {
-      const match = languageInfo.label.match(/\(([^)]+)\)/);
-      if (match) {
-        languageNameForAI = match[1]; // e.g., "Spanish" from "Español (Spanish)"
-      } else {
-        languageNameForAI = languageInfo.label; // e.g., "English"
-      }
-    }
-    
-    generateDiscussion({ content: textToConvert, languageName: languageNameForAI });
+    generateDiscussion({ content: textToConvert });
   }
 
   const handlePlaybackControl = () => {
@@ -207,7 +195,6 @@ function AudioSummarizer({
   children: React.ReactNode
 }) {
   const { t } = useTranslation();
-  const { appLanguage } = useSettings();
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
@@ -254,19 +241,7 @@ function AudioSummarizer({
   const handleGenerateDiscussion = () => {
     if (!generatedContent?.summary) return;
     playActionSound();
-    
-    const languageInfo = APP_LANGUAGES.find(l => l.value === appLanguage);
-    let languageNameForAI = "English";
-    if (languageInfo) {
-      const match = languageInfo.label.match(/\(([^)]+)\)/);
-      if (match) {
-        languageNameForAI = match[1];
-      } else {
-        languageNameForAI = languageInfo.label;
-      }
-    }
-
-    generateDiscussion({ content: generatedContent.summary, languageName: languageNameForAI });
+    generateDiscussion({ content: generatedContent.summary });
   };
   
   const handlePlaybackControl = () => {
@@ -323,7 +298,6 @@ function AudioSummarizer({
 
 function TextAudioSummarizer() {
   const { t } = useTranslation();
-  const { appLanguage } = useSettings();
   const [textInput, setTextInput] = useState('');
   const { toast } = useToast();
   const { isListening, transcript, startListening, stopListening, browserSupportsSpeechRecognition } = useVoiceRecognition();
@@ -343,17 +317,7 @@ function TextAudioSummarizer() {
         return true;
       }}
       generateAction={(generate) => {
-        const languageInfo = APP_LANGUAGES.find(l => l.value === appLanguage);
-        let languageNameForAI = "English";
-        if (languageInfo) {
-          const match = languageInfo.label.match(/\(([^)]+)\)/);
-          if (match) {
-            languageNameForAI = match[1];
-          } else {
-            languageNameForAI = languageInfo.label;
-          }
-        }
-        generate({ text: textInput, language: languageNameForAI });
+        generate({ text: textInput });
       }}
     >
       <div className="space-y-2">
@@ -373,7 +337,6 @@ function TextAudioSummarizer() {
 
 function ImageAudioSummarizer() {
   const { t } = useTranslation();
-  const { appLanguage } = useSettings();
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
@@ -404,7 +367,6 @@ function ImageAudioSummarizer() {
       }}
       generateAction={(generate) => generate({
         imageDataUri: imageData,
-        language: APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English'
       })}
     >
       <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
@@ -421,7 +383,6 @@ function ImageAudioSummarizer() {
 
 function PdfAudioSummarizer() {
   const { t } = useTranslation();
-  const { appLanguage } = useSettings();
   const { toast } = useToast();
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [extractedText, setExtractedText] = useState<string | null>(null);
@@ -460,17 +421,7 @@ function PdfAudioSummarizer() {
         return true;
       }}
       generateAction={(generate) => {
-        const languageInfo = APP_LANGUAGES.find(l => l.value === appLanguage);
-        let languageNameForAI = "English";
-        if (languageInfo) {
-          const match = languageInfo.label.match(/\(([^)]+)\)/);
-          if (match) {
-            languageNameForAI = match[1];
-          } else {
-            languageNameForAI = languageInfo.label;
-          }
-        }
-        generate({ text: extractedText, language: languageNameForAI });
+        generate({ text: extractedText });
       }}
     >
       <input type="file" accept="application/pdf" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
