@@ -12,7 +12,7 @@
 
 'use server';
 
-import { aiForNotes, aiForTTS } from '@/ai/genkit';
+import { ai, aiForNotes, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -71,8 +71,8 @@ const dialoguePrompt = aiForNotes.definePrompt({
 });
 
 
-// The main Genkit flow
-const generateDiscussionAudioFlow = aiForTTS.defineFlow(
+// The main Genkit flow, defined with the general `ai` client to prevent context issues.
+const generateDiscussionAudioFlow = ai.defineFlow(
   {
     name: 'generateDiscussionAudioFlow',
     inputSchema: GenerateDiscussionAudioInputSchema,
