@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow to translate a given math fact into a target language.
@@ -7,7 +8,7 @@
  * - TranslateMathFactOutput - The return type for this function.
  */
 
-import { ai } from '@/ai/genkit';
+import { aiForNotes } from '@/ai/genkit';
 import { z } from 'zod';
 
 // Note: The function names in this file are kept similar to the original for compatibility,
@@ -25,7 +26,7 @@ const TranslateMathFactOutputSchema = z.object({
 export type TranslateMathFactOutput = z.infer<typeof TranslateMathFactOutputSchema>;
 
 
-const translateMathFactPrompt = ai.definePrompt({
+const translateMathFactPrompt = aiForNotes.definePrompt({
     name: 'translateMathFactPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
     input: { schema: TranslateMathFactInputSchema },
@@ -53,7 +54,7 @@ Your translated fact:`,
     },
 });
 
-const translateMathFactFlow = ai.defineFlow(
+const translateMathFactFlow = aiForNotes.defineFlow(
   {
     name: 'generateMathFactFlow', // Keep original name to avoid breaking dev server import
     inputSchema: TranslateMathFactInputSchema,

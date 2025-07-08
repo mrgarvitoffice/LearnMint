@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * LearnMint: Your AI-Powered Learning Assistant
@@ -33,14 +34,8 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
   }
 
   // 2. Find the full, clean language name for the AI prompt.
-  let targetLanguageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
+  const targetLanguageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
   
-  // Extract the English name if it's in parentheses to make it cleaner for the AI
-  const englishNameMatch = targetLanguageName.match(/\(([^)]+)\)/);
-  if (englishNameMatch && englishNameMatch[1]) {
-      targetLanguageName = englishNameMatch[1];
-  }
-
   // 3. Call the AI flow to translate the selected fact.
   try {
     console.log(`[Action - Math Fact] Requesting translation of fact into: ${targetLanguageName}`);
@@ -50,7 +45,7 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
     });
     
     // The flow now has a fallback, but we double-check here.
-    if (!result || !result.fact) {
+    if (!result || !result.fact || result.fact.trim() === '') {
         console.warn(`[Action - Math Fact] AI did not return a valid translation. Falling back to English.`);
         return { fact: factToTranslate };
     }
