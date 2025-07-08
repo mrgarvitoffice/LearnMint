@@ -222,7 +222,7 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardFooter className="pt-2 pb-4">
                         <Button onClick={handleRefreshMathFact} variant="outline" size="sm" disabled={isLoadingMathFact} className="bg-background/70 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
-                            {isLoadingMathFact ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2"/>} {t('library.mathFact.newButton')}
+                            {isLoadingMathFact ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="w-4 w-4 mr-2"/>} {t('library.mathFact.newButton')}
                         </Button>
                     </CardFooter>
                 </Card>

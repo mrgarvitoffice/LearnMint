@@ -10,7 +10,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 export function BottomMobileNav() {
   const pathname = usePathname();
-  const { playSound } = useSound('/sounds/ting.mp3', 0.2);
+  const { playSound } = useSound('/sounds/ting.mp3', { priority: 'incidental' });
   const { t } = useTranslation();
 
   return (
@@ -32,7 +32,7 @@ export function BottomMobileNav() {
               onClick={playSound}
             >
               <Icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
-              <span className="text-[10px] font-medium leading-snug text-center break-words">{title}</span>
+              <span className="text-[10px] font-medium leading-tight text-center break-words">{title}</span>
             </Link>
           );
         })}

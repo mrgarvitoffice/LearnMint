@@ -27,7 +27,7 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
       throw new Error("AI did not return a valid math fact.");
     }
     console.log(`[Action - Math Fact] Successfully received fact in ${language}: "${result.fact.substring(0, 50)}..."`);
-    return { fact: result.fact }; // Corrected from `text` to `fact`
+    return { fact: result.fact };
   } catch (error) {
     console.error(`[Action Error - Math Fact] Failed for language "${language}":`, error);
     // Re-throw the error to be handled by the calling component's query error state.

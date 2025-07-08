@@ -16,7 +16,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 export default function RootPage() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
 
   useEffect(() => {
     // Immediately replace the current history entry with the dashboard route.
@@ -27,7 +27,7 @@ export default function RootPage() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="mt-3 text-lg">{t('dashboard.loading')}</p>
+      <p className="mt-3 text-lg">{isReady ? t('dashboard.loading') : 'Loading...'}</p>
     </div>
   );
 }
