@@ -1,6 +1,6 @@
 
 {
-  "dashboard.welcome": "LearnMint मध्ये आपले स्वागत आहे!",
+  "dashboard.welcome": "LearnMint मध्ये स्वागत आहे!",
   "dashboard.description": "नोट्स, क्विझ, चाचण्या आणि बरेच काहीसाठी आपला AI-चालित शिक्षण सहाय्यक.",
   "dashboard.totalLearners": "{{count}} शिकाऊ सामील झाले",
   "dashboard.generateMaterials.title": "अभ्यास साहित्य तयार करा",
@@ -233,8 +233,7 @@
   "notesView.speak.toast.noContent": "सामग्री नाही",
   "notesView.speak.toast.noContentDesc": "बोलण्यासाठी काहीही नाही.",
   "notesView.visualAid.title": "दृष्य सहाय्य सुचवले",
-  "notesView.visualAid.searchButton": "Google प्रतिमांवर शोधा",
-  "quizView.title": "{{topic}} वर क्विझ",
+  "quizView.title": "क्विझ: {{topic}}",
   "quizView.unavailable": "कोणतेही क्विझ प्रश्न उपलब्ध नाहीत.",
   "quizView.loading": "प्रश्न लोड होत आहे...",
   "quizView.results.title": "क्विझ परिणाम",
@@ -251,7 +250,7 @@
   "quizView.formatError.description": "हा प्रश्न ओळखण्यायोग्य स्वरूपात नाही (उदा. गहाळ पर्यायांसह बहुपर्यायी, किंवा अज्ञात प्रकार). कृपया AI निर्मिती स्रोत तपासा किंवा हा प्रश्न वगळा.",
   "quizView.speak.results": "क्विझ संपले! तुमचे अंतिम गुण {{totalPossibleScore}} पैकी {{score}} आहेत.",
   "quizView.speak.restarted": "क्विझ पुन्हा सुरू केले.",
-  "flashcardsView.title": "{{topic}} साठी फ्लॅशकार्ड्स",
+  "flashcardsView.title": "फ्लॅशकार्ड: {{topic}}",
   "flashcardsView.unavailable": "या विषयासाठी कोणतीही फ्लॅशकार्ड्स उपलब्ध नाहीत, किंवा त्रुटी आली.",
   "flashcardsView.loading": "फ्लॅશकार्ड लोड होत आहे...",
   "flashcardsView.progress": "कार्ड {{current}} / {{total}}",
@@ -308,9 +307,6 @@
   "profile.sendFeedback": "अभिप्राय पाठवा",
   "auth.profileErrorTitle": "प्रोफाइल त्रुटी",
   "auth.profileErrorDesc": "तुमचा प्रोफाइल डेटा सेव्ह करता आला नाही. तुमच्याकडे Firestore मध्ये प्रतिबंधात्मक सुरक्षा नियम असू शकतात.",
-  "auth.verifying": "प्रमाणीकरण तपासत आहे...",
-  "auth.redirecting": "पुन्हा दिशा देत आहे...",
-  "dashboard.loading": "डॅशबोर्ड लोड होत आहे...",
   "auth.signInWelcomeBack": "पुन्हा स्वागत आहे!",
   "auth.signInDescription": "तुमच्या LearnMint डॅशबोर्डवर ॲक्सेस करण्यासाठी साइन इन करा.",
   "auth.continueAsGuest": "अतिथी म्हणून सुरू ठेवा",
@@ -570,5 +566,3 @@
   "news.categories.entertainment": "मनोरंजन",
   "news.categories.world": "जग"
 }
-
-    

@@ -92,7 +92,7 @@
   "audioFactory.invalidFileType": "غلط فائل کی قسم।",
   "audioFactory.pdfExtractError": "PDF سے متن نہیں نکالا جا سکا۔",
   "customTest.pageTitle": "جدید ٹیسٹ کنفیگریشن",
-  "customTest.pageDescription": "اپنے ٹیسٹ کے پیرامیٹرز کو کنفیگر کریں۔ موضوعات، نوٹس یا حالیہ مطالعات سے سوالات تیار کریں۔",
+  "customTest.pageDescription": "اپنے ٹیسٹ کے پیرامیٹرز کو کنفیگر کریں۔ موضوعات، نوٹس یا حالیہ مطالعاتی سیشنز سے سوالات تیار کریں۔",
   "customTest.sourceTitle": "ٹیسٹ کا ذریعہ",
   "customTest.source.topic": "موضوعات",
   "customTest.source.notes": "میرے نوٹس",
@@ -297,7 +297,7 @@
   "auth.credentialInUseError": "یہ ای میل پہلے ہی کسی دوسرے اکاؤنٹ سے منسلک ہے۔ براہ کرم ایک مختلف ای میل استعمال کریں۔",
   "auth.signUpErrorTitle": "سائن اپ ناکام",
   "profile.guestGreeting": "ہیلو، مہمان!",
-  "profile.guestDescription": "آپ ایک مہمان کے طور پر براؤز کر رہے ہیں۔ اپنی پیشرفت کو بچانے کے لیے سائن اپ کریں!",
+  "profile.guestDescription": "آپ ایک مہمان کے طور पर براؤز کر رہے ہیں۔ اپنی پیشرفت کو بچانے کے لیے سائن اپ کریں!",
   "profile.userDescription": "اپنے اکاؤنٹ کا نظم کریں اور اپنی روزانہ کی پیشرفت کو ٹریک کریں۔",
   "profile.emailLabel": "ای میل",
   "profile.guestAddEmail": "ایک ای میل شامل کرنے کے لیے سائن اپ کریں۔",
@@ -361,5 +361,3 @@
   "chatbot.megumin.errorToast": "واہ! میرا مانا توازن سے باہر ہے! منتر ناکام ہو گیا!",
   "chatbot.avatar.meguminAlt": "میگومین AI اوتار"
 }
-
-    
