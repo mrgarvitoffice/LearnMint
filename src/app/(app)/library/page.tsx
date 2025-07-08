@@ -12,7 +12,7 @@ import type { MathFact, YoutubeVideoItem, GoogleBookItem, QueryError, YoutubeSea
 import { ResourceCard } from '@/components/features/library/ResourceCard';
 import { YoutubeVideoResultItem } from '@/components/features/library/YoutubeVideoResultItem';
 import { BookResultItem } from '@/components/features/library/BookResultItem';
-import { BookMarked, Search, Youtube, Lightbulb, BookOpen, Brain, ExternalLink, Loader2, Quote, Video, X, Mic, AlertTriangle } from 'lucide-react';
+import { BookMarked, Search, Youtube, Lightbulb, BookOpen, Brain, ExternalLink, Loader2, Quote, Video, X, Mic, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
 import { directYoutubeSearch, directGoogleBooksSearch } from '@/lib/actions'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -196,7 +196,7 @@ export default function LibraryPage() {
              <div className="flex items-center space-x-2 text-destructive py-3"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
           ) : mathFact ? (
             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3">
-              "{mathFact.text}"
+              "{mathFact.fact}"
             </CardDescription>
           ) : (
             <CardDescription className="text-lg text-muted-foreground py-3">{t('library.mathFact.error')}</CardDescription>

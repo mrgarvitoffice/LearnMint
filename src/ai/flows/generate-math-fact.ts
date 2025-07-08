@@ -40,6 +40,9 @@ Example for "Español": "El número 0 es el único número que no se puede repre
 Example for "English": "There are more possible games of chess than atoms in the observable universe."
 Example for "हिन्दी": "शून्य एकमात्र ऐसी संख्या है जिसे रोमन अंकों द्वारा दर्शाया नहीं जा सकता है।"
     `,
+    config: {
+        temperature: 0.9,
+    },
 });
 
 const generateMathFactFlow = ai.defineFlow(

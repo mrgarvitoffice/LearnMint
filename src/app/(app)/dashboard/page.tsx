@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
@@ -213,7 +214,7 @@ export default function DashboardPage() {
                             <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
                         ) : mathFact ? (
                             <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[4.5rem] flex items-center justify-center">
-                            "{mathFact.text}"
+                            "{mathFact.fact}"
                             </CardDescription>
                         ) : (
                             <div className="flex items-center space-x-2 text-destructive py-3 h-[4.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>

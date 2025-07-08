@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -13,13 +14,13 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   useEffect(() => {
     let active = true;
     setIsReady(false);
-    setTranslations(null);
+    setTranslations(null); // Reset translations on language change
 
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
         // This logic is more robust: check if `default` exists and has content, otherwise use the module itself.
-        const data = module.default && Object.keys(module.default).length > 0 ? module.default : module;
+        const data = (module.default && Object.keys(module.default).length > 0) ? module.default : module;
         
         if (data && Object.keys(data).length > 0) {
           if (active) {
@@ -33,7 +34,8 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         console.warn(`Could not load translations for language: "${lang}". Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          const fallbackData = fallbackModule.default && Object.keys(fallbackModule.default).length > 0 ? fallbackModule.default : fallbackModule;
+          // Use the same robust logic for the fallback.
+          const fallbackData = (fallbackModule.default && Object.keys(fallbackModule.default).length > 0) ? fallbackModule.default : fallbackModule;
 
           if (fallbackData && Object.keys(fallbackData).length > 0) {
              if (active) {
@@ -76,7 +78,6 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const translation = translations[key];
 
     if (translation === undefined) {
-        // Return the key itself for easier debugging.
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
     }

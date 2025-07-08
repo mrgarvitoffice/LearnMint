@@ -1,3 +1,4 @@
+
 // For AI Generated Content
 export interface QuizQuestion {
   question: string;
@@ -80,6 +81,7 @@ export interface GenerateAudioSummaryOutput {
 // For Audio Discussion Generation
 export interface GenerateDiscussionAudioInput {
   content: string;
+  languageName?: string;
 }
 export interface GenerateDiscussionAudioOutput {
   audioDataUri: string;
@@ -117,10 +119,7 @@ export interface NewsApiResponse {
 
 // For Math Fact API
 export interface MathFact {
-  text: string;
-  number?: number; 
-  found?: boolean; 
-  type?: string; 
+  fact: string;
 }
 
 // For Calculator
