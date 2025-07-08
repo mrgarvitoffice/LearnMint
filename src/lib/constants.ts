@@ -108,8 +108,6 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "ta", label: "தமிழ் (Tamil)", bcp47: "ta-IN" },
   { value: "te", label: "తెలుగు (Telugu)", bcp47: "te-IN" },
   { value: "gu", label: "ગુજરાતી (Gujarati)", bcp47: "gu-IN" },
-  { value: "kn", label: "ಕನ್ನಡ (Kannada)", bcp47: "kn-IN" },
-  { value: "ml", label: "മലയാളം (Malayalam)", bcp47: "ml-IN" },
   { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)", bcp47: "pa-IN" },
   { value: "ur", label: "اردو (Urdu)", bcp47: "ur-PK" },
   { value: "uk", label: "Українська (Ukrainian)", bcp47: "uk-UA" },
