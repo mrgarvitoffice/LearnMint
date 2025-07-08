@@ -33,8 +33,10 @@ export async function getTranslatedMathFact(languageCode: string): Promise<MathF
     return { fact: factToTranslate };
   }
 
-  // 2. Find the full, clean language name for the AI prompt.
-  const targetLanguageName = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
+  // 2. Find and clean the language name for the AI prompt.
+  const languageLabel = APP_LANGUAGES.find(lang => lang.value === languageCode)?.label || "English";
+  // Clean the language name by removing parenthetical English translations, e.g., "Español (Spanish)" -> "Español"
+  const targetLanguageName = languageLabel.split('(')[0].trim();
   
   // 3. Call the AI flow to translate the selected fact.
   try {
