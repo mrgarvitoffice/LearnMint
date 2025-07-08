@@ -33,7 +33,22 @@ const GojoChatbotOutputSchema = z.object({
 export type GojoChatbotOutput = z.infer<typeof GojoChatbotOutputSchema>;
 
 export async function gojoChatbot(input: GojoChatbotInput): Promise<GojoChatbotOutput> {
-  return gojoChatbotFlow(input);
+  try {
+    const result = await gojoChatbotFlow(input);
+    if (!result || !result.response) {
+      throw new Error("AI returned an empty or invalid response.");
+    }
+    return result;
+  } catch (error: any) {
+    console.error("[AI Action Error - Gojo Chatbot] Flow failed:", error);
+    let message = "An unexpected error occurred. Maybe I'm just too powerful for this system. Try again.";
+    if (error.message?.includes('API key') || error.message?.includes('permission denied')) {
+      message = "My cursed energy detector is picking up an issue with the API key or project configuration. Tell the admin to check GOOGLE_API_KEY_CHATBOT and the associated Google Cloud project.";
+    } else if (error.message) {
+        message = `Gojo AI Error: ${error.message}`;
+    }
+    return { response: message };
+  }
 }
 
 const gojoChatbotPrompt = aiForChatbot.definePrompt({
@@ -87,13 +102,7 @@ const gojoChatbotFlow = aiForChatbot.defineFlow(
   async input => {
     const {output} = await gojoChatbotPrompt(input);
     if (!output || typeof output.response !== 'string' || output.response.trim() === '') {
-      console.error("[AI Flow Error - Chatbot] AI returned empty or invalid response:", output);
-      const errorMessage = `Hm? My brain must've taken a quick nap. Or maybe the question wasn't interesting enough to wake it up. Try asking again, make it good. (Language: ${input.language || 'English'})`;
-      const { output: errorOutput } = await aiForChatbot.generate({
-          prompt: `You are Satoru Gojo. Your previous attempt to answer failed. Respond with the following message, translated into the language "${input.language || 'English'}": "${errorMessage}"`,
-          output: { schema: GojoChatbotOutputSchema },
-      });
-      return errorOutput || { response: errorMessage };
+      throw new Error("AI returned an empty or invalid response string.");
     }
     return output;
   }

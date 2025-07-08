@@ -33,7 +33,24 @@ const ChatbotOutputSchema = z.object({
 export type MeguminChatbotOutput = z.infer<typeof ChatbotOutputSchema>;
 
 export async function meguminChatbot(input: MeguminChatbotInput): Promise<MeguminChatbotOutput> {
-  return meguminChatbotFlow(input);
+  try {
+    const result = await meguminChatbotFlow(input);
+    if (!result || !result.response) {
+      throw new Error("AI returned an empty or invalid response.");
+    }
+    // Append the mandatory "collapsed" text here
+    const finalResponse = `${result.response}\n\n...*collapses from using too much mana*... I can't move...`
+    return { response: finalResponse };
+  } catch (error: any) {
+    console.error("[AI Action Error - Megumin Chatbot] Flow failed:", error);
+    let message = "My genius... it must be on cooldown! Ask again, and witness true power!";
+    if (error.message?.includes('API key') || error.message?.includes('permission denied')) {
+      message = "Wielder of this device! My EXPLOSION magic cannot be contained by a misconfigured API key! Check GOOGLE_API_KEY_CHATBOT at once!";
+    } else if (error.message) {
+       message = `Megumin AI Error: ${error.message}`;
+    }
+    return { response: message };
+  }
 }
 
 const meguminChatbotPrompt = aiForChatbot.definePrompt({
@@ -87,15 +104,8 @@ const meguminChatbotFlow = aiForChatbot.defineFlow(
   async input => {
     const {output} = await meguminChatbotPrompt(input);
     if (!output || typeof output.response !== 'string' || output.response.trim() === '') {
-        const errorMessage = `My genius... it must be on cooldown! Ask again, and witness true power! (Language: ${input.language || 'English'})`;
-        const { output: errorOutput } = await aiForChatbot.generate({
-            prompt: `You are Megumin. Your previous attempt to answer failed. Respond with the following message, translated into the language "${input.language || 'English'}": "${errorMessage}"`,
-            output: { schema: ChatbotOutputSchema },
-        });
-        return errorOutput || { response: errorMessage };
+      throw new Error("AI returned an empty or invalid response string.");
     }
-    // Append the mandatory "collapsed" text
-    const finalResponse = `${output.response}\n\n...*collapses from using too much mana*... I can't move...`
-    return { response: finalResponse };
+    return output;
   }
 );

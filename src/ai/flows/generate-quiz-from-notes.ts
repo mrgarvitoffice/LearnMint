@@ -34,12 +34,17 @@ const GenerateQuizFromNotesInputSchema = z.object({
 export type GenerateQuizFromNotesInput = z.infer<typeof GenerateQuizFromNotesInputSchema>;
 
 export async function generateQuizFromNotes(input: GenerateQuizFromNotesInput): Promise<GenerateQuizOutput> {
-  return generateQuizFromNotesFlow(input);
+  try {
+    return await generateQuizFromNotesFlow(input);
+  } catch (error: any) {
+    console.error("[AI Action Error - Quiz From Notes] Flow failed:", error);
+    throw new Error(`Failed to generate quiz from notes. Error: ${error.message}`);
+  }
 }
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizFromNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizFromNotesInputSchema},
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.

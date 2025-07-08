@@ -33,12 +33,17 @@ const GenerateFlashcardsFromNotesInputSchema = z.object({
 export type GenerateFlashcardsFromNotesInput = z.infer<typeof GenerateFlashcardsFromNotesInputSchema>;
 
 export async function generateFlashcardsFromNotes(input: GenerateFlashcardsFromNotesInput): Promise<GenerateFlashcardsOutput> {
-  return generateFlashcardsFromNotesFlow(input);
+  try {
+    return await generateFlashcardsFromNotesFlow(input);
+  } catch (error: any) {
+    console.error("[AI Action Error - Flashcards From Notes] Flow failed:", error);
+    throw new Error(`Failed to generate flashcards from notes. Error: ${error.message}`);
+  }
 }
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateFlashcardsFromNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateFlashcardsFromNotesInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an expert multilingual educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes.
