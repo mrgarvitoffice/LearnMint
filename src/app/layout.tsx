@@ -1,10 +1,7 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * This is the root layout component that wraps all pages in the application.
- * It is responsible for setting up global styles, fonts, and context providers
- * that are shared across all routes.
+ * @fileoverview Root layout for the entire application.
+ * This component wraps all pages and is responsible for setting up global providers (like theme and auth),
+ * defining metadata for SEO and PWA functionality, and including global styles and fonts.
  */
 
 import type { Metadata, Viewport } from 'next';

@@ -1,11 +1,12 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow to translate a given math fact into a target language.
- *
- * - generateTranslatedMathFact - A function that takes a fact and a language, returning the translation.
- * - TranslateMathFactInput - The input type for this function.
- * - TranslateMathFactOutput - The return type for this function.
+ * @fileoverview Defines a Genkit flow for translating a math fact into a specified language.
+ * This flow is designed to take an English fact and a target language name, returning the translated text.
+ * Exports:
+ * - generateTranslatedMathFact: The main function to perform the translation.
+ * - TranslateMathFactInput: The Zod schema for the input.
+ * - TranslateMathFactOutput: The Zod schema for the output.
  */
 
 import { aiForNotes } from '@/ai/genkit';

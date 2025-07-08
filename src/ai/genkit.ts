@@ -1,12 +1,9 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * This file configures the Genkit AI clients used throughout the application.
- * It intelligently selects API keys from environment variables, allowing for
- * separate keys for different features (e.g., notes, chatbot, images) with
- * a robust fallback to the main GOOGLE_API_KEY. This provides flexibility
- * for managing API usage and permissions.
+ * @fileoverview Configures and exports Genkit AI clients for the application.
+ * This setup allows for different API keys to be used for different AI features (e.g., notes, chatbot, images)
+ * by reading from specific environment variables. If a feature-specific key is not provided, it gracefully
+ * falls back to the main `GOOGLE_API_KEY`, ensuring continuous operation.
+ * This provides flexibility for managing API usage, costs, and permissions across various services.
  */
 
 import {genkit} from 'genkit';
@@ -124,5 +121,3 @@ export const aiForTTS = genkit({
     plugins: [googleAI({ apiKey: ttsApiKey })],
     enableTracingAndMetrics: true,
 });
-
-    

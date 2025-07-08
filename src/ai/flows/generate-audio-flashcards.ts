@@ -1,12 +1,11 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A flashcard generation AI agent that creates flashcards.
- * NOTE: This flow has been updated to ONLY generate text. Audio is now handled client-side.
- *
- * - generateAudioFlashcards - A function that handles the text-based flashcard generation process.
- * - GenerateAudioFlashcardsInput - The input type for this function.
- * - GenerateAudioFlashcardsOutput - The return type for this function.
+ * @fileoverview Generates text-based flashcards for a given topic.
+ * This flow reuses the primary flashcard generation logic to create the card content.
+ * NOTE: Audio generation is handled on the client-side via the Web Speech API and is not part of this flow.
+ * Exports:
+ * - generateAudioFlashcards: The primary function to generate flashcard text.
+ * - GenerateAudioFlashcardsInput: The Zod schema for the input.
+ * - GenerateAudioFlashcardsOutput: The Zod schema for the output.
  */
 
 'use server';
@@ -69,5 +68,3 @@ const generateAudioFlashcardsFlow = aiForQuizzes.defineFlow(
     };
   }
 );
-
-    

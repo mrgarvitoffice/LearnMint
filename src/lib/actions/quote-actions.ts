@@ -1,7 +1,9 @@
 
 'use server';
 /**
- * @fileOverview Server action for fetching a translated motivational quote.
+ * @fileoverview Server action for fetching a translated motivational quote.
+ * This action selects a random quote from a predefined English list and uses the `translateText`
+ * flow to provide a localized version based on the user's selected language.
  */
 
 import { translateText } from '@/ai/flows/translate-text';

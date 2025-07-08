@@ -1,11 +1,8 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * This layout component is for the authentication pages (sign-in, sign-up).
- * It ensures that already logged-in (non-guest) users are redirected away from
- * these pages to the main application dashboard, preventing redundant logins.
+ * @fileoverview Layout for the authentication pages (e.g., sign-in, sign-up).
+ * This component ensures that users who are already fully authenticated (i.e., not guests)
+ * are redirected to the main application dashboard, preventing them from seeing login or
+ * registration forms unnecessarily.
  */
 
 "use client";

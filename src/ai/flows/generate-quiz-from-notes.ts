@@ -1,12 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI agent that creates quiz questions based on provided notes.
- *
- * - generateQuizFromNotes - Handles the quiz generation process from notes.
- * - GenerateQuizFromNotesInput - Input type for the generation function.
- * - GenerateQuizOutput - Return type (shared with generate-quiz.ts).
+ * @fileoverview Defines a Genkit flow for creating a quiz from user-provided notes.
+ * This flow is used in the Custom Test feature to generate questions from raw text.
+ * It automatically detects the language of the notes to provide multilingual output.
+ * Exports:
+ * - generateQuizFromNotes: The main function to generate quiz questions.
+ * - GenerateQuizFromNotesInput: The Zod schema for the input.
+ * - GenerateQuizOutput: The Zod schema for the output.
  */
 
 'use server';

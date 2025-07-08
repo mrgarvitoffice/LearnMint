@@ -1,12 +1,7 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A Genkit flow to search for Google Books.
- *
- * - searchGoogleBooks - A function that searches Google Books based on a query.
- * - GoogleBooksSearchInput - The input type for the function.
- * - GoogleBooksSearchOutput - The return type for the function.
+ * @fileoverview This file is DEPRECATED and no longer in use.
+ * The library page now calls the Google Books API directly via a server action (`lib/actions.ts`)
+ * for improved performance and reliability. This flow can be safely removed.
  */
 
 'use server';

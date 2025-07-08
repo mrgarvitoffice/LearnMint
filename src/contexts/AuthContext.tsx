@@ -1,8 +1,9 @@
 
 "use client";
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @fileoverview Provides authentication context and logic for the application.
+ * This file manages user state (sign-in, sign-up, sign-out, guest mode) using Firebase Authentication.
+ * It also handles the creation and updating of user documents in Firestore upon authentication events.
  */
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
@@ -101,8 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOutUser = async () => {
     try {
       await signOut(auth);
-      // The onAuthStateChanged listener will handle setting user to null and loading to false.
-      // The main app layout will handle the redirect when `user` becomes null.
+      // The onAuthStateChanged listener will handle the rest.
       toast({ title: t('auth.signOutTitle'), description: t('auth.signOutDesc') });
     } catch (error: any) {
       console.error("Error signing out:", error);

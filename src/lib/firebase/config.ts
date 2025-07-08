@@ -1,13 +1,13 @@
 // This file configures and initializes the Firebase application instance.
-// It reads the configuration from environment variables and exports the initialized auth and firestore services.
-// NOTE: This setup ensures Firebase is initialized only once, preventing common errors.
+// It reads the configuration from environment variables and exports the initialized
+// auth and firestore services. This setup ensures Firebase is initialized only once.
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration, sourced from environment variables.
-// It's crucial that these are prefixed with NEXT_PUBLIC_ to be accessible on the client side.
+// Firebase configuration object, populated from environment variables.
+// These variables must be prefixed with NEXT_PUBLIC_ to be available on the client-side.
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -17,22 +17,16 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// --- Firebase Initialization ---
-
-// Check if a Firebase app has already been initialized. If not, initialize it.
-// This is a standard pattern to prevent re-initialization on hot reloads in development.
+// Initialize Firebase App
+// This pattern prevents re-initialization of the app on hot reloads in development.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// --- Service Exports ---
-
-// Export the authentication service, making it available for use throughout the application.
+// Export Firebase services
 export const auth = getAuth(app);
-
-// Export the Firestore database service.
 export const db = getFirestore(app);
 
 
-// --- Startup Verification Log ---
+// Startup Verification Log
 // This log helps confirm that the Firebase config is being loaded correctly.
 // It runs on both the server and the client to help with debugging.
 const logConfigVerification = () => {

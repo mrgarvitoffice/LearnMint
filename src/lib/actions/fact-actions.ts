@@ -1,10 +1,8 @@
 
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview Server action for fetching a translated math fact. This action now
- * uses a predefined list of English facts and a dedicated translation flow for reliability.
+ * @fileoverview Server action for fetching a translated math fact.
+ * This action uses a predefined list of English facts and a dedicated translation flow for reliability.
  */
 
 import { translateText } from '@/ai/flows/translate-text';

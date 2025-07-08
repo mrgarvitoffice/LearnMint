@@ -1,12 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A flashcard generation AI agent.
- *
- * - generateFlashcards - A function that handles the flashcard generation process.
- * - GenerateFlashcardsInput - The input type for the function.
- * - GenerateFlashcardsOutput - The return type for the function.
+ * @fileoverview Defines the primary Genkit flow for generating flashcards.
+ * This flow takes a topic and creates a set of flashcards with terms and definitions.
+ * It can optionally use a provided image for additional context and supports multilingual generation.
+ * Exports:
+ * - generateFlashcards: The main function to generate flashcards.
+ * - GenerateFlashcardsInput: The Zod schema for the input.
+ * - GenerateFlashcardsOutput: The Zod schema for the output.
  */
 
 'use server';

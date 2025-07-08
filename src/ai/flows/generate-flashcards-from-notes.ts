@@ -1,12 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI agent that creates flashcards based on provided notes.
- *
- * - generateFlashcardsFromNotes - Handles flashcard generation from notes.
- * - GenerateFlashcardsFromNotesInput - Input type for the generation function.
- * - GenerateFlashcardsOutput - Return type (shared with generate-flashcards.ts).
+ * @fileoverview Defines a Genkit flow for creating flashcards from user-provided notes.
+ * This flow is used in the Custom Test feature to generate study materials from raw text.
+ * It automatically detects the language of the notes to provide multilingual output.
+ * Exports:
+ * - generateFlashcardsFromNotes: The main function to generate flashcards.
+ * - GenerateFlashcardsFromNotesInput: The Zod schema for the input.
+ * - GenerateFlashcardsOutput: The Zod schema for the output.
  */
 
 'use server';

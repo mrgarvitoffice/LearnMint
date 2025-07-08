@@ -1,12 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A quiz generation AI agent.
- *
- * - generateQuiz - A function that handles the quiz generation process.
- * - GenerateQuizInput - The input type for the generateQuiz function.
- * - GenerateQuizOutput - The return type for the generateQuiz function.
+ * @fileoverview DEPRECATED. This flow is no longer in active use.
+ * The more robust `generate-quiz-questions.ts` flow has replaced it.
+ * This file is kept for historical reference and can be safely removed.
+ * Exports:
+ * - generateQuiz: A function that handles the quiz generation process.
+ * - GenerateQuizInput: The input type for the function.
+ * - GenerateQuizOutput: The return type for the function.
  */
 
 'use server';

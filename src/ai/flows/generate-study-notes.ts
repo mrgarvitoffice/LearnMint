@@ -1,12 +1,12 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI agent for generating comprehensive study notes.
- *
- * - generateStudyNotes - Handles the study note generation process.
- * - GenerateStudyNotesInput - The input type for the function.
- * - GenerateStudyNotesOutput - The return type for the function.
+ * @fileoverview Defines the primary Genkit flow for generating comprehensive study notes.
+ * This flow creates well-structured, Markdown-formatted notes for a given topic.
+ * It also identifies opportunities for visual aids and calls the `generate-image-from-prompt` flow
+ * to create and embed relevant images directly into the notes.
+ * Exports:
+ * - generateStudyNotes: The main function to generate notes with embedded images.
+ * - GenerateStudyNotesInput: The Zod schema for the input.
+ * - GenerateStudyNotesOutput: The Zod schema for the output.
  */
 
 'use server';

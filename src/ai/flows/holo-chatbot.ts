@@ -1,13 +1,13 @@
 
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI chatbot with Holo the Wise Wolf's persona.
- *
- * - holoChatbot - A function that handles the chatbot interaction with Holo.
- * - HoloChatbotInput - The input type for the holoChatbot function.
- * - HoloChatbotOutput - The return type for the holoChatbot function.
+ * @fileoverview Defines the Holo the Wise Wolf AI chatbot flow.
+ * This flow powers a chatbot that adopts the persona of Holo from "Spice and Wolf".
+ * It handles user messages, including optional media uploads, and generates responses in character.
+ * Exports:
+ * - holoChatbot: The primary function to interact with the chatbot.
+ * - HoloChatbotInput: The Zod schema for the chatbot's input.
+ * - HoloChatbotOutput: The Zod schema for the chatbot's output.
  */
 
 import {aiForChatbot} from '@/ai/genkit';

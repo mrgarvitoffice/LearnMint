@@ -1,12 +1,7 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A Genkit flow to search for YouTube videos.
- *
- * - searchYoutubeVideos - A function that searches YouTube based on a query.
- * - YoutubeSearchInput - The input type for the function.
- * - YoutubeSearchOutput - The return type for the function.
+ * @fileoverview This file is DEPRECATED and no longer in use.
+ * The library page now calls the YouTube Data API directly via a server action (`lib/actions.ts`)
+ * for improved performance and reliability. This flow can be safely removed.
  */
 
 'use server';

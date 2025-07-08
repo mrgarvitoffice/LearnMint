@@ -1,13 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI agent that generates a text summary from content (text or image).
- * NOTE: This flow has been updated to ONLY generate text. Audio is now handled client-side.
- *
- * - generateAudioSummary - A function that handles the summary process.
- * - GenerateAudioSummaryInput - The input type for this function.
- * - GenerateAudioSummaryOutput - The return type for this function.
+ * @fileoverview Generates a text summary from provided content (text or image).
+ * This flow is used by the Audio Factory feature to create a summary before client-side text-to-speech is applied.
+ * It automatically detects the language of the source text for multilingual summarization.
+ * Exports:
+ * - generateAudioSummary: The main function to generate a text summary.
+ * - GenerateAudioSummaryInput: The Zod schema for the function's input.
+ * - GenerateAudioSummaryOutput: The Zod schema for the function's output.
  */
 
 'use server';

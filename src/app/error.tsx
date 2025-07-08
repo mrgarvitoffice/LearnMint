@@ -1,6 +1,8 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @fileoverview Global error boundary for the application.
+ * This component catches unhandled errors that occur during rendering and provides a user-friendly
+ * fallback UI with an option to retry the action.
+ * @see https://nextjs.org/docs/app/building-your-application/routing/error-handling
  */
 'use client' // Error components must be Client Components
 
@@ -51,5 +53,3 @@ export default function GlobalError({
     </div>
   )
 }
-
-    

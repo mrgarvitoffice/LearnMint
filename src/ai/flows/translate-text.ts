@@ -1,11 +1,13 @@
 
 'use server';
 /**
- * @fileOverview A reusable Genkit flow to translate a given piece of text.
- *
- * - translateText - A function that takes text and a language, returning the translation.
- * - TranslateTextInput - The input type for this function.
- * - TranslateTextOutput - The return type for this function.
+ * @fileoverview Defines a reusable Genkit flow for translating text.
+ * This flow takes a string of text and a target language name (e.g., "Spanish")
+ * and returns the translated text. It is designed to be a reliable, general-purpose translation utility.
+ * Exports:
+ * - translateText: The main function to perform the translation.
+ * - TranslateTextInput: The Zod schema for the input.
+ * - TranslateTextOutput: The Zod schema for the output.
  */
 
 import { aiForNotes } from '@/ai/genkit';

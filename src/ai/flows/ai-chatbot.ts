@@ -1,13 +1,13 @@
 
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI chatbot with Satoru Gojo's persona.
- *
- * - gojoChatbot - A function that handles the chatbot interaction.
- * - GojoChatbotInput - The input type for the gojoChatbot function.
- * - GojoChatbotOutput - The return type for the gojoChatbot function.
+ * @fileoverview Defines the Satoru Gojo AI chatbot flow.
+ * This flow powers a chatbot that adopts the persona of Satoru Gojo from Jujutsu Kaisen.
+ * It handles user messages, including optional media uploads, and generates responses in character.
+ * Exports:
+ * - gojoChatbot: The primary function to interact with the chatbot.
+ * - GojoChatbotInput: The Zod schema for the chatbot's input.
+ * - GojoChatbotOutput: The Zod schema for the chatbot's output.
  */
 
 import {aiForChatbot} from '@/ai/genkit';

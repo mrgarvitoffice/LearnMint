@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -41,7 +42,8 @@ const SidebarProvider = React.forwardRef<
         : setOpen((current) => !current)
     }, [isMobile])
 
-    // Keyboard shortcut is removed as sidebar is now hover-based.
+    // Keyboard shortcut to toggle sidebar state (b for "bar").
+    // Note: This interaction has been removed as the desktop sidebar is now hover-based.
     // React.useEffect(() => {
     //   const handleKeyDown = (event: KeyboardEvent) => {
     //     if (event.key === "b" && (event.metaKey || event.ctrlKey)) {

@@ -1,6 +1,6 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @file Next.js configuration for the LearnMint application.
+ * @see https://nextjs.org/docs/api-reference/next.config.js/introduction
  */
 
 import type {NextConfig} from 'next';

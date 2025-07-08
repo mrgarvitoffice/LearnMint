@@ -1,6 +1,5 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @fileoverview Provides utility functions used throughout the application.
  */
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"

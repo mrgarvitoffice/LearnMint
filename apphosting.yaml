@@ -1,12 +1,7 @@
-
-# LearnMint: Your AI-Powered Learning Assistant
-# @author MrGarvit
-#
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+# Configuration for Firebase App Hosting.
+# Specifies settings for the backend environment, such as instance scaling.
+# See a full list of options at: https://firebase.google.com/docs/app-hosting/configure
 
 runConfig:
   # Increase this value to automatically spin up more instances in response to increased traffic.
   maxInstances: 1
-
-    

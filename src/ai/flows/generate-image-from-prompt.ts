@@ -1,11 +1,11 @@
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview A Genkit flow to generate an image from a text prompt.
- *
- * - generateImageFromPrompt - A function that takes a text prompt and returns a generated image as a data URI.
- * - GenerateImageInput - The input type for this function.
- * - GenerateImageOutput - The return type for this function.
+ * @fileoverview Defines a Genkit flow to generate an image from a text prompt.
+ * This flow is used internally by other flows, such as `generate-study-notes`, to create visual aids.
+ * It uses the `gemini-2.0-flash-preview-image-generation` model.
+ * Exports:
+ * - generateImageFromPrompt: The main function to generate an image.
+ * - GenerateImageInput: The Zod schema for the input.
+ * - GenerateImageOutput: The Zod schema for the output, containing a data URI.
  */
 
 'use server';
@@ -85,5 +85,3 @@ const generateImageFromPromptFlow = aiForImages.defineFlow(
     }
   }
 );
-
-    

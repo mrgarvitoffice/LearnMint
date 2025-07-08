@@ -1,11 +1,8 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * This layout component handles the main application view. It wraps all pages
- * that require user authentication. It verifies the user's session and redirects
- * to the sign-in page if no user is found, ensuring protected routes.
+ * @fileoverview Layout for authenticated application routes.
+ * This component wraps all pages that require a user to be logged in.
+ * It uses the `useAuth` hook to verify the user's session. If no user is authenticated,
+ * it redirects them to the sign-in page, effectively protecting these routes.
  */
 
 "use client";

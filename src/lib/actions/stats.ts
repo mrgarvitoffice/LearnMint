@@ -1,8 +1,6 @@
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview Server actions for fetching application statistics.
+ * @fileoverview Server action for fetching application statistics.
  */
 
 import { collection, getCountFromServer } from 'firebase/firestore';

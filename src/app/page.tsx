@@ -2,12 +2,9 @@
 "use client";
 
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * Root Page Component
- * This component acts as the main entry point for the application's root URL ('/').
- * It uses a client-side effect to immediately redirect the user to the dashboard.
+ * @fileoverview Root page component for the application.
+ * This page is responsible for redirecting users from the root URL ('/') to the main dashboard.
+ * It provides a loading state to ensure a smooth user experience during the redirection.
  */
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';

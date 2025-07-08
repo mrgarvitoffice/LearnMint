@@ -1,11 +1,8 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * 
- * This file is the entry point for the Genkit development server.
- * It loads environment variables and imports all AI flow definitions
- * so they can be discovered and tested in the Genkit Developer UI.
+ * @file Genkit development server entry point.
+ * This file is used to start the Genkit development server, which provides a UI for
+ * testing and debugging AI flows. It loads environment variables and imports all flow
+ * definitions to make them discoverable by the Genkit tools.
  */
 import { config } from 'dotenv';
 config(); // Load .env variables

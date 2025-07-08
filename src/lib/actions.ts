@@ -1,11 +1,12 @@
 
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @fileoverview Defines the primary server actions for the application.
+ * Server actions are asynchronous functions that run on the server and can be called directly from client components.
+ * They are used for data mutations, AI model interactions, and other server-side logic, providing a secure
+ * way to interact with server resources without needing to create separate API endpoints.
+ * @see https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
  */
-// This file contains server actions, which are functions that can be called directly from client components.
-// They run on the server and are often used for database operations, AI model calls, or other server-side logic.
 
 import { generateStudyNotes, type GenerateStudyNotesInput, type GenerateStudyNotesOutput } from "@/ai/flows/generate-study-notes";
 import { generateQuizQuestions, type GenerateQuizQuestionsInput, type GenerateQuizQuestionsOutput } from "@/ai/flows/generate-quiz-questions";

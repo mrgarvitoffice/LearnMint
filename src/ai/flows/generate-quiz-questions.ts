@@ -1,12 +1,11 @@
-
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI agent for generating quiz questions.
- *
- * - generateQuizQuestions - A function that handles quiz question generation.
- * - GenerateQuizQuestionsInput - The input type for this function.
- * - GenerateQuizQuestionsOutput - The return type for this function.
+ * @fileoverview Defines the primary Genkit flow for generating quiz questions.
+ * This flow takes a topic, number of questions, and difficulty to create a quiz.
+ * It can optionally use a provided image or other media for context and supports multilingual generation.
+ * Exports:
+ * - generateQuizQuestions: The main function to generate a quiz.
+ * - GenerateQuizQuestionsInput: The Zod schema for the input.
+ * - GenerateQuizQuestionsOutput: The Zod schema for the output.
  */
 
 'use server';

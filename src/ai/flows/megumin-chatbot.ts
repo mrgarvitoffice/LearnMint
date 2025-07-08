@@ -1,13 +1,13 @@
 
 'use server';
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
- * @fileOverview An AI chatbot with Megumin's persona from Konosuba.
- *
- * - meguminChatbot - A function that handles the chatbot interaction with Megumin.
- * - MeguminChatbotInput - The input type for the meguminChatbot function.
- * - MeguminChatbotOutput - The return type for the meguminChatbot function.
+ * @fileoverview Defines the Megumin AI chatbot flow.
+ * This flow powers a chatbot that adopts the persona of Megumin from "Konosuba".
+ * It handles user messages, including optional media uploads, and generates responses in character.
+ * Exports:
+ * - meguminChatbot: The primary function to interact with the chatbot.
+ * - MeguminChatbotInput: The Zod schema for the chatbot's input.
+ * - MeguminChatbotOutput: The Zod schema for the chatbot's output.
  */
 
 import {aiForChatbot} from '@/ai/genkit';
