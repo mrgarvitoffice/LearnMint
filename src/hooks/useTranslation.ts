@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -19,33 +18,32 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        // This is the key change: check module.default, but also the module itself.
-        const translationData = module.default || module;
-
-        if (active && translationData && Object.keys(translationData).length > 0) {
-          setTranslations(translationData);
+        if (active && module.default && Object.keys(module.default).length > 0) {
+          setTranslations(module.default);
+          setIsReady(true); // Set ready only after successful load
         } else {
-          // This error will be caught and handled by the fallback logic
-          throw new Error(`Translations for ${lang} are empty or invalid.`);
+            throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          const fallbackData = fallbackModule.default || fallbackModule;
-          if (active && fallbackData && Object.keys(fallbackData).length > 0) {
-            setTranslations(fallbackData);
+          if (active && fallbackModule.default && Object.keys(fallbackModule.default).length > 0) {
+            setTranslations(fallbackModule.default);
+            setIsReady(true); // Set ready after successful fallback load
           } else {
             console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
-            if (active) setTranslations({}); // Prevent crashes, UI will show keys
+            if (active) {
+                setTranslations({}); // Prevent crashes
+                setIsReady(true); // Still need to unblock the UI, even if translations are broken
+            }
           }
         } catch (fallbackError) {
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) setTranslations({});
-        }
-      } finally {
-        if (active) {
-          setIsReady(true); // Always become ready, even if translations failed (to unblock UI)
+          if (active) {
+             setTranslations({});
+             setIsReady(true);
+          }
         }
       }
     };
