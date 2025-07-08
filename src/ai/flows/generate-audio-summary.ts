@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -37,7 +38,7 @@ export async function generateAudioSummary(input: GenerateAudioSummaryInput): Pr
 // Define a prompt specifically for summarizing TEXT content.
 const summaryPrompt = aiForNotes.definePrompt({
   name: 'generateSummaryForAudioPrompt',
-  model: 'googleai/gemini-1.5-flash-latest', 
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17', 
   input: { schema: z.object({ content: z.string() }) },
   output: { schema: z.object({ summary: z.string() }) },
   prompt: `You are an expert multilingual summarizer. Your task is to provide a clear, concise, and informative summary of the provided text content.
@@ -59,7 +60,7 @@ Please provide your summary below.`,
 // Define a new, dedicated prompt for summarizing an IMAGE.
 const imageSummaryPrompt = aiForTTS.definePrompt({ // Using aiForTTS as it appears to have working vision permissions
   name: 'generateSummaryFromImagePrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: { schema: z.object({ imageDataUri: z.string(), language: z.string().optional() }) },
   output: { schema: z.object({ summary: z.string() }) },
   prompt: `You are an expert at describing and summarizing images. Your task is to provide a clear, concise, and informative summary of the provided image. The summary should capture the main subjects, actions, and environment, and be easy to understand when read aloud.

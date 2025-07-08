@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -85,6 +86,7 @@ const searchYoutubeVideosFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await ai.generate({
+      model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
       prompt: `You MUST use the fetchYouTubeVideos tool to find videos. Search YouTube for "${input.query}" and get ${input.maxResults} results using the fetchYouTubeVideos tool. Return ONLY the tool's output.`, 
       tools: [fetchYouTubeVideosTool],
       toolChoice: "fetchYouTubeVideos", 
@@ -124,5 +126,3 @@ export async function searchYoutubeVideos(input: YoutubeSearchInput): Promise<Yo
     return { videos: [] };
   }
 }
-
-    

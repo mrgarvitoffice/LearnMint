@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -44,7 +45,7 @@ export async function generateQuizFromNotes(input: GenerateQuizFromNotesInput): 
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizFromNotesPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateQuizFromNotesInputSchema},
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.

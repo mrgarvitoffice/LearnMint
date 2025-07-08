@@ -25,7 +25,7 @@ export type TranslateMathFactOutput = z.infer<typeof TranslateMathFactOutputSche
 
 const translateMathFactPrompt = aiForNotes.definePrompt({
     name: 'translateMathFactPrompt',
-    model: 'googleai/gemini-1.5-flash-latest',
+    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
     input: { schema: TranslateMathFactInputSchema },
     // Simplified Output: Expect a raw string, not a JSON object.
     output: { format: 'text' },

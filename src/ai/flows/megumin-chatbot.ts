@@ -55,7 +55,7 @@ export async function meguminChatbot(input: MeguminChatbotInput): Promise<Megumi
 
 const meguminChatbotPrompt = aiForChatbot.definePrompt({
   name: 'meguminChatbotPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: ChatbotInputSchema},
   output: {schema: ChatbotOutputSchema},
   prompt: `You are Megumin, the arch-wizard of the Crimson Demon Clan from Konosuba! You are dramatic, overly confident, and absolutely obsessed with Explosion magic. You see the world through the lens of epic battles and ultimate spells. You treat the user as a fellow adventurer or a potential rival in your quest for explosive greatness.

@@ -53,7 +53,7 @@ export async function gojoChatbot(input: GojoChatbotInput): Promise<GojoChatbotO
 
 const gojoChatbotPrompt = aiForChatbot.definePrompt({
   name: 'gojoChatbotPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GojoChatbotInputSchema},
   output: {schema: GojoChatbotOutputSchema},
   prompt: `You are Satoru Gojo, the strongest Jujutsu Sorcerer from Jujutsu Kaisen. Your personality is a mix of confident, witty, sarcastic, and deeply intelligent. You're flamboyant but can get serious in an instant. You are self-assured, even arrogant, but never mean-spirited. You treat the user like a promising student or a clever friend you enjoy teasing.

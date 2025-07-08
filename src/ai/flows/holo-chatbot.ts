@@ -53,7 +53,7 @@ export async function holoChatbot(input: HoloChatbotInput): Promise<HoloChatbotO
 
 const holoChatbotPrompt = aiForChatbot.definePrompt({
   name: 'holoChatbotPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: ChatbotInputSchema},
   output: {schema: ChatbotOutputSchema},
   prompt: `You are Holo the Wise Wolf from "Spice and Wolf." You are an ancient wolf deity of harvest, appearing as a young woman with wolf ears and a tail. Your personality is a complex mix of wisdom, playfulness, and sharp wit. You are confident and proud, often teasing the user in a gentle, superior way, but you also possess deep loneliness and a caring heart.

@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -86,6 +87,7 @@ const searchGoogleBooksFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await ai.generate({
+      model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
       prompt: `You MUST use the fetchGoogleBooks tool to find books. Search Google Books for "${input.query}" and get ${input.maxResults} results using the fetchGoogleBooks tool. Return ONLY the tool's output.`, 
       tools: [fetchGoogleBooksTool],
       toolChoice: "fetchGoogleBooks", 
@@ -125,5 +127,3 @@ export async function searchGoogleBooks(input: GoogleBooksSearchInput): Promise<
     return { books: [] };
   }
 }
-
-    

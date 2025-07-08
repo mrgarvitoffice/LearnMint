@@ -48,7 +48,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 // Updated prompt to self-determine the language and be more robust.
 const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-1.5-flash-latest',
+    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
     output: { schema: z.object({ dialogue: z.string() }) },
     prompt: `You are an expert scriptwriter. Your primary task is to convert the given text content into a natural-sounding, two-person dialogue script.

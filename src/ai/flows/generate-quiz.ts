@@ -1,3 +1,4 @@
+
 /**
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
@@ -34,7 +35,7 @@ export type GenerateQuizOutput = z.infer<typeof GenerateQuizOutputSchema>;
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: {schema: GenerateQuizInputSchema},
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are a quiz generator. Generate a quiz with {{numQuestions}} questions about {{topic}}. Each question should have multiple choice options, one correct answer, and a brief explanation for why the answer is correct.
@@ -76,5 +77,3 @@ export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQu
     throw new Error(clientErrorMessage);
   }
 }
-
-    
