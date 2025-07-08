@@ -25,11 +25,11 @@ export type TranslateMathFactOutput = z.infer<typeof TranslateMathFactOutputSche
 
 const translateMathFactPrompt = aiForNotes.definePrompt({
     name: 'translateMathFactPrompt',
-    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+    model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: TranslateMathFactInputSchema },
-    // Simplified Output: Expect a raw string, not a JSON object.
+    // Simplified Output: Expect a raw string, not a JSON object for higher reliability.
     output: { format: 'text' },
-    // Simplified Prompt: A direct, imperative command.
+    // Simplified Prompt: A direct, imperative command for better translation accuracy.
     prompt: `Translate the following English fact into {{{targetLanguageName}}}.
 Fact: "{{{factToTranslate}}}"
 **CRITICAL**: Your entire response MUST be ONLY the translated text of the fact. Do NOT add any extra words, explanations, or quotation marks.`,

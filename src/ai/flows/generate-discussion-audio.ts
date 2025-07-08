@@ -3,7 +3,7 @@
  * LearnMint: Your AI-Powered Learning Assistant
  * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
- * This flow now auto-detects the language from the input content.
+ * This flow now allows for explicit language control for more reliable script generation.
  *
  * - generateDiscussionAudio - A function that handles the discussion generation process.
  * - GenerateDiscussionAudioInput - The input type for this function.
@@ -16,10 +16,10 @@ import { aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
-// Input schema no longer requires languageName.
+// Updated input schema to include optional languageName for explicit control.
 const GenerateDiscussionAudioInputSchema = z.object({
   content: z.string().describe('The content to be turned into a discussion.'),
-  languageName: z.string().optional().describe('The full language name for the audio output (e.g., "Japanese", "Spanish"). If not provided, the language will be auto-detected from the content.'),
+  languageName: z.string().optional().describe('The full English language name for the audio output (e.g., "Japanese", "Spanish"). If not provided, the language will be auto-detected from the content.'),
 });
 export type GenerateDiscussionAudioInput = z.infer<typeof GenerateDiscussionAudioInputSchema>;
 
@@ -45,10 +45,10 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// Updated prompt to self-determine the language and be more robust.
+// Updated prompt to be more robust and handle explicit language requests.
 const dialoguePrompt = aiForTTS.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+    model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
     output: { schema: z.object({ dialogue: z.string() }) },
     prompt: `You are an expert scriptwriter. Your primary task is to convert the given text content into a natural-sounding, two-person dialogue script.
