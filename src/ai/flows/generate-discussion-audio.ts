@@ -4,15 +4,11 @@
  * @author MrGarvit
  * @fileOverview An AI agent that converts text into a multi-speaker audio discussion.
  * This flow now allows for explicit language control for more reliable script generation.
- *
- * - generateDiscussionAudio - A function that handles the discussion generation process.
- * - GenerateDiscussionAudioInput - The input type for this function.
- * - GenerateDiscussionAudioOutput - The return type for this function.
  */
 
 'use server';
 
-import { ai, aiForNotes, aiForTTS } from '@/ai/genkit';
+import { ai, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -44,9 +40,8 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// Updated prompt to be more robust and handle explicit language requests.
-// This prompt now uses `aiForNotes` to ensure it uses a general-purpose text model API key.
-const dialoguePrompt = aiForNotes.definePrompt({
+// This prompt now correctly uses the main `ai` client to ensure it uses the general-purpose text model API key.
+const dialoguePrompt = ai.definePrompt({
     name: 'generateDialogueForTtsPrompt',
     model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: GenerateDiscussionAudioInputSchema },
@@ -71,7 +66,7 @@ const dialoguePrompt = aiForNotes.definePrompt({
 });
 
 
-// The main Genkit flow, defined with the general `ai` client to prevent context issues.
+// The main Genkit flow, defined with the general `ai` client.
 const generateDiscussionAudioFlow = ai.defineFlow(
   {
     name: 'generateDiscussionAudioFlow',

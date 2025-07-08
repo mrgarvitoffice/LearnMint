@@ -12,7 +12,7 @@
 
 'use server';
 
-import { aiForNotes, aiForTTS } from '@/ai/genkit';
+import { aiForNotes } from '@/ai/genkit';
 import { z } from 'zod';
 import type { GenerateAudioSummaryOutput } from '@/lib/types';
 
@@ -57,7 +57,8 @@ Please provide your summary below.`,
 });
 
 // Define a new, dedicated prompt for summarizing an IMAGE.
-const imageSummaryPrompt = aiForTTS.definePrompt({
+// This now correctly uses `aiForNotes` for the text generation task.
+const imageSummaryPrompt = aiForNotes.definePrompt({
   name: 'generateSummaryFromImagePrompt',
   model: 'gemini-2.5-flash-lite-preview-06-17',
   input: { schema: z.object({ imageDataUri: z.string() }) },
