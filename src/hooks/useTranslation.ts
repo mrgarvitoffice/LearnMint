@@ -19,8 +19,10 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        // This handles module inconsistencies. Sometimes data is in `module.default`, sometimes it's the module itself.
-        const translationData = module.default || module;
+        
+        // This is the robust fix. It checks if module.default is a non-empty object.
+        // If not, it falls back to the module itself. This handles build inconsistencies.
+        const translationData = (module.default && Object.keys(module.default).length > 0) ? module.default : module;
 
         if (active && translationData && Object.keys(translationData).length > 0) {
           setTranslations(translationData);
@@ -32,8 +34,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
         console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          // Also apply the robust check to the fallback.
-          const fallbackTranslationData = fallbackModule.default || fallbackModule;
+          const fallbackTranslationData = (fallbackModule.default && Object.keys(fallbackModule.default).length > 0) ? fallbackModule.default : fallbackModule;
 
           if (active && fallbackTranslationData && Object.keys(fallbackTranslationData).length > 0) {
             setTranslations(fallbackTranslationData);
@@ -64,16 +65,12 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
   }, [appLanguage]);
 
   const t: TFunction = useCallback((key, options) => {
-    // If translations are not ready, return an empty string. The UI components
-    // should be showing a loading skeleton based on the `isReady` flag.
     if (!isReady || !translations) {
       return "";
     }
     
     const translation = translations[key];
 
-    // If a specific key is missing from the loaded JSON file, it's a data error.
-    // Log a warning for debugging and return the key itself so it's visible in the UI.
     if (translation === undefined) {
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
