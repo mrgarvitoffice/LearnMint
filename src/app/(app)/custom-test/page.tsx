@@ -80,7 +80,7 @@ export default function CustomTestPage() {
 
   const notesFileRef = useRef<HTMLInputElement>(null);
 
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const { toast } = useToast();
   const { playSound: playCorrectSound } = useSound('/sounds/correct-answer.mp3', { priority: 'essential' });
   const { playSound: playIncorrectSound } = useSound('/sounds/incorrect-answer.mp3', { priority: 'essential' });
@@ -171,14 +171,15 @@ export default function CustomTestPage() {
   };
   
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current && !testState && !isLoading) {
+      if (!testState && !isLoading) {
         speak(t('customTest.pageTitle'), { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [speak, testState, isLoading, t]);
+  }, [speak, testState, isLoading, t, isReady]);
 
   useEffect(() => { if (isLoading) speak(t('customTest.generate.speak.creating'), { priority: 'optional' }); }, [isLoading, speak, t]);
 
@@ -462,6 +463,14 @@ export default function CustomTestPage() {
       notesFileRef.current.value = "";
     }
   };
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (user?.isAnonymous) {
     return (

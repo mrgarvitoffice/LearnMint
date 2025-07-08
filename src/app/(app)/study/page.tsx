@@ -80,7 +80,7 @@ function StudyPageContent() {
   const [activeTopic, setActiveTopic] = useState<string>(""); 
   const [activeTab, setActiveTab] = useState<string>("notes");
 
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const { toast } = useToast();
   const { playSound: playActionSound } = useSound('/sounds/custom-sound-2.mp3', { volume: 0.4, priority: 'essential' });
   const { playSound: playClickSound } = useSound('/sounds/ting.mp3');
@@ -106,15 +106,16 @@ function StudyPageContent() {
   }, [setVoicePreference]);
 
   useEffect(() => {
+    if (!isReady || pageTitleSpokenRef.current) return;
     const timer = setTimeout(() => {
-      if (!pageTitleSpokenRef.current && activeTopic) {
+      if (activeTopic) {
         speak(t('studyHub.titleForTopic', { topic: activeTopic }), { priority: 'optional' });
         pageTitleSpokenRef.current = true;
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [speak, activeTopic, t]);
+  }, [speak, activeTopic, t, isReady]);
 
 
   const getCacheKey = (type: string, topic: string) => `${LOCALSTORAGE_KEY_PREFIX}${type}-${topic.toLowerCase().replace(/\s+/g, '-')}`;
@@ -224,6 +225,15 @@ function StudyPageContent() {
   };
 
   const renderContent = () => {
+    if (!isReady) {
+      // This is a new check to prevent rendering before translations are loaded
+      return (
+        <div className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
+
     if (!activeTopic) { 
       return (
         <Alert variant="default" className="mt-6 flex flex-col items-center justify-center text-center p-6">
@@ -278,7 +288,7 @@ function StudyPageContent() {
 
   return (
     <div className="container mx-auto max-w-5xl px-2 py-6 sm:px-4 sm:py-8 flex flex-col flex-1 min-h-[calc(100vh-8rem)]">
-      {activeTopic ? (
+      {activeTopic && isReady ? (
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center sm:text-left truncate max-w-xl">
             {t('studyHub.titleForTopic', { topic: activeTopic })}
@@ -294,12 +304,12 @@ function StudyPageContent() {
 }
 
 export default function StudyPage() {
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   return (
     <Suspense fallback={
       <div className="container mx-auto max-w-5xl px-4 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">{t('studyHub.loading.title')}</p>
+        <p className="mt-4 text-muted-foreground">{isReady ? t('studyHub.loading.title') : 'Loading...'}</p>
       </div>
     }>
       <StudyPageContent />

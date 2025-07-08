@@ -24,7 +24,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
   const { signInWithEmail, signInAnonymously, loading } = useAuth();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -32,6 +32,14 @@ export default function SignInPage() {
   const handleEmailSignIn = async (data: FormData) => {
     await signInWithEmail(data.email, data.password);
   };
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
@@ -61,12 +69,12 @@ export default function SignInPage() {
           <div className="space-y-2">
             <Label htmlFor="email">{t('auth.emailLabel')}</Label>
             <Input id="email" type="email" placeholder={t('auth.emailPlaceholder')} {...register('email')} disabled={loading} />
-            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+            {errors.email && <p className="text-sm text-destructive">{t(errors.email.message || '')}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
             <Input id="password" type="password" {...register('password')} disabled={loading} />
-            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+            {errors.password && <p className="text-sm text-destructive">{t(errors.password.message || '')}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Mail, KeyRound, LogOut, CheckCircle, Brain, User, MessageSquareText } from 'lucide-react';
+import { Mail, KeyRound, LogOut, CheckCircle, Brain, User, MessageSquareText, Loader2 } from 'lucide-react';
 
 const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: string }) => (
     <div className={cn("flex items-center gap-3 p-3 bg-muted/50 rounded-md", isCompleted && "text-muted-foreground line-through")}>
@@ -28,12 +28,14 @@ const DailyQuestItem = ({ isCompleted, text }: { isCompleted: boolean; text: str
 export default function ProfilePage() {
   const { user, signOutUser } = useAuth();
   const { quests } = useQuests();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
 
-  if (!user) {
-    // This can happen briefly during a redirect or if state is not synced.
-    // The layout should handle the definitive redirect.
-    return null;
+  if (!isReady || !user) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const userDisplayName = user.displayName || user.email?.split('@')[0] || "User";

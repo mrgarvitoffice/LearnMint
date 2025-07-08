@@ -33,7 +33,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
   const { signUpWithEmail, signInAnonymously, loading } = useAuth();
-  const { t } = useTranslation();
+  const { t, isReady } = useTranslation();
   const { appLanguage, setAppLanguage } = useSettings();
   const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -44,6 +44,14 @@ export default function SignUpPage() {
     setAppLanguage(data.appLanguage);
     await signUpWithEmail(data.email, data.password, data.displayName);
   };
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background/95">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
   
   return (
     <Card className="w-full max-w-sm shadow-xl border-border/50 bg-card/80 backdrop-blur-lg">
