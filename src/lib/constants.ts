@@ -119,22 +119,15 @@ export const APP_LANGUAGES: { value: string; label: string; bcp47: string; }[] =
   { value: "hu", label: "Magyar (Hungarian)", bcp47: "hu-HU" },
   { value: "fi", label: "Suomi (Finnish)", bcp47: "fi-FI" },
   { value: "da", label: "Dansk (Danish)", bcp47: "da-DK" },
-  { value: "no", label: "Norsk (Norwegian)", bcp47: "no-NO" },
   { value: "ms", label: "Bahasa Melayu (Malay)", bcp47: "ms-MY" },
   { value: "fil", label: "Filipino", bcp47: "fil-PH" },
-  { value: "sw", label: "Kiswahili (Swahili)", bcp47: "sw-KE" },
   { value: "sr", label: "Српски (Serbian)", bcp47: "sr-RS" },
   { value: "bg", label: "Български (Bulgarian)", bcp47: "bg-BG" },
   { value: "ca", label: "Català (Catalan)", bcp47: "ca-ES" },
   { value: "hr", label: "Hrvatski (Croatian)", bcp47: "hr-HR" },
   { value: "sk", label: "Slovenčina (Slovak)", bcp47: "sk-SK" },
-  { value: "sl", label: "Slovenščina (Slovenian)", bcp47: "sl-SI" },
   { value: "lt", label: "Lietuvių (Lithuanian)", bcp47: "lt-LT" },
-  { value: "lv", "label": "Latviešu (Latvian)", "bcp47": "lv-LV" },
   { value: "et", "label": "Eesti (Estonian)", "bcp47": "et-EE" },
-  { value: "is", "label": "Íslenska (Icelandic)", "bcp47": "is-IS" },
-  { value: "my", "label": "မြန်မာ (Burmese)", "bcp47": "my-MM" },
-  { value: "km", "label": "ភាសាខ្មែរ (Khmer)", "bcp47": "km-KH" },
 ];
 
 
