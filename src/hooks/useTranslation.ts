@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,12 +7,13 @@ type TFunction = (key: string, options?: { [key: string]: string | number }) => 
 
 export function useTranslation(): { t: TFunction, isReady: boolean } {
   const { appLanguage } = useSettings();
-  const [translations, setTranslations] = useState<Record<string, any> | null>(null);
+  const [translations, setTranslations] = useState<Record<string, string> | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     let active = true;
     setIsReady(false);
+    setTranslations(null); 
 
     const loadTranslations = async (lang: string) => {
       try {
@@ -32,20 +32,21 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
           if (active && fallbackData && Object.keys(fallbackData).length > 0) {
             setTranslations(fallbackData);
           } else {
-            console.error("CRITICAL: Failed to load or parse fallback English translations.", fallbackError);
+            // The original error is the relevant one to log here.
+            console.error("CRITICAL: Fallback English translations are also empty or invalid.", error);
             if (active) setTranslations({}); // Prevent crashes
           }
-        } catch (fallbackError) {
+        } catch (fallbackError) { // This is where `fallbackError` is defined.
           console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
           if (active) setTranslations({});
         }
       } finally {
         if (active) {
-          setIsReady(true);
+            setIsReady(true);
         }
       }
     };
-    
+
     const langCode = appLanguage.split('-')[0] || 'en';
     loadTranslations(langCode);
 
@@ -56,7 +57,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
 
   const t: TFunction = useCallback((key, options) => {
     if (!isReady || !translations) {
-      return key; // Return the key itself if not ready, making debugging easier
+      return "";
     }
     
     const translation = translations[key];
