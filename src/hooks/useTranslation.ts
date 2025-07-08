@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -79,7 +80,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     let isMounted = true;
     
     const loadTranslations = async (lang: string) => {
-      setState({ translations: null, isReady: false }); // Reset state on language change
+      setState({ translations: null, isReady: false });
       const langCode = lang.split('-')[0] || 'en';
       const loader = localeLoaders[langCode as keyof typeof localeLoaders] || localeLoaders.en;
 
@@ -116,11 +117,18 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
       return key;
     }
     
+    // **FIXED LOGIC**: Perform a direct lookup on the flat JSON object
+    // instead of trying to parse a nested key.
     const translation = state.translations[key];
 
     if (translation === undefined) {
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
+    }
+
+    if (typeof translation !== 'string') {
+        console.warn(`Value for translation key "${key}" is not a string for language "${appLanguage}".`);
+        return key;
     }
 
     let finalTranslation = translation;
