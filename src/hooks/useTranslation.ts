@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -19,30 +18,44 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const loadTranslations = async (lang: string) => {
       try {
         const module = await import(`@/locales/${lang}.json`);
-        const data = module.default || module;
-        if (active && data && Object.keys(data).length > 0) {
-          setTranslations(data);
+        // This logic is more robust: check if `default` exists and has content, otherwise use the module itself.
+        const data = module.default && Object.keys(module.default).length > 0 ? module.default : module;
+        
+        if (data && Object.keys(data).length > 0) {
+          if (active) {
+            setTranslations(data);
+          }
         } else {
+          // Throw if both the module and its default export are empty/invalid.
           throw new Error(`Translations for ${lang} are empty or invalid.`);
         }
       } catch (error) {
-        console.warn(`Could not load translations for language: ${lang}. Falling back to English.`, error);
+        console.warn(`Could not load translations for language: "${lang}". Falling back to English.`, error);
         try {
           const fallbackModule = await import(`@/locales/en.json`);
-          const fallbackData = fallbackModule.default || fallbackModule;
-          if (active && fallbackData && Object.keys(fallbackData).length > 0) {
-            setTranslations(fallbackData);
+          const fallbackData = fallbackModule.default && Object.keys(fallbackModule.default).length > 0 ? fallbackModule.default : fallbackModule;
+
+          if (fallbackData && Object.keys(fallbackData).length > 0) {
+             if (active) {
+              setTranslations(fallbackData);
+            }
           } else {
-            console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
-            if (active) setTranslations({}); // Prevent crashes
+            // This is a critical failure if even English doesn't load.
+             console.error("CRITICAL: Failed to load or parse fallback English translations.", error);
+             if (active) {
+                setTranslations({}); // Set to empty object to prevent app crash from null.
+             }
           }
         } catch (fallbackError) {
-          console.error("CRITICAL: Failed to load fallback English translations.", fallbackError);
-          if (active) setTranslations({});
+          // This catches errors in importing the fallback (en.json) itself.
+          console.error("CRITICAL: The fallback 'en.json' translation file itself could not be loaded.", fallbackError);
+          if (active) {
+             setTranslations({});
+          }
         }
       } finally {
         if (active) {
-            setIsReady(true);
+          setIsReady(true);
         }
       }
     };
@@ -63,6 +76,7 @@ export function useTranslation(): { t: TFunction, isReady: boolean } {
     const translation = translations[key];
 
     if (translation === undefined) {
+        // Return the key itself for easier debugging.
         console.warn(`Translation key not found: "${key}" for language "${appLanguage}".`);
         return key; 
     }
