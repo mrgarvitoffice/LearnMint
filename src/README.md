@@ -1,4 +1,4 @@
-# LearnMint: AI-Powered Learning Toolkit
+# LearnMint: The AI-Powered Learning Toolkit
 
 <p align="center">
   <a href="https://learnmint.dev" target="_blank">
@@ -12,66 +12,58 @@
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/MrGarvit/learnmint?style=for-the-badge">
 </p>
 
-**LearnMint** is an advanced, AI-driven Next.js application engineered to transform study sessions into a dynamic and productive experience. It automates the creation of study materials, offers interactive learning tools, and provides a suite of utilities to support students and lifelong learners.
+**LearnMint** is an advanced, AI-driven web application built with Next.js, engineered to transform study sessions into a dynamic, efficient, and engaging experience. It automates the creation of study materials, offers a suite of interactive learning tools, and provides powerful utilities to support students and lifelong learners in mastering any subject.
 
 ---
 
-## 🌟 Table of Contents
+## ✨ Core Philosophy & Design
 
-*   [Overview & Design Philosophy](#-overview--design-philosophy)
-*   [🔥 Key Features](#-key-features)
-*   [🛠️ Tech Stack](#️-tech-stack)
-*   [🚀 Local Development & Setup](#-local-development--setup)
-*   [☁️ Deployment](#️-deployment)
-*   [🎨 Customization](#-customization)
+LearnMint is built on the principles of **efficiency**, **engagement**, and **elegance**.
 
----
-
-## ✨ Overview & Design Philosophy
-
-LearnMint is built on the principles of efficiency, engagement, and elegance.
-
-*   **Modern UI**: A futuristic dark theme designed for comfortable, prolonged study sessions, with a light mode available.
-*   **Vibrant Color Scheme**: A sophisticated deep blue background, a vibrant neon teal primary, and a striking magenta accent, all defined with HSL CSS variables for easy theming.
-*   **Typography**: The modern `Orbitron` font family is used for crisp, futuristic readability.
-*   **Iconography**: A consistent and modern visual language using `lucide-react` icons.
-*   **Component-Based Architecture**: Built with Tailwind CSS and ShadCN UI components for a polished, professional, and fully responsive experience.
+*   **Modern UI**: A sleek, futuristic dark theme designed for comfortable, prolonged study sessions, with a light mode available for preference.
+*   **Vibrant Color Scheme**: A sophisticated deep blue background paired with a vibrant neon teal primary and a striking magenta accent. The entire theme is built on HSL CSS variables for easy customization.
+*   **Elegant Typography**: Utilizes the modern `Orbitron` font family for crisp, futuristic readability.
+*   **Intuitive Iconography**: Employs a consistent and modern visual language through `lucide-react` icons.
+*   **Robust Architecture**: Built with Tailwind CSS and ShadCN UI components, ensuring a polished, professional, and fully responsive experience across all devices.
 
 ---
 
 ## 🔥 Key Features
 
-LearnMint is packed with a suite of powerful, AI-driven tools:
+LearnMint is packed with a suite of powerful, AI-driven tools designed to cover every angle of the learning process:
 
-*   **Firebase Authentication**: Secure user sign-in via Google or Email, plus a fully-featured Guest Mode.
+*   **Secure Authentication**: Flexible and secure user sign-in via Google or Email, plus a fully-featured Guest Mode for instant access.
 *   **Unified AI Material Generation**:
-    *   Enter a topic to generate comprehensive study materials instantly:
-        *   📝 **In-depth Notes**: Formatted in Markdown with headings, lists, tables, and AI-generated images embedded directly in the text.
-        *   🎯 **Interactive Quizzes**: A mix of multiple-choice and short-answer questions with detailed explanations.
-        *   📚 **Engaging Flashcards**: For quick review and memorization.
-*   **Custom Test Creation Lab**: Build tailored tests by combining topics, using custom notes, setting difficulty levels, and adding timers.
+    *   Enter any topic and instantly generate a comprehensive set of study materials:
+        *   📝 **In-depth Notes**: Receive well-structured notes in Markdown, complete with headings, lists, tables, and even AI-generated images embedded directly where they are most relevant.
+        *   🎯 **Interactive Quizzes**: Test your knowledge with a mix of multiple-choice and short-answer questions, each including a detailed explanation to reinforce learning.
+        *   📚 **Engaging Flashcards**: Perfect for quick review sessions and memorizing key concepts.
+*   **Custom Test Creation Lab**: Go beyond pre-generated content. Build tailored tests by combining topics, using your own custom notes, setting difficulty levels, and adding timers for a real exam experience.
 *   **Advanced AI Chatbot**:
-    *   Converse with distinct AI personas.
-    *   Supports text, image, PDF, audio, and video uploads for contextual conversations.
-    *   Features voice input and spoken responses.
-*   **Precision Toolkit**: A scientific calculator and a comprehensive unit converter with calculation history.
-*   **Daily News Digest**: Fetches the latest global news, filterable by location, category, and language, with voice search capabilities.
-*   **Resource Library**: A hub for external knowledge, featuring integrated YouTube and Google Books search, plus curated links to educational platforms.
-*   **Personalization**: Theme toggling (light/dark), adjustable font sizes, and multi-language support.
+    *   Converse with distinct and engaging AI personas.
+    *   Supports text, image, PDF, audio, and video uploads for rich, contextual conversations.
+    *   Features voice input and spoken responses for a hands-free, accessible interaction.
+*   **Precision Toolkit**: A suite of utilities for academic and scientific work, including a full-featured scientific calculator and a comprehensive unit converter with calculation history.
+*   **Daily News Digest**: Stay informed with the latest global news. Filter articles by location, category, and language, and use voice search to find what you're looking for.
+*   **Integrated Resource Library**: A central hub for external knowledge. Features integrated YouTube and Google Books search, plus curated links to other valuable educational platforms.
+*   **Deep Personalization**:
+    *   Toggle between light and dark themes.
+    *   Adjust font sizes for optimal readability.
+    *   Full multi-language support throughout the application.
 
 ---
 
 ## 🛠️ Tech Stack
 
-LearnMint leverages a modern, robust tech stack:
+LearnMint leverages a modern, robust, and scalable tech stack:
 
 *   **Framework**: Next.js 15+ (App Router)
 *   **Language**: TypeScript
 *   **Styling**: Tailwind CSS with ShadCN UI
 *   **Authentication**: Firebase Authentication (Google, Email, Anonymous)
 *   **AI**: Google Gemini via Genkit for all generative features
-*   **State Management**: React Query (TanStack Query)
-*   **UI/UX**: Framer Motion, Lucide Icons, `next-themes`
+*   **State Management**: React Query (TanStack Query) for server-state management
+*   **UI/UX**: Framer Motion for animations, Lucide Icons, and `next-themes` for theming.
 
 ---
 
