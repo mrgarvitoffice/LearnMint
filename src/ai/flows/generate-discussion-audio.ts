@@ -10,7 +10,8 @@
 
 'use server';
 
-import { aiForTTS } from '@/ai/genkit';
+// Use separate AI clients for text generation and text-to-speech for correctness.
+import { aiForNotes, aiForTTS } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
@@ -41,19 +42,23 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
   });
 }
 
-// Prompt to generate the dialogue script
-const dialoguePrompt = aiForTTS.definePrompt({
+// Prompt to generate the dialogue script. Uses the text-generation client.
+const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-1.5-flash-latest',
+    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
     input: { schema: z.object({ content: z.string() }) },
     output: { schema: z.object({ dialogue: z.string() }) },
-    prompt: `You are a scriptwriter. Your task is to convert the following text content into a natural-sounding, two-person dialogue script between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner).
+    prompt: `You are an expert multilingual scriptwriter. Your primary task is to convert the following text content into a natural-sounding, two-person dialogue script.
 
-The dialogue should discuss and explain the key points from the provided content. Speaker1 should present the information, and Speaker2 should ask clarifying questions or make comments to guide the conversation.
+**CRUCIAL INSTRUCTION: LANGUAGE DETECTION & ADHERENCE**
+First, meticulously analyze the provided "Content to convert" to determine its primary language (e.g., English, Japanese, Hindi, Spanish, etc.).
+You **MUST** write the entire dialogue script in that same detected language. This is a non-negotiable rule.
 
-IMPORTANT: The output MUST be a script formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
-Speaker1: [First line of dialogue]
-Speaker2: [Second line of dialogue]
+The dialogue should be between "Speaker1" (a knowledgeable and slightly formal expert) and "Speaker2" (an inquisitive and friendly learner). It should discuss and explain the key points from the provided content. Speaker1 should present the information, and Speaker2 should ask clarifying questions or make comments to guide the conversation.
+
+**CRITICAL FORMATTING RULE:** The output MUST be a script formatted *exactly* like this, with each line starting with "Speaker1:" or "Speaker2:":
+Speaker1: [First line of dialogue in detected language]
+Speaker2: [Second line of dialogue in detected language]
 ...and so on.
 
 Do not add any other text, introductions, or summaries. The entire output should be just the dialogue script.
@@ -63,7 +68,7 @@ Content to convert:
 {{{content}}}
 ---
 
-Please provide the dialogue script below.`
+Please provide the dialogue script below in the detected language.`
 });
 
 // The main Genkit flow
