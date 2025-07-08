@@ -147,15 +147,20 @@ export const OTHER_RESOURCES = [
 ];
 
 
-// --- Math Facts Fallback Data (for Library page) ---
-// This is no longer used as the primary source, but kept as a last resort fallback.
-export const MATH_FACTS_FALLBACK = [
+// --- Math Facts (Primary Source in English) ---
+// This list is now the primary source for the "Daily Motivation" and "Math Fact" features.
+// The AI's only job is to translate one of these facts.
+export const MATH_FACTS_EN = [
   "The number 0 is the only number that cannot be represented by Roman numerals.",
   "Pi (π) is an irrational number, meaning its decimal representation never ends and never repeats.",
   "A 'googol' is 1 followed by 100 zeros.",
   "The Fibonacci sequence is found in many natural patterns, like the arrangement of seeds in a sunflower.",
   "The sum of angles in any triangle is always 180 degrees.",
-  "Prime numbers are natural numbers greater than 1 that have no positive divisors other than 1 and themselves."
+  "Prime numbers are natural numbers greater than 1 that have no positive divisors other than 1 and themselves.",
+  "In a room of 23 people, there's a 50% chance that two people have the same birthday.",
+  "The word 'hundred' comes from the Old Norse term, 'hundrath', which actually means 120, not 100.",
+  "From 0 to 1,000, the only number that has the letter 'a' in it is 'one thousand'.",
+  "The spiral shapes of sunflowers and other patterns in nature follow the Fibonacci sequence."
 ];
 
 // --- News API Categories (for News page filters) ---

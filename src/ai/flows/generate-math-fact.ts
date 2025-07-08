@@ -1,73 +1,75 @@
-
 'use server';
 /**
- * @fileOverview A Genkit flow to generate a random math fact in a specified language.
+ * @fileOverview A Genkit flow to translate a given math fact into a target language.
  *
- * - generateTranslatedMathFact - A function that takes a language name and returns a math fact in that language.
- * - GenerateMathFactInput - The input type for this function.
- * - GenerateMathFactOutput - The return type for this function.
+ * - generateTranslatedMathFact - A function that takes a fact and a language, returning the translation.
+ * - TranslateMathFactInput - The input type for this function.
+ * - TranslateMathFactOutput - The return type for this function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-const GenerateMathFactInputSchema = z.object({
-  languageName: z.string().describe('The language in which to generate the math fact (e.g., "English", "Español").'),
+// Note: The function names in this file are kept similar to the original for compatibility,
+// but the functionality has been changed from 'generation' to 'translation' for reliability.
+
+const TranslateMathFactInputSchema = z.object({
+  factToTranslate: z.string().describe('The English math fact to be translated.'),
+  targetLanguageName: z.string().describe('The target language for the translation (e.g., "Español", "日本語").'),
 });
-export type GenerateMathFactInput = z.infer<typeof GenerateMathFactInputSchema>;
+export type TranslateMathFactInput = z.infer<typeof TranslateMathFactInputSchema>;
 
-const GenerateMathFactOutputSchema = z.object({
-  fact: z.string().describe('A single, interesting math fact translated into the requested language.'),
+const TranslateMathFactOutputSchema = z.object({
+  fact: z.string().describe('The math fact, translated into the target language.'),
 });
-export type GenerateMathFactOutput = z.infer<typeof GenerateMathFactOutputSchema>;
+export type TranslateMathFactOutput = z.infer<typeof TranslateMathFactOutputSchema>;
 
 
-const generateMathFactPrompt = ai.definePrompt({
-    name: 'generateMathFactPrompt',
+const translateMathFactPrompt = ai.definePrompt({
+    name: 'translateMathFactPrompt',
     model: 'googleai/gemini-1.5-flash-latest',
-    input: { schema: GenerateMathFactInputSchema },
-    output: { schema: GenerateMathFactOutputSchema },
-    prompt: `You are a multilingual mathematics expert.
-Your one and only task is to generate a single, interesting math fact.
+    input: { schema: TranslateMathFactInputSchema },
+    output: { schema: TranslateMathFactOutputSchema },
+    prompt: `You are an expert multilingual translator. Your one and only task is to translate the following mathematical fact into the language named '{{{targetLanguageName}}}'.
 
-CRITICAL: The fact MUST be written in the language named "{{{languageName}}}". Do not use any other language.
-The fact should be a complete sentence, suitable for a general audience.
+Respond with ONLY the translated text, and nothing else. Do not add any extra text, introductions, or conversational filler.
 
-IMPORTANT: Do NOT add any extra text, introductions, or conversational filler. Your entire response must be ONLY the single fact itself.
+Fact to translate: "{{{factToTranslate}}}"
 `,
     config: {
-        temperature: 0.9,
+        temperature: 0.2, // Lower temperature for more deterministic translation
     },
 });
 
-const generateMathFactFlow = ai.defineFlow(
+const translateMathFactFlow = ai.defineFlow(
   {
-    name: 'generateMathFactFlow',
-    inputSchema: GenerateMathFactInputSchema,
-    outputSchema: GenerateMathFactOutputSchema,
+    name: 'generateMathFactFlow', // Keep original name to avoid breaking dev server import
+    inputSchema: TranslateMathFactInputSchema,
+    outputSchema: TranslateMathFactOutputSchema,
   },
   async (input) => {
     try {
-      const { output } = await generateMathFactPrompt(input);
+      const { output } = await translateMathFactPrompt(input);
       if (!output || !output.fact || output.fact.trim() === '') {
-          console.error(`[AI Flow Error - Math Fact] AI returned an empty or invalid fact for language "${input.languageName}".`);
-          throw new Error("AI returned an empty or invalid fact.");
+          console.error(`[AI Flow Error - Translate Math Fact] AI returned an empty or invalid translation for language "${input.targetLanguageName}".`);
+          // Fallback to English if translation fails
+          return { fact: input.factToTranslate };
       }
       return output;
     } catch(e) {
-        console.error(`[AI Flow Error - Math Fact] Failed for language "${input.languageName}":`, e);
-        // Do not return a default fact here; let the caller handle the error.
-        // This ensures the client knows the operation failed and can display an error state.
-        throw new Error(`The AI failed to generate a math fact in ${input.languageName}.`);
+        console.error(`[AI Flow Error - Translate Math Fact] Failed for language "${input.targetLanguageName}":`, e);
+        // If the entire flow fails, fall back to the original English fact to ensure something is always displayed.
+        return { fact: input.factToTranslate };
     }
   }
 );
 
 /**
  * Wrapper function to be called from server actions.
- * @param {GenerateMathFactInput} input - The language name for the fact.
- * @returns {Promise<GenerateMathFactOutput>} The generated math fact.
+ * This is now a translation function.
+ * @param {TranslateMathFactInput} input - The fact and target language.
+ * @returns {Promise<TranslateMathFactOutput>} The translated math fact.
  */
-export async function generateTranslatedMathFact(input: GenerateMathFactInput): Promise<GenerateMathFactOutput> {
-  return generateMathFactFlow(input);
+export async function generateTranslatedMathFact(input: TranslateMathFactInput): Promise<TranslateMathFactOutput> {
+  return translateMathFactFlow(input);
 }
