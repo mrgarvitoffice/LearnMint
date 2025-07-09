@@ -26,22 +26,7 @@ const GenerateDiscussionAudioOutputSchema = z.object({
 export type GenerateDiscussionAudioOutput = z.infer<typeof GenerateDiscussionAudioOutputSchema>;
 
 export async function generateDiscussionAudio(input: GenerateDiscussionAudioInput): Promise<GenerateDiscussionAudioOutput> {
-  try {
-    return await generateDiscussionAudioFlow(input);
-  } catch(e: any) {
-    console.error(`[AI Action Error - Generate Discussion] Flow failed: ${e.message}`);
-    
-    let userMessage = "Failed to generate the audio discussion. The AI may have had trouble processing the provided content.";
-    if (e.message?.includes("dialogue script format")) {
-      userMessage = "The AI scriptwriter couldn't create a valid dialogue from your text. Please try rephrasing or using different content.";
-    } else if (e.message?.includes("API key") || e.message?.includes("permission denied")) {
-      userMessage = "Could not generate discussion due to an API key or configuration issue. Please check your server's environment variables (GOOGLE_API_KEY_NOTES or GOOGLE_API_KEY_TTS).";
-    } else {
-      userMessage = `An unexpected error occurred: ${e.message}`;
-    }
-    
-    throw new Error(userMessage);
-  }
+  return generateDiscussionAudioFlow(input);
 }
 
 // Helper to convert PCM data to WAV Base64
@@ -60,9 +45,9 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 // Prompt to generate the dialogue script. Uses the text-generation client.
 const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-1.5-flash-latest', // Upgraded model for better instruction following
+    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
     input: { schema: z.object({ content: z.string() }) },
-    output: { format: 'text' },
+    output: { schema: z.object({ dialogue: z.string() }) },
     prompt: `You are an expert multilingual scriptwriter. Your primary task is to convert the following text content into a natural-sounding, two-person dialogue script.
 
 **CRUCIAL INSTRUCTION: LANGUAGE DETECTION & ADHERENCE**
@@ -83,10 +68,7 @@ Content to convert:
 {{{content}}}
 ---
 
-Please provide the dialogue script below in the detected language.`,
-    config: {
-        temperature: 0.5, // Encourage more natural, less random dialogue
-    }
+Please provide the dialogue script below in the detected language.`
 });
 
 // The main Genkit flow
@@ -99,23 +81,8 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
   async (input) => {
     // 1. Generate the dialogue script from the input content
     console.log('[AI Flow - Discussion Audio] Generating dialogue script...');
-    const llmResponse = await dialoguePrompt({ content: input.content });
-    const rawScript = llmResponse.text;
-
-    if (!rawScript || !rawScript.trim()) {
-      throw new Error("AI returned an empty dialogue script.");
-    }
-    
-    // Clean and validate the script to ensure it only contains valid dialogue lines
-    const scriptLines = rawScript.split('\n')
-      .map(line => line.trim())
-      .filter(line => line.startsWith('Speaker1:') || line.startsWith('Speaker2:'));
-      
-    if (scriptLines.length === 0) {
-      throw new Error("AI failed to generate a valid dialogue script format.");
-    }
-
-    const dialogueScript = scriptLines.join('\n');
+    const { output: dialogueOutput } = await dialoguePrompt({ content: input.content });
+    const dialogueScript = dialogueOutput?.dialogue;
 
     if (!dialogueScript) {
       throw new Error("Failed to generate a dialogue script from the content.");

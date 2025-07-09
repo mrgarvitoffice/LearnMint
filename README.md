@@ -15,7 +15,7 @@
 
 # 🌱 LearnMint
 
-**LearnMint** is a futuristic, AI-powered learning platform designed to redefine how students study and absorb knowledge. With the power of **Google Gemini** and a sleek, responsive UI built on **Next.js**, LearnMint offers a personalized and interactive educational experience — automating material creation, enabling contextual learning, and maximizing retention like never before.
+**LearnMint** is a futuristic, AI-powered learning platform designed to redefine how students study and absorb knowledge. With the power of **Google Gemini** and a sleek, responsive UI built on **Next.js**, LearnMint offers a personalized and interactive educational experience — automating material creation, enabling contextual learning, and maximizing retention like never before. !
 
 > Built by **MrGarvit**, LearnMint is not just a study tool — it’s your AI-powered academic assistant.
 
@@ -82,7 +82,7 @@ Want to tailor LearnMint to your needs? Here's how:
 ## 💬 Creator’s Note
 
 **LearnMint** was developed by **MrGarvit** as a showcase of cutting-edge AI integration in modern web applications.  
-It demonstrates how generative AI can be used to build dynamic, personalized, and engaging educational tools for the next generation of learners. !!!
+It demonstrates how generative AI can be used to build dynamic, personalized, and engaging educational tools for the next generation of learners. !!
 
 ---
 
