@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
@@ -208,16 +209,16 @@ export default function DashboardPage() {
                             <CardTitle className="text-xl font-semibold text-orange-600 dark:text-orange-500">{t('dashboard.dailyMotivation.title')}</CardTitle>
                         </div>
                         {isLoadingQuote ? (
-                            <div className="flex items-center justify-center space-x-2 text-muted-foreground py-3 h-[6.5rem]"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
+                            <div className="flex items-center justify-center space-x-2 text-muted-foreground p-4 min-h-32"><Loader2 className="h-5 w-5 animate-spin" /><span>{t('library.mathFact.loading')}</span></div>
                         ) : isErrorQuote ? (
-                            <div className="flex items-center justify-center space-x-2 text-destructive py-3 h-[6.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
+                            <div className="flex items-center justify-center space-x-2 text-destructive p-4 min-h-32"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
                         ) : quote ? (
-                            <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic py-3 h-[6.5rem] flex flex-col items-center justify-center">
+                            <CardDescription className="text-lg text-orange-700 dark:text-orange-400 font-medium pt-1 italic p-4 min-h-32 flex flex-col items-center justify-center">
                               <span>"{quote.quote}"</span>
                               <span className="text-sm not-italic font-sans font-semibold mt-1"> – {quote.author}</span>
                             </CardDescription>
                         ) : (
-                            <div className="flex items-center justify-center space-x-2 text-destructive py-3 h-[6.5rem]"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
+                            <div className="flex items-center justify-center space-x-2 text-destructive p-4 min-h-32"><AlertTriangle className="h-5 w-5" /><span>{t('library.mathFact.error')}</span></div>
                         )}
                     </CardHeader>
                     <CardFooter className="pt-2 pb-4">
