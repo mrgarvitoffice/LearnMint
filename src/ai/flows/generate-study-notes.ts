@@ -27,7 +27,7 @@ const GenerateStudyNotesInputSchema = z.object({
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
 const GenerateStudyNotesOutputSchema = z.object({
-  notes: z.string().describe("Comprehensive, well-structured study notes in Markdown format. Include headings (H1, H2, H3), subheadings, bullet points, bold text for key terms. Where a diagram or visual would be helpful, insert a placeholder like '[VISUAL_PROMPT: A diagram illustrating...]'. The notes should be engaging, like topper notes, with good spacing and visual hierarchy (big text, small text), and relevant emojis.")
+  notes: z.string().describe("Comprehensive, well-structured study notes in Markdown format.")
 });
 export type GenerateStudyNotesOutput = z.infer<typeof GenerateStudyNotesOutputSchema>;
 
@@ -35,7 +35,7 @@ const generateStudyNotesPrompt = aiForNotes.definePrompt({
   name: 'generateStudyNotesPrompt',
   model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
   input: { schema: GenerateStudyNotesInputSchema },
-  output: { schema: GenerateStudyNotesOutputSchema },
+  output: { format: 'text' }, // Request raw Markdown text for higher reliability
   prompt: `You are an expert educator tasked with creating exceptionally engaging and visually appealing study notes, in the style of a top student's "topper notes." The notes must be well-formatted using Markdown to be both informative and a pleasure to study from. Your goal is to make learning fun and effective!
 
 Topic: {{{topic}}}
@@ -98,8 +98,7 @@ Please generate study notes on this topic with the following characteristics:
 5.  **Conclusion:**
     *   End with a **concluding summary or a section to remember key facts**, perhaps with a fun, thematic title (e.g., "Remember These CELL-ebrated Facts! 🥳").
 
-Your goal is to produce notes that are not only informative but exceptionally well-organized, visually engaging, and a genuine pleasure to study from – the kind of notes a top student would create to ace their exams. Ensure there's good visual separation (space) between headings and the text that follows them.
-The entire output, including all Markdown formatting, emojis, and image placeholders, should be a single JSON object with a key "notes" containing the complete Markdown string.
+Your goal is to produce notes that are not only informative but exceptionally well-organized, visually engaging, and a genuine pleasure to study from – the kind of notes a top student would create to ace their exams. Ensure there's good visual separation (space) between headings and the text that follows them. The entire output should be ONLY the notes content as a single Markdown string. Do NOT add any extra text, introductions, or JSON formatting.
 Example of a desired style snippet for a section:
 \`\`\`markdown
 ## MEET THE CELL SUPERSTARS: Prokaryotic vs. Eukaryotic 🌟🕰️
@@ -131,14 +130,16 @@ const generateStudyNotesFlow = aiForNotes.defineFlow(
   },
   async (input) => {
     console.log(`[AI Flow - Notes Text] Generating notes text for topic: ${input.topic}`);
-    const textGenerationResult = await generateStudyNotesPrompt(input);
+    // The prompt now returns a raw string response for better reliability.
+    const llmResponse = await generateStudyNotesPrompt(input);
+    const notesText = llmResponse.text;
     
-    if (!textGenerationResult.output || typeof textGenerationResult.output.notes !== 'string' || textGenerationResult.output.notes.trim() === '') {
-      console.error("[AI Flow Error - Notes Text] AI returned empty or invalid notes data:", textGenerationResult.output);
+    if (!notesText || notesText.trim() === '') {
+      console.error("[AI Flow Error - Notes Text] AI returned empty or invalid notes data.");
       throw new Error("AI failed to generate notes text in the expected style. The returned data was empty or invalid.");
     }
     
-    let notesWithPlaceholders = textGenerationResult.output.notes;
+    let notesWithPlaceholders = notesText;
     console.log(`[AI Flow - Notes Text] Successfully generated notes text for topic: ${input.topic}. Length: ${notesWithPlaceholders.length}`);
 
     // Real Image generation step
