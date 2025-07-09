@@ -49,16 +49,27 @@ const prompt = aiForQuizzes.definePrompt({
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.
 
-**CRUCIAL INSTRUCTION:** First, determine the primary language of the provided "Study Notes Content". You **MUST** write all questions, options, answers, and explanations in that same language. Do not default to English if the notes are in another language.
+**CRITICAL INSTRUCTION 1: LANGUAGE DETECTION**
+First, determine the primary language of the provided "Study Notes Content". You **MUST** write all questions, options, answers, and explanations in that same language. Do not default to English if the notes are in another language. This is a non-negotiable rule.
+
+**CRITICAL INSTRUCTION 2: QUESTION TYPE RATIO**
+You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with a strict 80/20 ratio.
+- **80% of the questions must be 'multiple-choice'.**
+- **20% of the questions must be 'short-answer'.**
+
+For example:
+- If {{numQuestions}} is 10, create exactly 8 'multiple-choice' and 2 'short-answer' questions.
+- If {{numQuestions}} is 5, create exactly 4 'multiple-choice' and 1 'short-answer' question.
+
+**CRITICAL INSTRUCTION 3: FORMATTING**
+Each question must have one correct answer and a brief explanation. For multiple-choice, provide 4 options.
 
 Study Notes Content:
 ---
 {{{notesContent}}}
 ---
 
-Include a mix of 'multiple-choice' and 'short-answer' questions. **Strictly aim for approximately 20% of the total questions to be 'short-answer' and the remaining 80% to be 'multiple-choice'.** Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
-
-Output the questions in JSON format. Here is the schema:
+Output the questions in a valid JSON format, matching this schema precisely:
 \n{{{outputSchema}}}
 `,
 });
