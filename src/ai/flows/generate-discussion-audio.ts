@@ -45,7 +45,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 // Prompt to generate the dialogue script. Uses the text-generation client.
 const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-1.5-flash-latest',
+    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
     input: { schema: z.object({ content: z.string() }) },
     output: { format: 'text' },
     prompt: `You are an expert multilingual scriptwriter. Your primary task is to convert the following text content into a natural-sounding, two-person dialogue script.
