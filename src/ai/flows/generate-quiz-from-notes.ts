@@ -56,7 +56,7 @@ Study Notes Content:
 {{{notesContent}}}
 ---
 
-Include a mix of 'multiple-choice' and 'short-answer' questions. Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
+Include a mix of 'multiple-choice' and 'short-answer' questions. **Strictly aim for approximately 20% of the total questions to be 'short-answer' and the remaining 80% to be 'multiple-choice'.** Each question must have one correct answer and a brief explanation for why the answer is correct. For multiple-choice, provide 4 options.
 
 Output the questions in JSON format. Here is the schema:
 \n{{{outputSchema}}}

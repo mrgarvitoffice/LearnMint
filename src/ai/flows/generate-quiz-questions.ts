@@ -70,12 +70,12 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
   The questions should cover key concepts and test understanding effectively.
 
   Include a mix of 'multiple-choice' and 'short-answer' question types.
-  The proportion of 'short-answer' questions should generally be between 15% and 30% of the total number of questions ({{numQuestions}}).
+  **Strictly aim for approximately 20% of the total questions to be 'short-answer' and the remaining 80% to be 'multiple-choice'.**
   For example:
-  - If {{numQuestions}} is 30, aim for approximately 5-8 'short-answer' questions.
-  - If {{numQuestions}} is 10, aim for approximately 2-3 'short-answer' questions.
-  - If {{numQuestions}} is 5, aim for approximately 1-2 'short-answer' questions.
-  The majority of questions should be 'multiple-choice'.
+  - If {{numQuestions}} is 30, aim for exactly 6 'short-answer' questions.
+  - If {{numQuestions}} is 10, aim for exactly 2 'short-answer' questions.
+  - If {{numQuestions}} is 5, aim for exactly 1 'short-answer' question.
+  The vast majority of questions should be 'multiple-choice'.
 
   For 'multiple-choice' questions:
     - Provide exactly 4 distinct and plausible options.
