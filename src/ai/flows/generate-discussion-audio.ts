@@ -26,7 +26,22 @@ const GenerateDiscussionAudioOutputSchema = z.object({
 export type GenerateDiscussionAudioOutput = z.infer<typeof GenerateDiscussionAudioOutputSchema>;
 
 export async function generateDiscussionAudio(input: GenerateDiscussionAudioInput): Promise<GenerateDiscussionAudioOutput> {
-  return generateDiscussionAudioFlow(input);
+  try {
+    return await generateDiscussionAudioFlow(input);
+  } catch(e: any) {
+    console.error(`[AI Action Error - Generate Discussion] Flow failed: ${e.message}`);
+    
+    let userMessage = "Failed to generate the audio discussion. The AI may have had trouble processing the provided content.";
+    if (e.message?.includes("dialogue script format")) {
+      userMessage = "The AI scriptwriter couldn't create a valid dialogue from your text. Please try rephrasing or using different content.";
+    } else if (e.message?.includes("API key") || e.message?.includes("permission denied")) {
+      userMessage = "Could not generate discussion due to an API key or configuration issue. Please check your server's environment variables (GOOGLE_API_KEY_NOTES or GOOGLE_API_KEY_TTS).";
+    } else {
+      userMessage = `An unexpected error occurred: ${e.message}`;
+    }
+    
+    throw new Error(userMessage);
+  }
 }
 
 // Helper to convert PCM data to WAV Base64
@@ -45,7 +60,7 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 // Prompt to generate the dialogue script. Uses the text-generation client.
 const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+    model: 'googleai/gemini-1.5-flash-latest', // Upgraded model for better instruction following
     input: { schema: z.object({ content: z.string() }) },
     output: { format: 'text' },
     prompt: `You are an expert multilingual scriptwriter. Your primary task is to convert the following text content into a natural-sounding, two-person dialogue script.
@@ -68,7 +83,10 @@ Content to convert:
 {{{content}}}
 ---
 
-Please provide the dialogue script below in the detected language.`
+Please provide the dialogue script below in the detected language.`,
+    config: {
+        temperature: 0.5, // Encourage more natural, less random dialogue
+    }
 });
 
 // The main Genkit flow
