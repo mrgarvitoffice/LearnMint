@@ -608,6 +608,7 @@
   "news.categories.sports": "Sport",
   "news.categories.science": "Wetenschap",
   "news.categories.health": "Gezondheid",
+  "auth.email.label": "E-mail",
   "news.categories.entertainment": "Amusement",
   "news.categories.world": "Wereld"
 }

@@ -437,6 +437,7 @@
   "arcade.challenge.gameOverMessage": "Mäng on läbi! Olete kõik sõnad lõpetanud. Teie viimane jada: {{streak}}. Kõrgeim skoor: {{highScore}}",
   "arcade.challenge.feedback.correct": "Õige!",
   "arcade.challenge.feedback.incorrect": "Vale.",
+  "auth.email.label": "E-mail",
   "arcade.challenge.feedback.fail": "Ups! Õige vastus oli: {{term}}",
   "arcade.challenge.feedback.wordWas": "Sõna oli: {{term}}.",
   "arcade.challenge.feedback.attemptsLeft": "Vale. Järelejäänud katsed: {{attempts}}",

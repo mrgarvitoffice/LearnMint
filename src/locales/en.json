@@ -352,6 +352,7 @@
   "auth.signInButton": "Sign In",
   "auth.noAccountPrompt": "No account?",
   "auth.signUpLink": "Sign Up",
+  "auth.email.label": "E-mail",
   "auth.createAccountTitle": "Create an Account",
   "auth.createAccountDescription": "Join LearnMint to unlock all features.",
   "auth.orSignUpWithEmail": "OR SIGN UP WITH EMAIL",

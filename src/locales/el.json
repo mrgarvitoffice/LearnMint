@@ -473,6 +473,7 @@
   "calculator.buttons.log": "log",
   "calculator.buttons.ln": "ln",
   "calculator.buttons.rad": "RAD",
+  "auth.email.label": "E-mail",
   "calculator.buttons.deg": "DEG",
   "calculator.converter.categories.length": "Μήκος",
   "calculator.converter.categories.temperature": "Θερμοκρασία",

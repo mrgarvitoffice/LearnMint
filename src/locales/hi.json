@@ -361,6 +361,7 @@
   "auth.createAccountButton": "खाता बनाएं",
   "auth.alreadyHaveAccountPrompt": "पहले से ही खाता है?",
   "auth.signInLink": "साइन इन करें",
+  "auth.email.label": "ई-मेल",
   "auth.emailPlaceholder": "your@email.com",
   "chatbot.gojo.name": "गोजो एआई",
   "chatbot.holo.name": "होलो एआई",

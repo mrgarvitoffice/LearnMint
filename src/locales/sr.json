@@ -610,6 +610,7 @@
   "news.categories.science": "Наука",
   "news.categories.health": "Здравље",
   "news.categories.entertainment": "Забава",
+  "auth.email.label": "E-mail",
   "news.categories.world": "Свет"
 }
 

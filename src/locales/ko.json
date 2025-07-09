@@ -609,6 +609,7 @@
   "news.categories.sports": "스포츠",
   "news.categories.science": "과학",
   "news.categories.health": "건강",
+  "auth.email.label": "E-mail",
   "news.categories.entertainment": "엔터테인먼트",
   "news.categories.world": "세계"
 }

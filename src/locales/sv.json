@@ -610,5 +610,6 @@
   "news.categories.science": "Vetenskap",
   "news.categories.health": "Hälsa",
   "news.categories.entertainment": "Underhållning",
+  "auth.email.label": "E-mail",
   "news.categories.world": "Världen"
 }

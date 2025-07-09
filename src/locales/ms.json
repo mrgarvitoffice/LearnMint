@@ -609,6 +609,7 @@
   "news.categories.sports": "Sukan",
   "news.categories.science": "Sains",
   "news.categories.health": "Kesihatan",
+  "auth.email.label": "E-mail",
   "news.categories.entertainment": "Hiburan",
   "news.categories.world": "Dunia"
 }

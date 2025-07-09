@@ -543,6 +543,7 @@
   "library.books.readInApp": "Lue sovelluksessa",
   "library.books.viewOnGoogle": "Näytä Google Kirjoissa",
   "library.books.moreInfo": "Lisätietoja",
+  "auth.email.label": "E-mail",
   "library.books.toast.successTitle": "Google Kirjojen haku valmis",
   "library.books.toast.successDesc": "Löytyi {{count}} kirjaa.",
   "library.books.toast.noResultsTitle": "Kirjoja ei löytynyt",

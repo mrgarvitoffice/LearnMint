@@ -448,6 +448,7 @@
   "arcade.challenge.hints.hint2": "Hinweis: Der erste Buchstabe ist \"{{letter}}\"",
   "arcade.challenge.hints.hint3": "Hinweis: Beginnt mit \"{{letters}}...\"",
   "arcade.challenge.yourGuess": "Dein Tipp",
+  "auth.email.label": "E-mail",
   "arcade.challenge.submitButton": "Tipp abgeben",
   "arcade.challenge.wordFailedTitle": "Wort fehlgeschlagen",
   "arcade.challenge.useHintButton": "Hinweis verwenden (noch {{count}})",

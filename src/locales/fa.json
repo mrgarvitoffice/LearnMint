@@ -45,6 +45,7 @@
   "header.theme": "تم",
   "header.profile.greeting": "سلام، {{name}}!",
   "header.profile.signOut": "خروج",
+  "auth.email.label": "E-mail",
   "header.profile.signIn": "ورود / ثبت نام",
   "header.profile.profile": "پروفایل",
   "generate.title": "ایجاد مطالب مطالعه",
