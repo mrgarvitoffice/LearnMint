@@ -89,19 +89,22 @@ const generateDiscussionAudioFlow = aiForTTS.defineFlow(
     // 1. Generate the dialogue script from the input content
     console.log('[AI Flow - Discussion Audio] Generating dialogue script...');
     const llmResponse = await dialoguePrompt({ content: input.content });
-    let dialogueScript = llmResponse.text;
+    const rawScript = llmResponse.text;
 
-    if (!dialogueScript || dialogueScript.trim() === '') {
+    if (!rawScript || rawScript.trim() === '') {
       throw new Error("AI failed to generate a dialogue script. The response was empty.");
     }
     
-    // Clean up the response to ensure it's a valid script.
-    const scriptStartIndex = dialogueScript.indexOf('Speaker1:');
-    if (scriptStartIndex !== -1) {
-        dialogueScript = dialogueScript.substring(scriptStartIndex);
-    } else {
-        throw new Error("AI response did not contain a valid 'Speaker1:' starting line.");
+    // More robust cleanup: Extract only the lines that match the expected format.
+    const scriptLines = rawScript.split('\n').filter(line => 
+        line.trim().startsWith('Speaker1:') || line.trim().startsWith('Speaker2:')
+    );
+
+    if (scriptLines.length === 0) {
+        throw new Error("AI response did not contain any valid 'Speaker1:' or 'Speaker2:' dialogue lines.");
     }
+
+    const dialogueScript = scriptLines.join('\n');
     console.log(`[AI Flow - Discussion Audio] Dialogue script generated and cleaned successfully.`);
 
     // 2. Generate multi-speaker audio from the script using the TTS client
