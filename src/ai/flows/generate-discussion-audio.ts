@@ -37,40 +37,28 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
 
 const dialoguePrompt = aiForNotes.definePrompt({
     name: 'generateDialogueForTtsPrompt',
-    model: 'googleai/gemini-1.5-flash-latest', // Use a more capable model for script generation
+    model: 'gemini-2.5-flash-lite-preview-06-17',
     input: { schema: z.object({ content: z.string() }) },
     output: { format: 'text' },
-    prompt: `You are an expert multilingual scriptwriter. Your task is to convert the given text content into a natural-sounding, two-person dialogue script.
+    prompt: `You are an expert multilingual scriptwriter. Convert the following text content into a natural-sounding, two-person dialogue script.
 
 **Language Rules:**
-1.  First, detect the primary language of the input content.
-2.  The entire output script **MUST** be written in that same language.
+1. Detect the language of the input content
+2. Write the entire dialogue in that same language
 
 **Participants:**
--   **Speaker1:** A knowledgeable expert, with a slightly formal tone.
--   **Speaker2:** An inquisitive learner, with a friendly and curious tone.
+- Speaker1: Knowledgeable expert (slightly formal)
+- Speaker2: Inquisitive learner (friendly)
 
-**CRITICAL FORMATTING RULES:**
--   Every single line of your output **MUST** start with either "Speaker1:" or "Speaker2:".
--   Do **NOT** include any other text, introductions, summaries, or stage directions (like "smiles" or "nods").
--   The output must **ONLY** contain the dialogue lines, each on a new line.
+**Format Rules:**
+- Each line must start with exactly "Speaker1:" or "Speaker2:"
+- No additional text, introductions, or summaries
+- Only include the dialogue lines
 
-**Example Input:**
-"The mitochondria is the powerhouse of the cell."
-
-**Example Output:**
-Speaker1: Did you know that the mitochondria is often called the powerhouse of the cell?
-Speaker2: Oh, really? Why is that?
-Speaker1: It's because it generates most of the cell's supply of adenosine triphosphate, used as a source of chemical energy.
-Speaker2: Wow, that's fascinating!
-
+Content to convert:
 ---
-**Content to convert to a dialogue script:**
 {{{content}}}
----`,
-    config: {
-        temperature: 0.4,
-    }
+---`
 });
 
 const generateDiscussionAudioFlow = aiForTTS.defineFlow(
