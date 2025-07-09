@@ -609,7 +609,7 @@
   "news.categories.sports": "Sport",
   "news.categories.science": "Scienza",
   "news.categories.health": "Salute",
-  "auth.email.label": "E-mail",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Intrattenimento",
   "news.categories.world": "Mondo"
 }

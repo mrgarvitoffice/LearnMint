@@ -611,5 +611,6 @@
   "news.categories.health": "Здоровье",
   "auth.email.label": "E-mail",
   "news.categories.entertainment": "Развлечения",
+  "auth.emailLabel": "E-Mail",
   "news.categories.world": "Мир"
 }

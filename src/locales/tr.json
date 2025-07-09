@@ -610,6 +610,7 @@
   "news.categories.sports": "Spor",
   "news.categories.science": "Bilim",
   "news.categories.health": "Sağlık",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Eğlence",
   "news.categories.world": "Dünya"
 }

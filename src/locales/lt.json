@@ -610,6 +610,7 @@
   "news.categories.sports": "Sportas",
   "news.categories.science": "Mokslas",
   "news.categories.health": "Sveikata",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Pramogos",
   "news.categories.world": "Pasaulis"
 }

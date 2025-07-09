@@ -609,6 +609,7 @@
   "news.categories.sports": "খেলাধুলা",
   "news.categories.science": "বিজ্ঞান",
   "news.categories.health": "স্বাস্থ্য",
+  "auth.auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "বিনোদন",
   "news.categories.world": "বিশ্ব"
 }

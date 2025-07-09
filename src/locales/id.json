@@ -609,7 +609,7 @@
   "news.categories.sports": "Olahraga",
   "news.categories.science": "Sains",
   "news.categories.health": "Kesehatan",
-  "auth.email.label": "E-mail",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Hiburan",
   "news.categories.world": "Dunia"
 }

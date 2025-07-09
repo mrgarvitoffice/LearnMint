@@ -609,7 +609,7 @@
   "news.categories.sports": "விளையாட்டு",
   "news.categories.science": "அறிவியல்",
   "news.categories.health": "உடல்நலம்",
-  "auth.email.label": "E-mail",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "பொழுதுபோக்கு",
   "news.categories.world": "உலகம்"
 }

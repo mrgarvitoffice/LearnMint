@@ -611,5 +611,6 @@
   "news.categories.science": "Tiede",
   "news.categories.health": "Terveys",
   "news.categories.entertainment": "Viihde",
+  "auth.emailLabel": "E-Mail",
   "news.categories.world": "Maailma"
 }

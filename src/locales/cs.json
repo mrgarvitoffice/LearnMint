@@ -609,6 +609,7 @@
   "news.categories.sports": "Sport",
   "news.categories.science": "Věda",
   "news.categories.health": "Zdraví",
+  "auth.auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Zábava",
   "news.categories.world": "Svět"
 }

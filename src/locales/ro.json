@@ -610,7 +610,7 @@
   "news.categories.science": "Știință",
   "news.categories.health": "Sănătate",
   "news.categories.entertainment": "Divertisment",
-  "auth.email.label": "E-mail",
+  "auth.emailLabel": "E-Mail",
   "news.categories.world": "Lume"
 }
 

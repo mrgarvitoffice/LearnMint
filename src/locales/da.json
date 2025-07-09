@@ -609,6 +609,7 @@
   "news.categories.sports": "Sport",
   "news.categories.science": "Videnskab",
   "news.categories.health": "Sundhed",
+  "auth.auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Underholdning",
   "news.categories.world": "Verden"
 }

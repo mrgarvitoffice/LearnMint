@@ -610,6 +610,6 @@
   "news.categories.science": "Veda",
   "news.categories.health": "Zdravie",
   "news.categories.entertainment": "Zábava",
-  "auth.email.label": "E-mail",
+  "auth.emailLabel": "E-Mail",
   "news.categories.world": "Svet"
 }

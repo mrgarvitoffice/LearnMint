@@ -610,6 +610,7 @@
   "news.categories.sports": "Αθλητισμός",
   "news.categories.science": "Επιστήμη",
   "news.categories.health": "Υγεία",
+  "auth.emailLabel": "E-Mail",
   "news.categories.entertainment": "Ψυχαγωγία",
   "news.categories.world": "Κόσμος"
 }

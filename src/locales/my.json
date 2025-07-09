@@ -360,6 +360,7 @@
   "auth.confirmPasswordLabel": "စကားဝှက်ကို အတည်ပြုပါ",
   "auth.createAccountButton": "အကောင့်တစ်ခု ဖန်တီးပါ",
   "auth.alreadyHaveAccountPrompt": "အကောင့်ရှိနှင့်ပြီးလား။",
+  "auth.emailLabel": "E-Mail",
   "auth.signInLink": "ဝင်ရောက်ပါ",
   "auth.emailPlaceholder": "your@email.com"
 }

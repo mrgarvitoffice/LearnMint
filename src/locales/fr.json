@@ -610,5 +610,6 @@
   "news.categories.science": "Science",
   "news.categories.health": "Santé",
   "news.categories.entertainment": "Divertissement",
+  "auth.emailLabel": "E-Mail",
   "news.categories.world": "Monde"
 }
