@@ -1,191 +1,190 @@
-<p align="center">
-  <a href="#" target="_blank">
-    <img src="https://placehold.co/600x300.png?text=LearnMint&font=orbitron&bg=222_47_11&fc=170_100_50" alt="LearnMint Banner">
+<p align="center">  
+  <a href="https://learnmint-ai.vercel.app/" target="_blank">  
+    <img src="./icon.png" alt="LearnMint Icon" width="200">  
+  </a>  
+</p>  
+
+<h1 align="center">🌿 LearnMint: The AI-Powered Learning Toolkit</h1>  
+
+<p align="center">  
+  <a href="https://github.com/mrgarvitoffice/LearnMint">
+    <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/mrgarvitoffice/LearnMint?color=%2300C4B3&style=for-the-badge">
   </a>
-</p>
-<h1 align="center">LearnMint: The AI-Powered Learning Toolkit</h1>
-
-<p align="center">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/MrGarvit/learnmint?color=%2300C4B3&style=for-the-badge">
-  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/MrGarvit/learnmint?color=%2300C4B3&style=for-the-badge">
-  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/MrGarvit/learnmint?style=for-the-badge">
-</p>
-
-## About The Project
-
-# LearnMint 🌱
-
-> *AI-Powered All-in-One Learning Platform*
-
-LearnMint is a modern, AI-driven web application designed to revolutionize the learning process. Built with Next.js and the Google Gemini API, it provides a comprehensive suite of tools that automate study material creation, facilitate interactive learning, and support students in mastering any subject with greater efficiency and engagement.
-
-## ✨ Features
-
-### 🤖 AI-Powered Content Generation
-- *📝 Smart Notes*: Generate well-structured, Markdown-formatted notes with embedded AI-generated images
-- *🎯 Interactive Quizzes*: Create quizzes with multiple-choice and short-answer questions, complete with detailed explanations
-- *📚 Dynamic Flashcards*: Instant flashcard creation for quick review and memorization
-
-### 🧪 Custom Test Creation Lab
-- Build tailored exams by combining multiple topics
-- Set custom difficulty levels and time limits
-- Use personal notes or AI-generated content
-- Timer functionality for realistic exam simulation
-
-### 💬 Advanced AI Chatbot
-- Multiple AI personas for different learning styles
-- Support for text, image, PDF, audio, and video uploads
-- Contextual conversations for deeper understanding
-- Rich multimedia interactions
-
-### 🛠 Integrated Learning Toolkit
-- *🔬 Scientific Calculator*: Advanced mathematical computations
-- *📏 Unit Converter*: Convert between different measurement units
-- *📹 YouTube Integration*: Search and access educational videos
-- *📖 Google Books Search*: Find relevant academic resources
-- *📰 News Feed*: Stay updated with current affairs
-
-### 🎧 Audio Factory
-- *🗣 Text-to-Speech*: Convert any text content to natural-sounding audio
-- *👥 Two-Person Audio Generation*: Create dialogue-style audio with multiple voices
-- *📄 File Reading*: Read aloud any uploaded document or file
-- *🎵 Voice Customization*: Multiple voice options and speech settings
-
-### 🎨 Personalization & Accessibility
-- *🌙 Dark/Light Theme*: Futuristic design with theme toggling
-- *📱 Responsive Design*: Seamless experience across all devices
-- *🔤 Adjustable Font Sizes*: Better readability for all users
-- *🌍 45+ Language Support*: Comprehensive multilingual accessibility
-- *♿ Accessibility Features*: Inclusive design principles
-
-## 🚀 Tech Stack
-
-- *Framework*: [Next.js](https://nextjs.org/) (App Router)
-- *Language*: [TypeScript](https://www.typescriptlang.org/)
-- *AI*: [Google Gemini via Genkit](https://firebase.google.com/docs/genkit)
-- *Styling*: [Tailwind CSS](https://tailwindcss.com/) with [ShadCN UI](https://ui.shadcn.com/)
-- *Authentication*: [Firebase Authentication](https://firebase.google.com/docs/auth)
-- *State Management*: [TanStack Query](https://tanstack.com/query/latest)
-- *Animations*: [Framer Motion](https://www.framer.com/motion/)
-- *Icons*: [Lucide Icons](https://lucide.dev/)
-
-## 🎯 Getting Started
-
-### Prerequisites
-- Node.js 18+ and npm/yarn
-- Firebase project setup
-- Google Gemini API key
-
-### Installation
-
-1. *Clone the repository*
-   bash
-   git clone https://github.com/yourusername/learnmint.git
-   cd learnmint
-   
-
-2. *Install dependencies*
-   bash
-   npm install
-   # or
-   yarn install
-   
-
-3. *Environment Setup*
-   Create a .env.local file in the root directory:
-   env
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
-   
-   GOOGLE_GEMINI_API_KEY=your_gemini_api_key
-   
-
-4. *Run the development server*
-   bash
-   npm run dev
-   # or
-   yarn dev
-   
-
-5. *Open your browser*
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 📱 Usage
-
-### For Students
-1. *Sign up/Login* using Firebase Authentication
-2. *Generate Study Materials*: Enter any topic to create instant notes, quizzes, and flashcards
-3. *Take Custom Tests*: Build personalized exams with difficulty settings
-4. *Chat with AI*: Get help with multimedia support
-5. *Access Tools*: Use integrated calculator, converter, and research tools
-
-### For Teachers
-1. *Create Content*: Generate comprehensive study materials for any subject
-2. *Build Tests*: Design custom exams with multiple topics and difficulty levels
-3. *Use Audio Factory*: Create audio content and read documents aloud for students
-4. *Monitor Progress*: Track student engagement and performance
-5. *Distribute Resources*: Share materials easily with students
-
-## 🏗 Project Structure
-
-
-learnmint/
-├── app/                    # Next.js app directory
-│   ├── components/         # Reusable UI components
-│   ├── lib/               # Utility functions and configurations
-│   ├── pages/             # Application pages
-│   └── styles/            # Global styles
-├── public/                # Static assets
-├── firebase/              # Firebase configuration
-├── types/                 # TypeScript type definitions
-└── utils/                 # Helper functions
-
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (git checkout -b feature/amazing-feature)
-3. Commit your changes (git commit -m 'Add amazing feature')
-4. Push to the branch (git push origin feature/amazing-feature)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- *Google Gemini AI* for powerful AI capabilities
-- *Next.js Team* for the excellent framework
-- *Firebase* for authentication and backend services
-- *ShadCN/UI* for beautiful UI components
-- *Tailwind CSS* for efficient styling
-
-## 📞 Support
-
-For support, email support@learnmint.com or join our [Discord community](https://discord.gg/learnmint).
-
-## 🚀 Roadmap
-
-- [ ] Mobile app development
-- [ ] Offline mode support
-- [ ] Advanced analytics dashboard
-- [ ] Collaborative study rooms
-- [ ] Integration with LMS platforms
-- [ ] Voice-to-text note taking
-- [ ] Advanced AI tutoring modes
+  <a href="https://github.com/mrgarvitoffice/LearnMint/commits">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/mrgarvitoffice/LearnMint?style=for-the-badge">
+  </a>
+</p>  
 
 ---
 
-*Made with ❤ by [MrGarvit](https://github.com/mrgarvit)*
+## 📘 About The Project
 
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://firebase.google.com/)
+*LearnMint* is a futuristic, AI-powered platform designed to revolutionize how learners of all ages study, revise, and grow. It automates material creation using *Google Gemini AI, delivering seamless contextual learning and boosting retention — all through a clean, fast, and responsive UI powered by **Next.js*.
+
+> Built by *MrGarvit (CSE, 4th Sem)*, LearnMint is more than a project — it's a learning revolution.
+
+---
+
+## 🚨 The Problem
+
+🧠 *Learning is Hard & Scattered*
+
+### ❌ For Students:
+- Hours lost creating notes  
+- Constant app-switching  
+- No habit of reading news
+
+### ❌ For Teachers:
+- Lesson planning is time-consuming  
+- Lack of integrated teaching tools
+
+### ❌ For Everyone:
+- Internet is filled with noise  
+- Confusion about what's accurate
+
+🎯 *Impact:* Fragmented learning → Wasted time → Reduced performance
+
+---
+
+## ✅ The LearnMint Solution
+
+> One platform. Everything you need to learn smarter and faster.
+
+- 🚀 AI-generated *Notes, **Quizzes, **Flashcards*
+- 🧠 Personalized chatbot with *file upload support*
+- 🛠 Scientific Calculator, Unit Converter, News & Library tools
+- 🎧 Audio support for hands-free learning
+- 🌍 Multi-language support, themes, accessibility controls
+
+---
+
+## 🔑 Core Features
+
+### 🤖 AI Content Generation  
+- AI-powered markdown notes with diagrams  
+- Instant MCQs and Short Answers with explanations  
+- Dynamic flashcards from any topic
+
+### 🧪 Custom Test Lab  
+- Build custom exams using topic selection, difficulty, and timer  
+- Reuse or generate new sets every time
+
+### 💬 Smart AI Chatbot  
+- Powered by *Google Gemini API*  
+- Upload PDF, text, image, video, or audio  
+- Contextual answers, assistant personas & arcade support
+
+### 🎧 Audio Factory  
+- Text-to-speech in natural voices  
+- Dual-voice dialogue generation for easy listening
+
+### 📰 Global News Terminal  
+- Real-time headlines with full article preview  
+- Source/date shown for trust
+
+### 🛠 Toolkit & Resource Library  
+- 📐 Unit converter  
+- 🧮 Scientific calculator  
+- 🔍 Search YouTube & Google Books directly
+
+---
+
+## 🌐 Accessibility & Trust
+
+| 📱 Accessibility | 🔐 Trust |
+|------------------|----------|
+| Works on all devices (Mobile-first) | Uses *Google Gemini API* |
+| 45+ Languages | News with real-time *date + source* |
+| Dark/Light Themes | Data secured via *Firebase Auth* |
+| Adjustable Fonts | All content sourced from Google APIs |
+| Trial Guest Mode | Minimizes hallucination/errors |
+| Instant Loading (<2s) | 99.9% uptime |
+
+---
+
+## 👥 Who Uses LearnMint?
+
+| 👩‍🎓 Students       | 🧑‍🏫 Teachers         | 💼 Professionals    | 🏡 Everyone        |
+|--------------------|----------------------|----------------------|--------------------|
+| Generate material  | Build smart lessons  | Learn + Certify      | Hobby learning     |
+| Practice tests     | Quick assessments    | Reskill efficiently  | Personal growth    |
+
+💬 “Replaced 4 apps with LearnMint!”  
+💬 “My students are finally engaged.”  
+💬 “I'm learning again — at 45!”
+
+---
+
+## 🧠 Powered By AI — Built For Scale
+
+### ⚙ Tech Stack
+
+| Category          | Technology                                                                                       |
+|------------------|--------------------------------------------------------------------------------------------------|
+| 🧩 Framework       | [![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&style=flat-square)](https://nextjs.org/) |
+| 🧑‍💻 Language        | [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&style=flat-square)](https://www.typescriptlang.org/) |
+| 🧠 AI Engine       | [![Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?logo=google&style=flat-square)](https://firebase.google.com/docs/genkit) |
+| 🎨 Styling         | [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwindcss&style=flat-square)](https://tailwindcss.com/) [![ShadCN](https://img.shields.io/badge/ShadCN_UI-111827?style=flat-square)](https://ui.shadcn.com/) |
+| 🎞 Animations      | [![Framer Motion](https://img.shields.io/badge/Framer%20Motion-EF008F?logo=framer&style=flat-square)](https://www.framer.com/motion/) |
+| 💠 Icons           | [![Lucide](https://img.shields.io/badge/Lucide-000000?style=flat-square)](https://lucide.dev/) |
+| 🔐 Authentication  | [![Firebase](https://img.shields.io/badge/Firebase_Auth-FFA611?logo=firebase&style=flat-square)](https://firebase.google.com/docs/auth) |
+| ⚙ State Mgmt      | [![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square)](https://tanstack.com/query/latest) |
+
+---
+
+## 🎨 Customization Guide
+
+| Area         | Location |
+|--------------|----------|
+| 🎨 Theme & Styles | src/app/globals.css, tailwind.config.ts |
+| 🧠 AI Prompts     | src/ai/flows/ |
+| 🔤 Global Font    | src/app/layout.tsx |
+
+---
+
+## 📈 Market Opportunity
+
+- 🌍 $366B+ EdTech industry  
+- 🎓 2.3B global learners  
+- 🚀 Growing 13.4% annually  
+
+### 💰 Business Model
+
+| Plan       | Features                   | Pricing        |
+|------------|----------------------------|----------------|
+| Free       | Basic access               | $0/month       |
+| Premium    | Unlimited features         | $4.99/month    |
+| Enterprise | Dashboards + Bulk tools    | $29.99/month   |
+
+---
+
+## 🚀 Roadmap (Upcoming)
+
+- 📱 Native Mobile Apps (iOS + Android)
+- 🖥 Desktop App (Electron)
+- 🛰 Offline Support & PWA
+- 🏢 Institution Dashboards
+- 🎨 Custom Branding for Enterprises
+
+---
+
+## 📦 Deployment Links
+
+- 🔗 *Live App*: [learnmint-ai.vercel.app](https://learnmint-ai.vercel.app/)
+- 🧑‍💻 *GitHub Repo*: [github.com/mrgarvitoffice/LearnMint](https://github.com/mrgarvitoffice/LearnMint)
+- 📧 *Contact*: [learnmint.ai@gmail.com](mailto:learnmint.ai@gmail.com)
+
+---
+
+## 📄 License
+
+This project is licensed under the  
+[Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).  
+You may use, share, and adapt this project — *but not for commercial purposes*.
+
+---
+
+<p align="center">
+  <strong>🎓 Enjoy minting new knowledge with <em>LearnMint</em>.</strong><br/>
+  <em>Learning Made Simple. For Everyone.</em>
+</p>
