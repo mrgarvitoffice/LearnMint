@@ -13,7 +13,7 @@
   <a href="https://github.com/mrgarvitoffice/LearnMint/commits">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/mrgarvitoffice/LearnMint?style=for-the-badge">
   </a>
-  <a href="https://drive.google.com/file/d/11wKQOCih6_pCCZeR458q--r2ekwZLGRC/view?usp=drivesdk" target="_blank">
+  <a href="https://drive.google.com/file/d/12bYDPrF6g6CF7hmlegjZuGAC_H86tWv5/view?usp=drivesdk" target="_blank">
     <img alt="LearnMint PDF" src="https://img.shields.io/badge/📄 LearnMint-PDF-blue?style=for-the-badge">
   </a>
 </p>
