@@ -1,11 +1,9 @@
 <p align="center">  
   <a href="https://learnmint-ai.vercel.app/" target="_blank">  
-    <img src="https://ibb.co/LDjc53ts" alt="LearnMint Icon" width="200">  
+    <img src="https://raw.githubusercontent.com/mrgarvitoffice/LearnMint/main/public/icons/icon-512x512.png" alt="LearnMint Icon" width="200">  
   </a>  
 </p>
-<p align="center">
-  <img src="https://ibb.co/LDjc53ts" alt="LearnMint Banner by MrGarvit" data-ai-hint="modern abstract">
-</p>
+
 <h1 align="center">🌿 LearnMint: The AI-Powered Learning Toolkit</h1>  
 
 <p align="center">  
