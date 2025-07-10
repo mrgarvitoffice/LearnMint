@@ -1,6 +1,6 @@
 <p align="center">  
   <a href="https://learnmint-ai.vercel.app/" target="_blank">  
-    <img src="https://raw.githubusercontent.com/mrgarvitoffice/LearnMint/main/icon-512x512.png" alt="LearnMint Icon" width="200">  
+    <img src="https://raw.githubusercontent.com/mrgarvitoffice/LearnMint/main/icons/icon-512x512.png" alt="LearnMint Icon" width="200">  
   </a>  
 </p>
 
