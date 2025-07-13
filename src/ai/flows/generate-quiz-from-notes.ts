@@ -49,8 +49,10 @@ const prompt = aiForQuizzes.definePrompt({
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.
 
-**CRITICAL INSTRUCTION 1: LANGUAGE DETECTION**
-First, determine the primary language of the provided "Study Notes Content". You **MUST** write all questions, options, answers, and explanations in that same language. Do not default to English if the notes are in another language. This is a non-negotiable rule.
+**CRITICAL INSTRUCTION 1: LANGUAGE DETECTION & ADHERENCE**
+First, determine the primary language of the provided "Study Notes Content".
+- If the notes are in a specific language (e.g., Spanish, Japanese, Hindi), you **MUST** write all questions, options, answers, and explanations in that same language.
+- If the language is not clear or is in English, you **MUST** generate the entire output in English. This is a non-negotiable rule. Do not default to any other language.
 
 **CRITICAL INSTRUCTION 2: QUESTION TYPE RATIO**
 You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with a strict 80/20 ratio.

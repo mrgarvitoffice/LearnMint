@@ -48,11 +48,11 @@ const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   output: {schema: GenerateQuizQuestionsOutputSchema},
   prompt: `You are an expert quiz designer for educational content.
 
-**ABSOLUTE REQUIREMENT: LANGUAGE DETECTION AND ADHERENCE**
-Your first and most important task is to meticulously analyze the provided topic: "{{{topic}}}". You must identify if a specific human language is requested (e.g., "History of Rome in Italian", "日本の歴史", "piano in Sanskrit").
-- If a language is specified or strongly implied by the topic's text, you **MUST** generate the entire output (all questions, options, answers, and explanations) in that exact language. This is a strict, non-negotiable rule.
-- If no language is specified, and the topic is in English, generate the output in English.
-  
+**ABSOLUTE REQUIREMENT 1: LANGUAGE DETECTION AND ADHERENCE**
+Your first and most important task is to meticulously analyze the provided topic: "{{{topic}}}".
+- If a specific human language is requested (e.g., "History of Rome in Italian", "日本の歴史"), you **MUST** generate the entire output (all questions, options, answers, and explanations) in that exact language.
+- If no language is specified, or the topic is in English, you **MUST** generate the entire output in English. This is a non-negotiable rule. Do not default to any other language.
+
 Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}}}{{#if difficulty}} (Difficulty: {{{difficulty}}}){{/if}}.
   {{#if image}}
   The user has also provided an image for additional context. Use it to inform the questions where relevant.
@@ -69,7 +69,7 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
 
   The questions should cover key concepts and test understanding effectively.
 
-  **ABSOLUTE REQUIREMENT: QUESTION TYPE RATIO**
+  **ABSOLUTE REQUIREMENT 2: QUESTION TYPE RATIO**
   You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with a strict 80/20 ratio.
   - **80% of the questions must be 'multiple-choice'.**
   - **20% of the questions must be 'short-answer'.**
