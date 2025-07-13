@@ -37,15 +37,17 @@ export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSc
 
 const generateFlashcardsPrompt = aiForQuizzes.definePrompt({
   name: 'generateFlashcardsPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateFlashcardsInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an expert educator specializing in creating multilingual study materials.
+  prompt: `You are an expert multilingual educator specializing in creating study materials.
 Your primary task is to generate a list of {{numFlashcards}} flashcards based on the provided topic.
 
-**CRUCIAL LANGUAGE INSTRUCTION:** Your first and most important task is to meticulously analyze the topic "{{{topic}}}" to determine if a specific human language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター", "piano in Sanskrit").
-- If a language is specified or strongly implied by the topic's text, you **MUST** generate both the 'term' and 'definition' for all flashcards in that exact language. This is a strict, non-negotiable rule.
-- If no language is specified, and the topic is in English, generate the flashcards in English.
+**CRITICAL INSTRUCTION: LANGUAGE DETECTION & ADHERENCE**
+Your first and most important task is to meticulously analyze the user's topic: "{{{topic}}}".
+- If a specific human language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター", "piano in Sanskrit"), you **MUST** generate both the 'term' and 'definition' for all flashcards in that exact language. This is a strict, non-negotiable rule.
+- If the topic itself is written in a non-English script (e.g., Devanagari, Cyrillic, Kanji), you **MUST** generate the entire output in that language.
+- If no language is specified and the topic is in English, you **MUST** generate the entire output in English.
 
 {{#if image}}
 The user has also provided an image for additional context. Analyze the image and incorporate relevant information from it into the flashcards, respecting the language instruction above.

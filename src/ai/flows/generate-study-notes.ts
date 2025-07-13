@@ -36,81 +36,56 @@ const generateStudyNotesPrompt = aiForNotes.definePrompt({
   model: 'googleai/gemini-1.5-flash-latest',
   input: { schema: GenerateStudyNotesInputSchema },
   output: { format: 'text' }, // Request raw Markdown text for higher reliability
-  prompt: `You are an expert educator tasked with creating exceptionally engaging and visually appealing study notes, in the style of a top student's "topper notes." The notes must be well-formatted using Markdown to be both informative and a pleasure to study from. Your goal is to make learning fun and effective!
+  prompt: `You are an expert multilingual educator. Your primary task is to create engaging, well-structured study notes in Markdown.
 
-Topic: {{{topic}}}
+**CRITICAL INSTRUCTION 1: LANGUAGE DETECTION**
+Your first and most important task is to meticulously analyze the user's topic: "{{{topic}}}".
+- If a specific human language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター", "piano in Sanskrit"), you **MUST** generate the entire notes content in that exact language.
+- If the topic itself is written in a non-English language (e.g., Devanagari, Cyrillic, Kanji), you **MUST** generate the notes in that same language.
+- If no language is specified and the topic is in English, generate the notes in English.
 
+**CRITICAL INSTRUCTION 2: CONTENT SOURCE**
 {{#if notes}}
 ---
-IMPORTANT: You MUST base the generated notes primarily on the following text provided by the user. The topic above provides context, but the content below is the main source of truth.
+You MUST base the generated notes primarily on the following text provided by the user. The topic "{{{topic}}}" provides context, but the content below is the main source of truth.
 USER-PROVIDED NOTES:
 {{{notes}}}
 ---
 {{/if}}
 
 {{#if image}}
-The user has also provided an image for additional context. Use it to enhance the notes where relevant, especially if it helps clarify a concept mentioned in the topic or notes.
+The user has also provided an image for additional context. Use it to enhance the notes where relevant, respecting the language instruction above.
 User's Image: {{media url=image}}
 {{/if}}
-
 {{#if audio}}
 The user has also provided an audio file for additional context. Use it to enhance the notes.
 User's Audio: {{media url=audio}}
 {{/if}}
-
 {{#if video}}
 The user has also provided an audio transcription from a video. This is a primary source of information. Use it to enhance the notes.
 Video Transcription: {{{video}}}
 {{/if}}
 
-Please generate study notes on this topic with the following characteristics:
+Please generate the study notes with the following characteristics, **always in the detected language**:
 
-1.  **Tone & Engagement:**
-    *   Write in an **enthusiastic, conversational, and highly engaging tone**, as if you're an excited teacher explaining the concepts.
-    *   Use **relevant emojis** (like 🚀, ✨, 🤔, 🧠, 💪, ⚡, 🕰️, 🌟, 🌱, 🐾, 🥳, etc.) to add visual appeal and thematic cues next to headings or key points where appropriate. Make it fun!
-    *   Use catchy or question-based phrases for section introductions or summaries.
-    *   Make key enthusiastic statements really **pop** and stand out using bolding or other Markdown emphasis! For example:
-        > **A cell is the smallest structural and functional unit of an organism. Think of it as the tiny, self-contained powerhouse of life! It's amazing what these little guys can do!** 🤩
+1.  **Tone & Structure:**
+    *   Start with a brief, exciting introduction.
+    *   Use a clear hierarchy of Markdown headings (e.g., # Title, ## Section, ### Sub-section).
+    *   Use **bold** for key terms and *italics* for emphasis.
+    *   Use \`blockquotes\` for important definitions or facts.
+    *   Use lists ('- ' or '1. ') for detailed points.
+    *   Use relevant emojis (🚀, ✨, 🤔, 🧠) next to headings to add visual appeal.
 
-2.  **Structure & Formatting (Markdown):**
-    *   Start with a brief, **exciting introductory paragraph** that hooks the reader.
-    *   Employ a clear hierarchy of headings:
-        *   A **main, attention-grabbing title** for the overall topic (using '# Main Topic Title 🚀✨'). This should be the largest and most prominent.
-        *   **Prominent major section headings** (using '## Key Concept Unveiled! 🤔' or '## Another Big Section! 💡'). Make these visually distinct and larger than major section headings.
-        *   **Clearly distinct sub-headings** for sub-topics (using '### Diving Deeper: ...' or '#### Specific Examples:'). These should be smaller than major section headings, creating a "big text, small text" visual flow.
-    *   Provide detailed information in a **point-wise manner** using bullet points ('- ') or numbered lists ('1. ').
-    *   Pay meticulous attention to **spacing and layout** throughout the document. Use blank lines effectively between paragraphs, headings, and list items to ensure the notes are scannable and easy on the eyes. Make the notes look good and visually appealing through excellent Markdown formatting.
-
-3.  **Content & Emphasis:**
-    *   Ensure the information is accurate, comprehensive, and clearly explained.
-    *   Emphasize **key terms, definitions, and crucial concepts by making them bold**.
-    *   Use *italics* for important nuances, examples, or foreign terms.
-    *   Use \`blockquotes\` for highlighting critical pieces of information, direct definitions, important summaries, or memorable facts.
-    *   If comparing concepts (e.g., Prokaryotic vs. Eukaryotic cells), format this information in a **clear Markdown table**.
-
-4.  **MANDATORY: Visual Placeholders:**
-    *   You **MUST** insert visual aid placeholders where a diagram or image would enhance understanding. This is a critical requirement.
-    *   Use the exact format: \`[VISUAL_PROMPT: A descriptive prompt for an educational image]\`.
+2.  **MANDATORY: Visual Placeholders:**
+    *   You **MUST** insert visual aid placeholders where a diagram or image would enhance understanding.
+    *   Use the exact format: \`[VISUAL_PROMPT: A descriptive prompt for an educational image in English]\`. **The prompt inside the brackets must be in English**, even if the rest of the notes are in another language.
     *   **Examples:** \`[VISUAL_PROMPT: A colorful diagram of the Krebs cycle]\` or \`[VISUAL_PROMPT: A simple chart showing the process of photosynthesis]\`.
     *   Aim for 2-3 visual prompts per document.
-    *   **DO NOT** generate image URLs yourself. Only use the specified placeholder format. Failure to include these placeholders will result in an incomplete output.
 
-5.  **Conclusion:**
-    *   End with a **concluding summary or a section to remember key facts**, perhaps with a fun, thematic title (e.g., "Remember These CELL-ebrated Facts! 🥳").
+3.  **Conclusion:**
+    *   End with a concise summary paragraph.
 
-Your goal is to produce notes that are not only informative but exceptionally well-organized, visually engaging, and a genuine pleasure to study from – the kind of notes a top student would create to ace their exams. Ensure there's good visual separation (space) between headings and the text that follows them. The entire output should be ONLY the notes content as a single Markdown string. Do NOT add any extra text, introductions, or JSON formatting.
-Example of a desired style snippet for a section:
-\`\`\`markdown
-## MEET THE CELL SUPERSTARS: Prokaryotic vs. Eukaryotic 🌟🕰️
-
-Not all cells are the same! There are two major types you must know!
-
-### PROKARYOTIC CELLS (Think SIMPLE & ANCIENT! 🕰️)
-
-- These are the original life forms!
-- **No nucleus!** Their genetic material (DNA) is just chillin' in the cytoplasm.
-- *Examples:* All Bacteria and Archaea.
-\`\`\`
+The entire output should be ONLY the notes content as a single Markdown string. Do NOT add any extra text, introductions, or JSON formatting.
 `,
   config: { 
     safetySettings: [
@@ -198,7 +173,7 @@ export async function generateStudyNotes(input: GenerateStudyNotesInput): Promis
     if (lowerCaseError.includes("model not found") || lowerCaseError.includes("permission denied") || lowerCaseError.includes("api key not valid")) {
       clientErrorMessage = "Study Notes: Generation failed due to an API key or project configuration issue. Please check that the GOOGLE_API_KEY_NOTES (or its fallback) is correct and that the 'Generative Language API' is enabled with billing in its Google Cloud project.";
     } else if (lowerCaseError.includes("api key") || lowerCaseError.includes("google_api_key")) {
-       clientErrorMessage = "Study Notes: Generation failed due to an API key issue. Please check server configuration (GOOGLE_API_KEY or GOOGLE_API_KEY_NOTES or GOOGLE_API_KEY_IMAGES) and ensure billing is enabled for the Google Cloud project.";
+       clientErrorMessage = "Study Notes: Generation failed due to an API key issue. Please check server configuration (GOOGLE_API_KEY, GOOGLE_API_KEY_NOTES, or GOOGLE_API_KEY_IMAGES) and ensure billing is enabled for the Google Cloud project.";
     } else if (error.message) {
       clientErrorMessage = `Study Notes: Generation failed. Error: ${error.message.substring(0, 150)}. Check server logs for full details.`;
     }

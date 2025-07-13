@@ -46,12 +46,13 @@ const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizQuestionsInputSchema},
   output: {schema: GenerateQuizQuestionsOutputSchema},
-  prompt: `You are an expert quiz designer for educational content.
+  prompt: `You are an expert multilingual quiz designer.
 
-**ABSOLUTE REQUIREMENT 1: LANGUAGE DETECTION AND ADHERENCE**
-Your first and most important task is to meticulously analyze the provided topic: "{{{topic}}}".
+**CRITICAL INSTRUCTION 1: LANGUAGE DETECTION & ADHERENCE**
+Your first and most important task is to meticulously analyze the user's topic: "{{{topic}}}".
 - If a specific human language is requested (e.g., "History of Rome in Italian", "日本の歴史"), you **MUST** generate the entire output (all questions, options, answers, and explanations) in that exact language.
-- If no language is specified, or the topic is in English, you **MUST** generate the entire output in English. This is a non-negotiable rule. Do not default to any other language.
+- If the topic itself is written in a non-English script (e.g., Cyrillic, Devanagari, Kanji), you **MUST** generate the entire output in that language.
+- If no language is specified and the topic is in English, you **MUST** generate the entire output in English. This is a non-negotiable rule. Do not default to any other language.
 
 Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}}}{{#if difficulty}} (Difficulty: {{{difficulty}}}){{/if}}.
   {{#if image}}
@@ -69,16 +70,14 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
 
   The questions should cover key concepts and test understanding effectively.
 
-  **ABSOLUTE REQUIREMENT 2: QUESTION TYPE RATIO**
+  **CRITICAL INSTRUCTION 2: QUESTION TYPE RATIO**
   You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with a strict 80/20 ratio.
   - **80% of the questions must be 'multiple-choice'.**
   - **20% of the questions must be 'short-answer'.**
   
   For example:
-  - If {{numQuestions}} is 30, create exactly 24 'multiple-choice' and 6 'short-answer' questions.
   - If {{numQuestions}} is 10, create exactly 8 'multiple-choice' and 2 'short-answer' questions.
   - If {{numQuestions}} is 5, create exactly 4 'multiple-choice' and 1 'short-answer' question.
-  The vast majority of questions must be 'multiple-choice'. This is a strict rule.
 
   For 'multiple-choice' questions:
     - Provide exactly 4 distinct and plausible options.
@@ -93,9 +92,7 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
   
   Output the questions as a JSON object with a "questions" array, conforming to this schema:
   {{{outputSchema}}}
-  Ensure the 'type' field is correctly set for each question ('multiple-choice' or 'short-answer').
-  If 'type' is 'multiple-choice', the 'options' array must be present and contain 4 strings.
-  If 'type' is 'short-answer', the 'options' array should be omitted (or be an empty array).`,
+  Ensure the 'type' field is correctly set for each question ('multiple-choice' or 'short-answer').`,
   config: {
     safetySettings: [
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
