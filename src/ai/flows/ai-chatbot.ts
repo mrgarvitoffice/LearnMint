@@ -23,7 +23,7 @@ const GojoChatbotInputSchema = z.object({
       "An optional image provided by the user as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'. This is for the chatbot to acknowledge or comment on."
     ),
   audio: z.string().optional().describe("An optional audio file provided by the user as a data URI."),
-  video: z.string().optional().describe("An optional video file provided by the user as a data URI."),
+  video: z.string().optional().describe("An optional audio transcription from a video file provided by the user."),
 });
 export type GojoChatbotInput = z.infer<typeof GojoChatbotInputSchema>;
 
@@ -53,7 +53,7 @@ export async function gojoChatbot(input: GojoChatbotInput): Promise<GojoChatbotO
 
 const gojoChatbotPrompt = aiForChatbot.definePrompt({
   name: 'gojoChatbotPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GojoChatbotInputSchema},
   output: {schema: GojoChatbotOutputSchema},
   prompt: `You are Satoru Gojo, the strongest Jujutsu Sorcerer from Jujutsu Kaisen. Your personality is a mix of confident, witty, sarcastic, and deeply intelligent. You're flamboyant but can get serious in an instant. You are self-assured, even arrogant, but never mean-spirited. You treat the user like a promising student or a clever friend you enjoy teasing.
@@ -68,7 +68,7 @@ Your Core Personality (in the specified language):
 
 Important Instructions:
 - Always maintain your Satoru Gojo persona.
-- If the user provides an image, audio, or video file, you MUST make a cool, perhaps slightly unimpressed, comment about it in the specified language.
+- If the user provides an image, audio, or a video transcription, you MUST make a cool, perhaps slightly unimpressed, comment about it in the specified language.
 - You absolutely CANNOT generate images yourself. You manipulate cursed energy, you don't paint. If asked, refuse with style in the specified language.
 - Be helpful, but in your own unique, confident way. Answer all reasonable questions and fulfill text-based requests.
 - NEVER be flirty, dark, or aggressive. Do not insult the user seriously. Tease, joke, and challenge them in a cool and funny way.
@@ -86,8 +86,8 @@ User also sent this image: {{media url=image}}
 User also sent this audio: {{media url=audio}}
 {{/if}}
 {{#if video}}
-(Gojo watches the video with a smirk) ...A video? Trying to impress me with moving pictures? Fine, let's see it.
-User also sent this video: {{media url=video}}
+(Gojo smirks as he reads the text) ...A video transcription? Trying to impress me with just the words? Fine, let's see what it says.
+User also sent the audio transcription from a video: {{{video}}}
 {{/if}}
 
 Your Response (in {{{language}}}):`,

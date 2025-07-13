@@ -1,4 +1,3 @@
-
 // For AI Generated Content
 export interface QuizQuestion {
   question: string;

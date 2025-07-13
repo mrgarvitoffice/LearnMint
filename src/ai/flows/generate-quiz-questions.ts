@@ -30,7 +30,7 @@ const GenerateQuizQuestionsInputSchema = z.object({
       "An optional image provided by the user as a data URI for context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   audio: z.string().optional().describe("An optional audio file provided by the user as a data URI for context."),
-  video: z.string().optional().describe("An optional video file provided by the user as a data URI for context."),
+  video: z.string().optional().describe("An optional audio transcription from a video file provided by the user."),
   numQuestions: z.number().min(1).max(50).describe('The number of quiz questions to generate.'),
   difficulty: z.enum(['easy', 'medium', 'hard']).optional().describe('The difficulty level of the quiz questions.'),
 });
@@ -43,7 +43,7 @@ export type GenerateQuizQuestionsOutput = z.infer<typeof GenerateQuizQuestionsOu
 
 const generateQuizQuestionsPrompt = aiForQuizzes.definePrompt({
   name: 'generateQuizQuestionsPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizQuestionsInputSchema},
   output: {schema: GenerateQuizQuestionsOutputSchema},
   prompt: `You are an expert quiz designer for educational content.
@@ -63,14 +63,14 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
   User's Audio: {{media url=audio}}
   {{/if}}
   {{#if video}}
-  The user has also provided a video file for additional context. Use it to inform the questions where relevant.
-  User's Video: {{media url=video}}
+  The user has also provided an audio transcription from a video file. Use it as primary context for the questions.
+  Video Transcription: {{{video}}}
   {{/if}}
 
   The questions should cover key concepts and test understanding effectively.
 
   **ABSOLUTE REQUIREMENT: QUESTION TYPE RATIO**
-  You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with the following ratio:
+  You **MUST** create a mix of 'multiple-choice' and 'short-answer' questions with a strict 80/20 ratio.
   - **80% of the questions must be 'multiple-choice'.**
   - **20% of the questions must be 'short-answer'.**
   
@@ -106,6 +106,15 @@ Now, generate {{numQuestions}} diverse quiz questions about the topic: {{{topic}
   }
 });
 
+// Function to shuffle an array
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 const generateQuizQuestionsFlow = aiForQuizzes.defineFlow(
   {
     name: 'generateQuizQuestionsFlow',
@@ -128,7 +137,11 @@ const generateQuizQuestionsFlow = aiForQuizzes.defineFlow(
         }
     });
     console.log(`[AI Flow - Quiz] Successfully generated ${output.questions.length} quiz questions for topic: ${input.topic}`);
-    return output;
+    
+    // Shuffle the questions before returning them
+    const shuffledQuestions = shuffleArray(output.questions);
+    
+    return { questions: shuffledQuestions };
   }
 );
 

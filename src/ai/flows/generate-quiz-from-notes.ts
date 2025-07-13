@@ -44,7 +44,7 @@ export async function generateQuizFromNotes(input: GenerateQuizFromNotesInput): 
 
 const prompt = aiForQuizzes.definePrompt({
   name: 'generateQuizFromNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateQuizFromNotesInputSchema},
   output: {schema: GenerateQuizOutputSchema},
   prompt: `You are an expert multilingual quiz generator. Your task is to create a quiz with {{numQuestions}} questions based *solely* on the provided study notes.
@@ -74,6 +74,15 @@ Output the questions in a valid JSON format, matching this schema precisely:
 `,
 });
 
+// Function to shuffle an array
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 const generateQuizFromNotesFlow = aiForQuizzes.defineFlow(
   {
     name: 'generateQuizFromNotesFlow',
@@ -87,6 +96,10 @@ const generateQuizFromNotesFlow = aiForQuizzes.defineFlow(
       // Return a valid empty structure to prevent downstream errors
       return { questions: [] }; 
     }
-    return output;
+    
+    // Shuffle the questions before returning them
+    const shuffledQuestions = shuffleArray(output.questions);
+    
+    return { questions: shuffledQuestions };
   }
 );

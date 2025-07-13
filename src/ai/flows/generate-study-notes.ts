@@ -22,7 +22,7 @@ const GenerateStudyNotesInputSchema = z.object({
     "An optional image provided by the user as a data URI for context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
   ),
   audio: z.string().optional().describe("An optional audio file provided by the user as a data URI for context."),
-  video: z.string().optional().describe("An optional video file provided by the user as a data URI for context."),
+  video: z.string().optional().describe("An optional audio transcription from a video file provided by the user."),
 });
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
@@ -33,7 +33,7 @@ export type GenerateStudyNotesOutput = z.infer<typeof GenerateStudyNotesOutputSc
 
 const generateStudyNotesPrompt = aiForNotes.definePrompt({
   name: 'generateStudyNotesPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: { schema: GenerateStudyNotesInputSchema },
   output: { format: 'text' }, // Request raw Markdown text for higher reliability
   prompt: `You are an expert educator tasked with creating exceptionally engaging and visually appealing study notes, in the style of a top student's "topper notes." The notes must be well-formatted using Markdown to be both informative and a pleasure to study from. Your goal is to make learning fun and effective!
@@ -59,8 +59,8 @@ User's Audio: {{media url=audio}}
 {{/if}}
 
 {{#if video}}
-The user has also provided a video file for additional context. Use it to enhance the notes.
-User's Video: {{media url=video}}
+The user has also provided an audio transcription from a video. This is a primary source of information. Use it to enhance the notes.
+Video Transcription: {{{video}}}
 {{/if}}
 
 Please generate study notes on this topic with the following characteristics:
