@@ -165,7 +165,17 @@ export async function generateQuizAction(input: GenerateQuizQuestionsInput): Pro
   const trimmedTopic = input.topic.trim();
 
   try {
-    const result = await generateQuizQuestions({ ...input, topic: trimmedTopic });
+    let result;
+    if (input.notes) {
+      // Use the dedicated flow if notes are provided
+      result = await generateQuizFromNotes({
+        notesContent: input.notes,
+        numQuestions: input.numQuestions,
+      });
+    } else {
+      result = await generateQuizQuestions({ ...input, topic: trimmedTopic });
+    }
+
     if (!result || !result.questions || result.questions.length === 0) {
       throw new Error("AI returned empty or invalid quiz data.");
     }

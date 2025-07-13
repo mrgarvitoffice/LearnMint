@@ -192,7 +192,7 @@ export default function GenerateNotesPage() {
     if (notesToProcess && notesToProcess.length > NOTES_TRUNCATION_LIMIT) {
       console.log(`PDF content is long (${notesToProcess.length} chars), chunking it.`);
       const chunks = chunkText(notesToProcess, NOTES_TRUNCATION_LIMIT);
-      notesToProcess = chunks.join('\n...\n'); // Combine chunks, or just use the first one
+      notesToProcess = chunks[0];
       toast({ title: t('generate.toast.notesTruncatedTitle'), description: t('generate.toast.notesTruncatedDesc'), variant: "default" });
     }
 

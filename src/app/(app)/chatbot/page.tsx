@@ -159,12 +159,11 @@ export default function ChatbotPage() {
     try {
       let messageForAI = messageText;
       if (pdfContent) {
-         let truncatedPdfText = pdfContent.text;
-        // Use the new chunking strategy for large PDFs.
+        let truncatedPdfText = pdfContent.text;
         if (pdfContent.text.length > PDF_TRUNCATION_LIMIT) {
           console.log(`PDF content is long (${pdfContent.text.length} chars), chunking it.`);
           const chunks = chunkText(pdfContent.text, PDF_TRUNCATION_LIMIT);
-          truncatedPdfText = chunks[0]; // Send the first and most relevant chunk.
+          truncatedPdfText = chunks[0];
           toast({ title: t('chatbot.toast.pdfTruncatedTitle'), description: t('chatbot.toast.pdfTruncatedDesc'), variant: 'default' });
         }
         messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;

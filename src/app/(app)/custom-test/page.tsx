@@ -263,12 +263,12 @@ export default function CustomTestPage() {
         topicForAI = data.topics; topicsForSettings = [data.topics];
     } else if (data.sourceType === 'notes' && data.notes) {
         notesForAI = data.notes;
-        // Use chunking for large notes.
-        const notesChunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
-        topicForAI = `questions based on the following notes: ${notesChunks.join('\n...\n')}`;
         if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
+          const chunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
+          notesForAI = chunks[0];
           toast({ title: t('customTest.generate.toast.notesTruncatedTitle'), description: t('customTest.generate.toast.notesTruncatedDesc'), variant: "default"});
         }
+        topicForAI = `questions based on the following notes: ${notesForAI}`;
         topicsForSettings = [t('customTest.generate.notesBasedTest')];
     } else if (data.sourceType === 'recent' && data.selectedRecentTopics && data.selectedRecentTopics.length > 0) {
         topicForAI = data.selectedRecentTopics.join(', '); topicsForSettings = data.selectedRecentTopics;
@@ -349,12 +349,20 @@ export default function CustomTestPage() {
 
     speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
     let topicForAI = "";
-    if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) topicForAI = originalSettings.topics.join(', ');
-    else if (originalSettings.sourceType === 'notes' && originalSettings.notes) {
-      const notesChunks = chunkText(originalSettings.notes, NOTES_TRUNCATION_LIMIT);
-      topicForAI = `questions based on the following notes: ${notesChunks.join('\n...\n')}`;
+    let notesForAI = "";
+    if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) {
+      topicForAI = originalSettings.topics.join(', ');
+    } else if (originalSettings.sourceType === 'notes' && originalSettings.notes) {
+      notesForAI = originalSettings.notes;
+      if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
+        const chunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
+        notesForAI = chunks[0];
+      }
+      topicForAI = `questions based on the following notes: ${notesForAI}`;
     }
-    else if (originalSettings.sourceType === 'recent' && originalSettings.selectedRecentTopics && originalSettings.selectedRecentTopics.length > 0) topicForAI = originalSettings.selectedRecentTopics.join(', ');
+    else if (originalSettings.sourceType === 'recent' && originalSettings.selectedRecentTopics && originalSettings.selectedRecentTopics.length > 0) {
+      topicForAI = originalSettings.selectedRecentTopics.join(', ');
+    }
 
     generateQuizAction({ topic: `${topicForAI}`, numQuestions: originalSettings.numQuestions, difficulty: originalSettings.difficulty })
       .then(result => {

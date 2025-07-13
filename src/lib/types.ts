@@ -31,6 +31,7 @@ export type GenerateQuizQuestionsInput = {
   image?: string;
   audio?: string;
   video?: string;
+  notes?: string; // Add notes to input for quiz from notes
 };
 export type GenerateQuizQuestionsOutput = { questions: QuizQuestion[] };
 
