@@ -21,7 +21,7 @@ import { GuestLock } from '@/components/features/auth/GuestLock';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/contexts/SettingsContext';
 import { APP_LANGUAGES } from '@/lib/constants';
-
+import { chunkText } from '@/lib/utils';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
 const PDF_TRUNCATION_LIMIT = 8000; // Character limit for PDF content sent to AI
@@ -159,11 +159,12 @@ export default function ChatbotPage() {
     try {
       let messageForAI = messageText;
       if (pdfContent) {
-        let truncatedPdfText = pdfContent.text;
+         let truncatedPdfText = pdfContent.text;
+        // Use the new chunking strategy for large PDFs.
         if (pdfContent.text.length > PDF_TRUNCATION_LIMIT) {
-          const start = pdfContent.text.substring(0, PDF_TRUNCATION_LIMIT / 2);
-          const end = pdfContent.text.substring(pdfContent.text.length - PDF_TRUNCATION_LIMIT / 2);
-          truncatedPdfText = `${start}... (content truncated) ...${end}`;
+          console.log(`PDF content is long (${pdfContent.text.length} chars), chunking it.`);
+          const chunks = chunkText(pdfContent.text, PDF_TRUNCATION_LIMIT);
+          truncatedPdfText = chunks[0]; // Send the first and most relevant chunk.
           toast({ title: t('chatbot.toast.pdfTruncatedTitle'), description: t('chatbot.toast.pdfTruncatedDesc'), variant: 'default' });
         }
         messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;

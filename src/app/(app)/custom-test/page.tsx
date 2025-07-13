@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { generateQuizAction } from '@/lib/actions';
+import { generateNotesAction, generateQuizAction } from '@/lib/actions';
 import type { TestSettings, QuizQuestion as TestQuestionType, GenerateQuizQuestionsOutput } from '@/lib/types';
 import { Loader2, TestTubeDiagonal, CheckCircle, XCircle, RotateCcw, Clock, Lightbulb, AlertTriangle, Mic, Sparkles, Award, HelpCircle, TimerIcon, PlayCircle, PauseCircle, StopCircle, ImageIcon, FileText, AudioLines, Video } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
@@ -29,7 +29,7 @@ import Image from 'next/image';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
-import { extractTextFromPdf } from '@/lib/utils';
+import { extractTextFromPdf, chunkText } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
@@ -263,12 +263,11 @@ export default function CustomTestPage() {
         topicForAI = data.topics; topicsForSettings = [data.topics];
     } else if (data.sourceType === 'notes' && data.notes) {
         notesForAI = data.notes;
+        // Use chunking for large notes.
+        const notesChunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
+        topicForAI = `questions based on the following notes: ${notesChunks.join('\n...\n')}`;
         if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
-          const truncatedNotes = `${notesForAI.substring(0, NOTES_TRUNCATION_LIMIT / 2)}... (content truncated) ...${notesForAI.substring(notesForAI.length - NOTES_TRUNCATION_LIMIT / 2)}`;
-          topicForAI = `questions based on the following notes: ${truncatedNotes}`;
           toast({ title: t('customTest.generate.toast.notesTruncatedTitle'), description: t('customTest.generate.toast.notesTruncatedDesc'), variant: "default"});
-        } else {
-          topicForAI = `questions based on the following notes: ${notesForAI}`;
         }
         topicsForSettings = [t('customTest.generate.notesBasedTest')];
     } else if (data.sourceType === 'recent' && data.selectedRecentTopics && data.selectedRecentTopics.length > 0) {
@@ -351,7 +350,10 @@ export default function CustomTestPage() {
     speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
     let topicForAI = "";
     if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) topicForAI = originalSettings.topics.join(', ');
-    else if (originalSettings.sourceType === 'notes' && originalSettings.notes) topicForAI = `questions based on the following notes: ${originalSettings.notes}`;
+    else if (originalSettings.sourceType === 'notes' && originalSettings.notes) {
+      const notesChunks = chunkText(originalSettings.notes, NOTES_TRUNCATION_LIMIT);
+      topicForAI = `questions based on the following notes: ${notesChunks.join('\n...\n')}`;
+    }
     else if (originalSettings.sourceType === 'recent' && originalSettings.selectedRecentTopics && originalSettings.selectedRecentTopics.length > 0) topicForAI = originalSettings.selectedRecentTopics.join(', ');
 
     generateQuizAction({ topic: `${topicForAI}`, numQuestions: originalSettings.numQuestions, difficulty: originalSettings.difficulty })

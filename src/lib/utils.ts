@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Provides utility functions used throughout the application.
  */
@@ -40,4 +41,40 @@ export async function extractTextFromPdf(file: File): Promise<string> {
   }
 
   return fullText.trim();
+}
+
+/**
+ * Splits a long string of text into smaller chunks based on a maximum length.
+ * It tries to split along sentences to maintain context.
+ * @param text The full text to split.
+ * @param maxLength The maximum character length for each chunk.
+ * @returns An array of text chunks.
+ */
+export function chunkText(text: string, maxLength = 3000): string[] {
+  if (text.length <= maxLength) {
+    return [text];
+  }
+  
+  const sentences = text.split(/(?<=[.?!])\s+/);
+  const chunks: string[] = [];
+  let currentChunk = "";
+
+  for (const sentence of sentences) {
+    if (currentChunk.length + sentence.length + 1 > maxLength) {
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk.trim());
+      }
+      currentChunk = sentence;
+    } else {
+      currentChunk += (currentChunk.length > 0 ? " " : "") + sentence;
+    }
+  }
+
+  if (currentChunk.length > 0) {
+    chunks.push(currentChunk.trim());
+  }
+  
+  // If a single sentence is longer than maxLength, it will be its own chunk.
+  // This logic is simple and avoids complex word-by-word splitting for now.
+  return chunks;
 }

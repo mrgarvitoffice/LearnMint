@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback, type ChangeEvent } from 'react';
@@ -19,10 +20,11 @@ import { useQuests } from '@/contexts/QuestContext';
 import { generateNotesAction } from "@/lib/actions";
 import type { CombinedStudyMaterialsOutput } from '@/lib/types'; 
 import { useTranslation } from '@/hooks/useTranslation';
-import { extractTextFromPdf } from '@/lib/utils';
+import { extractTextFromPdf, chunkText } from '@/lib/utils';
 
 const RECENT_TOPICS_LS_KEY = "learnmint-recent-topics";
 const LOCALSTORAGE_KEY_PREFIX = "learnmint-study-";
+const NOTES_TRUNCATION_LIMIT = 4000;
 
 export default function GenerateNotesPage() {
   const router = useRouter(); 
@@ -186,11 +188,19 @@ export default function GenerateNotesPage() {
       }
     } catch (e) { console.error("Failed to save recent topic to localStorage", e); }
 
+    let notesToProcess = pdfText;
+    if (notesToProcess && notesToProcess.length > NOTES_TRUNCATION_LIMIT) {
+      console.log(`PDF content is long (${notesToProcess.length} chars), chunking it.`);
+      const chunks = chunkText(notesToProcess, NOTES_TRUNCATION_LIMIT);
+      notesToProcess = chunks.join('\n...\n'); // Combine chunks, or just use the first one
+      toast({ title: t('generate.toast.notesTruncatedTitle'), description: t('generate.toast.notesTruncatedDesc'), variant: "default" });
+    }
+
     try {
       const combinedResult: CombinedStudyMaterialsOutput = await generateNotesAction({ 
         topic: trimmedTopic, 
         image: imageData || undefined,
-        notes: pdfText || undefined,
+        notes: notesToProcess || undefined,
         audio: audioData || undefined,
         video: videoData || undefined,
       });
