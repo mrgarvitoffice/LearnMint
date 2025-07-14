@@ -164,7 +164,7 @@
 - 🖥 Desktop App (Electron)
 - 🛰 Offline Support & PWA
 - 🏢 Institution Dashboards
-- 🎨 Custom Branding for Enterprises !
+- 🎨 Custom Branding for Enterprises 
 
 ---
 
