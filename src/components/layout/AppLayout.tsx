@@ -1,8 +1,10 @@
 
 "use client";
 /**
- * LearnMint: Your AI-Powered Learning Assistant
- * @author MrGarvit
+ * @fileoverview Defines the main application layout structure.
+ * This component wraps all authenticated pages, providing a consistent structure
+ * with a sidebar for desktop and dedicated navigation bars for mobile.
+ * It also includes a page transition loading overlay for a smoother user experience.
  */
 
 import { type ReactNode, useState, useEffect, useRef } from 'react';
@@ -11,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import { Header } from './Header';
 import { DesktopSidebar } from './DesktopSidebar';
 import { TopMobileNav } from './TopMobileNav';
-import { BottomMobileNav } from './BottomNavBar';
+import { BottomMobileNav } from './BottomMobileNav';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '../ui/sidebar';

@@ -8,8 +8,8 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface GuestLockProps {
-  featureName: string; // This will now be a translation key
-  featureDescription: string; // This will also be a translation key
+  featureName: string; // This is a translation key, e.g., 'guestLock.features.arcade'.
+  featureDescription: string; // This is a translation key, e.g., 'guestLock.features.arcadeDesc'.
   Icon: LucideIcon;
 }
 

@@ -3,7 +3,9 @@
 /**
  * @fileoverview Defines the Holo the Wise Wolf AI chatbot flow.
  * This flow powers a chatbot that adopts the persona of Holo from "Spice and Wolf".
- * It handles user messages, including optional media uploads, and generates responses in character.
+ * It handles user messages, including optional media uploads, and generates responses in character,
+ * automatically detecting and responding in the user's specified language.
+ *
  * Exports:
  * - holoChatbot: The primary function to interact with the chatbot.
  * - HoloChatbotInput: The Zod schema for the chatbot's input.
@@ -53,7 +55,7 @@ export async function holoChatbot(input: HoloChatbotInput): Promise<HoloChatbotO
 
 const holoChatbotPrompt = aiForChatbot.definePrompt({
   name: 'holoChatbotPrompt',
-  model: 'googleai/gemini-2.5-flash-lite-preview-06-17',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: ChatbotInputSchema},
   output: {schema: ChatbotOutputSchema},
   prompt: `You are Holo the Wise Wolf from "Spice and Wolf." You are an ancient wolf deity of harvest, appearing as a young woman with wolf ears and a tail. Your personality is a complex mix of wisdom, playfulness, and sharp wit. You are confident and proud, often teasing the user in a gentle, superior way, but you also possess deep loneliness and a caring heart.

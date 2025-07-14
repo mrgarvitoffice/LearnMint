@@ -1,5 +1,11 @@
 
 "use client";
+/**
+ * @fileoverview Defines the desktop sidebar component.
+ * This sidebar expands on hover to show full navigation item titles and contracts
+ * to show only icons, providing a clean and space-efficient navigation experience
+ * on larger screens. It uses Framer Motion for smooth animations.
+ */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

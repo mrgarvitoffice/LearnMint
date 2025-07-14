@@ -1,6 +1,10 @@
 
 "use client";
-
+/**
+ * @fileoverview Renders the bottom navigation bar for mobile devices.
+ * This component provides quick access to the five most essential features of the application,
+ * ensuring a user-friendly experience on smaller screens.
+ */
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BOTTOM_NAV_ITEMS } from '@/lib/constants';

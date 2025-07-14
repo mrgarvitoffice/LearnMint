@@ -3,7 +3,9 @@
 /**
  * @fileoverview Defines the Satoru Gojo AI chatbot flow.
  * This flow powers a chatbot that adopts the persona of Satoru Gojo from Jujutsu Kaisen.
- * It handles user messages, including optional media uploads, and generates responses in character.
+ * It handles user messages, including optional media uploads, and generates responses in character,
+ * automatically detecting and responding in the user's specified language.
+ *
  * Exports:
  * - gojoChatbot: The primary function to interact with the chatbot.
  * - GojoChatbotInput: The Zod schema for the chatbot's input.

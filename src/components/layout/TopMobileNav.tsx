@@ -1,5 +1,11 @@
 
 "use client";
+/**
+ * @fileoverview Renders the top navigation bar for mobile devices.
+ * This component includes the application logo and a settings dropdown menu,
+ * which consolidates user profile actions and global application settings like
+ * theme, language, and sound.
+ */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -53,7 +59,7 @@ export function TopMobileNav() {
         </div>
       </div>
       
-      {/* Restored secondary navigation bar */}
+      {/* This secondary navigation bar provides quick access to key features on mobile. */}
       <div className="flex h-16 items-center overflow-x-auto px-2 border-t border-border/50">
         <nav className="flex w-full items-center justify-around text-sm font-medium">
           {TOP_NAV_ITEMS.map((item) => {

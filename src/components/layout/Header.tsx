@@ -1,5 +1,10 @@
 
 "use client";
+/**
+ * @fileoverview Defines the header for the main application layout on desktop.
+ * It provides access to global settings such as theme, sound mode, font size, and language,
+ * which are managed through the `useSettings` hook and applied globally.
+ */
 
 import React from 'react';
 import { useTheme } from "next-themes";
