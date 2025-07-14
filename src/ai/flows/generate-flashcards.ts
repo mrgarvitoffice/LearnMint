@@ -45,9 +45,9 @@ Your primary task is to generate a list of {{numFlashcards}} flashcards based on
 
 **CRITICAL INSTRUCTION: LANGUAGE DETECTION & ADHERENCE**
 Your first and most important task is to meticulously analyze the user's topic: "{{{topic}}}".
-- If a specific human language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター", "piano in Sanskrit"), you **MUST** generate both the 'term' and 'definition' for all flashcards in that exact language. This is a strict, non-negotiable rule.
+- If a specific human language is requested (e.g., "Quantum Physics in Spanish", "ハリー・ポッターのキャラクター"), you **MUST** generate both the 'term' and 'definition' for all flashcards in that exact language.
 - If the topic itself is written in a non-English script (e.g., Devanagari, Cyrillic, Kanji), you **MUST** generate the entire output in that language.
-- If no language is specified and the topic is in English, you **MUST** generate the entire output in English.
+- If no language is specified and the topic is in English, you **MUST** generate the entire output in English. This is a strict, non-negotiable rule. Do not default to any other language.
 
 {{#if image}}
 The user has also provided an image for additional context. Analyze the image and incorporate relevant information from it into the flashcards, respecting the language instruction above.

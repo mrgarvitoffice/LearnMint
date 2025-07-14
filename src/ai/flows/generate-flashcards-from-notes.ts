@@ -48,16 +48,18 @@ const prompt = aiForQuizzes.definePrompt({
   output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an expert multilingual educator specializing in creating flashcards. Your task is to generate {{numFlashcards}} flashcards based *solely* on the provided study notes.
 
-**CRITICAL INSTRUCTION: LANGUAGE DETECTION**
-First, determine the primary language of the provided "Study Notes Content". You **MUST** write all 'term' and 'definition' fields in that same language. Do not default to English if the notes are in another language.
+**CRITICAL INSTRUCTION: LANGUAGE DETECTION & ADHERENCE**
+First, meticulously analyze the provided "Study Notes Content" to determine its primary language (e.g., English, Japanese, Hindi, Spanish, etc.).
+- If the notes are clearly in a non-English language, you **MUST** write all 'term' and 'definition' fields in that same detected language.
+- If the notes are in English, you **MUST** generate the entire output in English. This is a strict, non-negotiable rule. Do not default to any other language.
+
+Please ensure all terms and definitions are derived directly from the information within the provided notes. Do not use any external knowledge.
+The flashcards should cover the most important aspects of the notes.
 
 Study Notes Content:
 ---
 {{{notesContent}}}
 ---
-
-Please ensure all terms and definitions are derived directly from the information within the provided notes. Do not use any external knowledge.
-The flashcards should cover the most important aspects of the notes.
 
 Format the output as a JSON array of objects, where each object has a 'term' and a 'definition' field.
 Example schema for output:
