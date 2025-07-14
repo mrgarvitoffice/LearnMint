@@ -21,10 +21,8 @@ import { GuestLock } from '@/components/features/auth/GuestLock';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/contexts/SettingsContext';
 import { APP_LANGUAGES } from '@/lib/constants';
-import { chunkText } from '@/lib/utils';
 
 const TYPING_INDICATOR_ID = 'typing-indicator';
-const PDF_TRUNCATION_LIMIT = 8000; // Character limit for PDF content sent to AI
 
 type ChatbotCharacter = 'gojo' | 'holo' | 'megumin';
 
@@ -159,14 +157,7 @@ export default function ChatbotPage() {
     try {
       let messageForAI = messageText;
       if (pdfContent) {
-        let truncatedPdfText = pdfContent.text;
-        if (pdfContent.text.length > PDF_TRUNCATION_LIMIT) {
-          console.log(`PDF content is long (${pdfContent.text.length} chars), chunking it.`);
-          const chunks = chunkText(pdfContent.text, PDF_TRUNCATION_LIMIT);
-          truncatedPdfText = chunks[0];
-          toast({ title: t('chatbot.toast.pdfTruncatedTitle'), description: t('chatbot.toast.pdfTruncatedDesc'), variant: 'default' });
-        }
-        messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${truncatedPdfText}`;
+        messageForAI = `${messageText}\n\n[The user has provided the following document for context: ${pdfContent.name}]\n---DOCUMENT CONTENT---\n${pdfContent.text}`;
       }
       
       const languageLabel = APP_LANGUAGES.find(l => l.value === appLanguage)?.label || 'English';

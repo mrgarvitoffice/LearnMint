@@ -29,13 +29,12 @@ import Image from 'next/image';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { GuestLock } from '@/components/features/auth/GuestLock';
-import { extractTextFromPdf, chunkText } from '@/lib/utils';
+import { extractTextFromPdf } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const MAX_RECENT_TOPICS_DISPLAY = 10;
 const MAX_RECENT_TOPICS_SELECT = 3;
 const RECENT_TOPICS_LS_KEY = 'learnmint-recent-topics';
-const NOTES_TRUNCATION_LIMIT = 4000; // Character limit for notes sent to AI
 
 const formSchema = z.object({
   sourceType: z.enum(['topic', 'notes', 'recent']).default('topic'),
@@ -258,17 +257,11 @@ export default function CustomTestPage() {
     pageTitleSpokenRef.current = true; 
     speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
 
-    let topicForAI = ""; let topicsForSettings: string[] = []; let notesForAI = "";
+    let topicForAI = ""; let topicsForSettings: string[] = [];
     if (data.sourceType === 'topic' && data.topics) {
         topicForAI = data.topics; topicsForSettings = [data.topics];
     } else if (data.sourceType === 'notes' && data.notes) {
-        notesForAI = data.notes;
-        if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
-          const chunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
-          notesForAI = chunks[0];
-          toast({ title: t('customTest.generate.toast.notesTruncatedTitle'), description: t('customTest.generate.toast.notesTruncatedDesc'), variant: "default"});
-        }
-        topicForAI = `questions based on the following notes: ${notesForAI}`;
+        topicForAI = `questions based on the following notes: ${data.notes}`;
         topicsForSettings = [t('customTest.generate.notesBasedTest')];
     } else if (data.sourceType === 'recent' && data.selectedRecentTopics && data.selectedRecentTopics.length > 0) {
         topicForAI = data.selectedRecentTopics.join(', '); topicsForSettings = data.selectedRecentTopics;
@@ -291,6 +284,7 @@ export default function CustomTestPage() {
         image: data.sourceType === 'notes' ? data.notesImage : undefined,
         audio: data.sourceType === 'notes' ? data.notesAudio : undefined,
         video: data.sourceType === 'notes' ? data.notesVideo : undefined,
+        notes: data.sourceType === 'notes' ? data.notes : undefined,
       });
 
       if (result.questions && result.questions.length > 0) {
@@ -349,22 +343,16 @@ export default function CustomTestPage() {
 
     speak(t('customTest.generate.speak.creating'), { priority: 'optional' });
     let topicForAI = "";
-    let notesForAI = "";
     if (originalSettings.sourceType === 'topic' && originalSettings.topics.length > 0) {
       topicForAI = originalSettings.topics.join(', ');
     } else if (originalSettings.sourceType === 'notes' && originalSettings.notes) {
-      notesForAI = originalSettings.notes;
-      if (notesForAI.length > NOTES_TRUNCATION_LIMIT) {
-        const chunks = chunkText(notesForAI, NOTES_TRUNCATION_LIMIT);
-        notesForAI = chunks[0];
-      }
-      topicForAI = `questions based on the following notes: ${notesForAI}`;
+      topicForAI = `questions based on the following notes: ${originalSettings.notes}`;
     }
     else if (originalSettings.sourceType === 'recent' && originalSettings.selectedRecentTopics && originalSettings.selectedRecentTopics.length > 0) {
       topicForAI = originalSettings.selectedRecentTopics.join(', ');
     }
 
-    generateQuizAction({ topic: `${topicForAI}`, numQuestions: originalSettings.numQuestions, difficulty: originalSettings.difficulty })
+    generateQuizAction({ topic: `${topicForAI}`, numQuestions: originalSettings.numQuestions, difficulty: originalSettings.difficulty, notes: originalSettings.notes || undefined })
       .then(result => {
         if (result.questions && result.questions.length > 0) {
           setTestState({
