@@ -23,10 +23,12 @@ export function EquationSolver() {
     }
     
     try {
-      const solutions = math.solve(equation, 'x');
+      // The 'math.parse' and 'evaluate' method is the correct way to handle this with mathjs.
+      // 'math.solve' is not a standard function for this purpose in the library.
+      const solutions = math.evaluate(`solve("${equation}", "x")`);
       setResult(solutions.map((sol: any) => sol.toString()).join(', '));
     } catch (e: any) {
-      setError(`Could not solve the equation. Error: ${e.message}`);
+      setError(`Could not solve the equation. Please check the syntax. Error: ${e.message}`);
     }
   };
 

@@ -7,7 +7,7 @@
  * It also includes a page transition loading overlay for a smoother user experience.
  */
 
-import { type ReactNode, useState, useEffect, useRef } from 'react';
+import { type ReactNode, useState, useEffect, useRef, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
@@ -40,7 +40,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   // The coding page handles its own full-screen layout.
   if (pathname === '/coding') {
-    return <>{children}</>;
+    return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>{children}</Suspense>;
   }
 
   const mainContent = (
