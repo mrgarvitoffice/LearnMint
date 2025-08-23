@@ -31,7 +31,7 @@
 
 ## 🚨 The Problem
 
-🧠 *Learning is Hard & Scattered*
+🧠 *Learning is Hard & Scattered..*
 
 ### ❌ For Students:
 - Hours lost creating notes  
