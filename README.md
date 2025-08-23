@@ -25,7 +25,7 @@
 
 *Nexithra* is a futuristic, AI-powered platform designed to revolutionize how learners of all ages study, revise, and grow. It automates material creation using *Google Gemini AI, delivering seamless contextual learning and boosting retention — all through a clean, fast, and responsive UI powered by **Next.js*.
 
-> Built by *MrGarvit (CSE, 4th Sem)*, Nexithra is more than a project — it's a learning revolution.
+> Built by *MrGarvit (CSE, 5th Sem)*, Nexithra is more than a project — it's a learning revolution.
 
 ---
 
