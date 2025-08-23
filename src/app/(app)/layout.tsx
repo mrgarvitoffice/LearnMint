@@ -52,7 +52,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       exit={{ opacity: 0, y: -15 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {children}
+      <Suspense fallback={<div className="flex min-h-[calc(100vh-12rem)] w-full flex-col items-center justify-center bg-background/95"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
+          {children}
+      </Suspense>
     </motion.main>
   );
 
