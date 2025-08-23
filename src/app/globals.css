@@ -1,0 +1,265 @@
+
+/**
+ * @fileoverview Global CSS styles and Tailwind CSS configuration.
+ * This file defines the base, component, and utility layers for Tailwind CSS.
+ * It also sets up the application's color palette (CSS variables for light and dark themes)
+ * and defines global styles for typography and layout.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Futuristic "Elite" Dark Theme */
+    --background: 222 47% 11%;      /* Deep Midnight Blue */
+    --foreground: 210 40% 98%;       /* Light Cyan/White */
+
+    --card: 222 47% 11%;             /* Base card color, glassmorphism applied in component */
+    --card-foreground: 210 40% 98%;  /* Text on Cards */
+
+    --popover: 222 47% 8%;           /* Darker popovers */
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 170 100% 50%;         /* Vibrant Neon Teal */
+    --primary-foreground: 222 47% 5%; /* Very Dark Blue for contrast */
+
+    --secondary: 217 33% 17%;        /* Muted Dark Blue */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;            /* Muted for less emphasis */
+    --muted-foreground: 215 20% 65%; /* Softer Gray/Cyan for muted text */
+
+    --accent: 280 85% 65%;           /* Vibrant Magenta/Purple for Accents */
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;        /* Darker, sharp Red */
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 27%;           /* Borders - visible against card/bg */
+    --input: 217 33% 22%;            /* Input border/bg */
+    --ring: 170 90% 45%;             /* Ring color (brighter primary) */
+
+    --chart-1: 170 80% 45%;
+    --chart-2: 280 70% 60%;
+    --chart-3: 40 90% 55%;
+    --chart-4: 210 70% 65%;
+    --chart-5: 340 70% 55%;
+
+    --radius: 0.75rem; /* Slightly larger radius for a modern feel */
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 170 80% 40%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 28% 44%;
+    
+    --accent: 280 75% 55%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 170 80% 45%;
+    
+    --chart-1: 170 75% 45%;
+    --chart-2: 280 70% 55%;
+    --chart-3: 40 85% 50%;
+    --chart-4: 210 75% 55%;
+    --chart-5: 340 75% 50%;
+  }
+
+  /* Font Size Variables for accessibility */
+  html.font-size-small { font-size: 15px; }
+  html.font-size-normal { font-size: 16px; /* Default */ }
+  html.font-size-large { font-size: 17.5px; }
+}
+
+@layer base {
+  * { @apply border-border; }
+
+  body {
+    @apply bg-background text-foreground;
+    @apply min-h-screen flex flex-col;
+    font-family: var(--font-orbitron), sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    overflow-x: hidden;
+  }
+  
+  html.dark body {
+    background-color: transparent;
+  }
+
+  html.light body {
+    background-color: transparent;
+  }
+
+  #background-video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+  }
+
+  .dark #background-video-overlay {
+    background: linear-gradient(rgba(14, 25, 45, 0.82), rgba(14, 25, 45, 0.87));
+  }
+
+  .light #background-video-overlay {
+    background: linear-gradient(rgba(255, 255, 255, 0.81), rgba(245, 245, 245, 0.84));
+  }
+
+  #background-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -20;
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+  }
+
+
+  /* Custom pulse animation for status dot */
+  @keyframes pulse-status {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  .animate-pulse-status { animation: pulse-status 2s infinite ease-in-out; }
+
+  /* Custom styles for Markdown content from AI */
+  .prose h1, .dark .prose h1, .light .prose h1 { color: hsl(var(--primary)); font-size: 2.25rem; @apply font-extrabold mt-0 mb-6 first:mt-0; }
+  .prose h2, .dark .prose h2, .light .prose h2 { color: hsl(var(--foreground)); font-size: 1.875rem; @apply font-bold mt-8 mb-4 border-b pb-2; }
+  .prose h3, .dark .prose h3, .light .prose h3 { color: hsl(var(--foreground)); font-size: 1.5rem; @apply font-semibold mt-6 mb-3; }
+  .prose h4, .dark .prose h4, .light .prose h4 { color: hsl(var(--foreground)); font-size: 1.25rem; @apply font-semibold mt-4 mb-2; }
+  .prose blockquote { @apply border-l-4 px-4 py-2 my-4 rounded-r-md; border-color: hsl(var(--primary)); background-color: hsl(var(--primary) / 0.1); }
+  .dark .prose blockquote { color: hsl(var(--foreground)); }
+  .light .prose blockquote { color: hsl(var(--card-foreground)); }
+  .prose blockquote p { font-size: 1rem; @apply mb-0; }
+  .prose blockquote p:last-child { @apply mb-0; }
+  .prose div[data-ai-hint] { @apply my-6; }
+
+  /* Custom styles for Coder AI chat messages */
+  .prose-coder {
+    color: theme('colors.gray.300');
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+  .prose-coder p {
+    color: theme('colors.gray.300');
+  }
+  .prose-coder strong {
+    color: theme('colors.white');
+  }
+  .prose-coder a {
+    color: theme('colors.blue.400');
+  }
+  .prose-coder blockquote {
+    color: theme('colors.gray.400');
+    border-color: theme('colors.blue.500');
+    background-color: theme('colors.gray.800');
+  }
+  .prose-coder pre {
+    background-color: #1e1e1e; /* Match editor background */
+  }
+}
+
+/* NProgress (top loading bar) styling */
+#nprogress { pointer-events: none; }
+#nprogress .bar { background: hsl(var(--primary)); position: fixed; z-index: 10310; top: 0; left: 0; width: 100%; height: 3px; }
+#nprogress .peg { display: block; position: absolute; right: 0px; width: 100px; height: 100%; box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary)); opacity: 1.0; transform: rotate(3deg) translate(0px, -4px); }
+#nprogress .spinner { display: none; }
+
+
+/* Print-specific styles for PDF export */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  body.printing .printable-notes-area {
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  body.printing .printable-notes-area * {
+     visibility: visible;
+  }
+  
+  body.printing > *:not(.printable-notes-area) {
+     display: none;
+  }
+
+  .printable-notes-area .prose { color: #000 !important; }
+  .printable-notes-area .prose h1, 
+  .printable-notes-area .prose h2, 
+  .printable-notes-area .prose h3, 
+  .printable-notes-area .prose h4 {
+    color: #000000 !important; 
+    text-shadow: none !important;
+    page-break-after: avoid; /* Prevent headings from being orphaned */
+  }
+  .printable-notes-area .prose a { color: #0000FF !important; text-decoration: underline !important; }
+  .printable-notes-area .prose a:after { content: " (" attr(href) ")"; }
+  
+  /* Force page breaks BEFORE major headings */
+  .printable-notes-area h1, 
+  .printable-notes-area h2 { 
+    page-break-before: always; 
+  }
+  /* But not for the very first one */
+  .printable-notes-area > div > h1:first-child, 
+  .printable-notes-area > div > h2:first-child { 
+    page-break-before: auto; 
+  }
+  
+  /* Prevent certain elements from being split across pages */
+  .printable-notes-area blockquote, 
+  .printable-notes-area pre, 
+  .printable-notes-area table,
+  .printable-notes-area div[data-ai-hint] { 
+    page-break-inside: avoid; 
+  }
+  .printable-notes-area li { 
+    page-break-inside: avoid; 
+    vertical-align: baseline; /* Align list numbers and text */
+  }
+
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+}
+
