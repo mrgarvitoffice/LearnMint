@@ -5,7 +5,7 @@
   </a>  
 </p>
 
-<h1 align="center">🌿 Nexithra: The AI-Powered Learning Toolkit</h1>  
+<h1 align="center">🌿 Nexithra: The Next-gen AI-Powered Learning Toolkit</h1>  
 
 <p align-center">  
   <a href="https://github.com/mrgarvitoffice/LearnMint">
