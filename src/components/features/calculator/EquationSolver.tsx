@@ -10,7 +10,7 @@ import { Variable, AlertTriangle } from 'lucide-react';
 import * as math from 'mathjs';
 
 export function EquationSolver() {
-  const [equation, setEquation] = useState('x^2 + 2*x + 1 = 0');
+  const [equation, setEquation] = useState('x^2 + 2x + 1 = 0');
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
 
@@ -23,27 +23,17 @@ export function EquationSolver() {
     }
     
     try {
-      // Equation is expected in the form ax^2+bx+c=0
-      const cleanedEquation = equation.replace(/\s/g, '').split('=')[0];
+      // Improved regex to handle various quadratic equation formats
+      const simplified = equation.replace(/\s/g, '').replace('x^2', '1x^2').replace('+x', '+1x').replace('-x', '-1x');
+      const match = simplified.match(/([+-]?\d*\.?\d*)x\^2([+-]?\d*\.?\d*)x([+-]?\d*\.?\d*)=0/);
 
-      // A more robust regex to capture coefficients, handling missing '1's and signs.
-      const regex = /([+-]?\d*\.?\d*)x\^2([+-]?\d*\.?\d*)x([+-]?\d*\.?\d*)/;
-      const match = cleanedEquation.match(regex);
-      
       if (!match) {
         throw new Error("Invalid format. Please use the form ax^2+bx+c=0.");
       }
       
-      // Helper to parse coefficients, defaulting to 1 or -1 if no number is present.
-      const parseCoeff = (val: string, isLeading: boolean = false) => {
-        if (val === '+' || (val === '' && isLeading)) return 1;
-        if (val === '-') return -1;
-        return parseFloat(val) || 0;
-      };
-
-      const a = parseCoeff(match[1], true);
-      const b = parseCoeff(match[2]);
-      const c = parseCoeff(match[3]);
+      const a = parseFloat(match[1]) || 1;
+      const b = parseFloat(match[2]) || 0;
+      const c = parseFloat(match[3]) || 0;
 
       if (isNaN(a) || isNaN(b) || isNaN(c)) {
           throw new Error("Invalid coefficients found in the equation.");
