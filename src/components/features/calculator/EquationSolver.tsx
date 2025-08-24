@@ -23,23 +23,35 @@ export function EquationSolver() {
     }
     
     try {
-      // Clean up the equation string
+      // Equation is expected in the form ax^2+bx+c=0
       const cleanedEquation = equation.replace(/\s/g, '').split('=')[0];
 
-      // Regex to parse coefficients a, b, and c from ax^2+bx+c
-      const regex = /([+-]?\d*\.?\d*)x\^2([+-]\d*\.?\d*)x([+-]\d*\.?\d*)/;
+      // A more robust regex to capture coefficients, handling missing '1's and signs.
+      const regex = /([+-]?\d*\.?\d*)x\^2([+-]?\d*\.?\d*)x([+-]?\d*\.?\d*)/;
       const match = cleanedEquation.match(regex);
-
+      
       if (!match) {
         throw new Error("Invalid format. Please use the form ax^2+bx+c=0.");
       }
+      
+      // Helper to parse coefficients, defaulting to 1 or -1 if no number is present.
+      const parseCoeff = (val: string, isLeading: boolean = false) => {
+        if (val === '+' || (val === '' && isLeading)) return 1;
+        if (val === '-') return -1;
+        return parseFloat(val) || 0;
+      };
 
-      const a = match[1] === '' || match[1] === '+' ? 1 : match[1] === '-' ? -1 : parseFloat(match[1]);
-      const b = match[2] === '+' ? 1 : match[2] === '-' ? -1 : parseFloat(match[2]);
-      const c = parseFloat(match[3]);
+      const a = parseCoeff(match[1], true);
+      const b = parseCoeff(match[2]);
+      const c = parseCoeff(match[3]);
 
       if (isNaN(a) || isNaN(b) || isNaN(c)) {
           throw new Error("Invalid coefficients found in the equation.");
+      }
+      
+      if (a === 0) {
+        setError("This is not a quadratic equation (coefficient 'a' cannot be zero).");
+        return;
       }
       
       const discriminant = b * b - 4 * a * c;
