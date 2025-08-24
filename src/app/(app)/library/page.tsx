@@ -386,6 +386,9 @@ export default function LibraryPage() {
                         <Button id="calculator-dialog-trigger" className="w-full" size="lg">Open Advanced Calculator</Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl w-[95vw] p-0">
+                        <DialogHeader className="p-4 border-b">
+                          <DialogTitle>Advanced Calculator</DialogTitle>
+                        </DialogHeader>
                         <Tabs defaultValue="scientific" className="w-full">
                             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto rounded-t-lg rounded-b-none">
                                 {calculatorTabs.map(({ value, label, Icon }) => (
