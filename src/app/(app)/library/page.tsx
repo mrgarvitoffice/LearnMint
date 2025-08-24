@@ -32,6 +32,14 @@ import { MatrixCalculator } from '@/components/features/calculator/MatrixCalcula
 import { EquationSolver } from '@/components/features/calculator/EquationSolver';
 import { StatsCalculator } from '@/components/features/calculator/StatsCalculator';
 
+const calculatorTabs = [
+    { value: 'scientific', label: 'Scientific', Icon: CalculatorIcon },
+    { value: 'matrix', label: 'Matrix', Icon: Bot },
+    { value: 'equation', label: 'Equation', Icon: Variable },
+    { value: 'stats', label: 'Statistics', Icon: Sigma },
+    { value: 'unit', label: 'Unit Converter', Icon: Shapes },
+];
+
 
 export default function LibraryPage() {
   const searchParams = useSearchParams();
@@ -380,11 +388,11 @@ export default function LibraryPage() {
                     <DialogContent className="max-w-4xl w-[95vw] p-0">
                         <Tabs defaultValue="scientific" className="w-full">
                             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto rounded-t-lg rounded-b-none">
-                                <TabsTrigger value="scientific" className="py-2.5 rounded-tl-md"><CalculatorIcon className="w-4 h-4 mr-2"/>Scientific</TabsTrigger>
-                                <TabsTrigger value="matrix" className="py-2.5"><Bot className="w-4 h-4 mr-2"/>Matrix</TabsTrigger>
-                                <TabsTrigger value="equation" className="py-2.5"><Variable className="w-4 h-4 mr-2"/>Equation</TabsTrigger>
-                                <TabsTrigger value="stats" className="py-2.5"><Sigma className="w-4 h-4 mr-2"/>Statistics</TabsTrigger>
-                                <TabsTrigger value="unit" className="py-2.5 rounded-tr-md"><Shapes className="w-4 h-4 mr-2"/>Unit Converter</TabsTrigger>
+                                {calculatorTabs.map(({ value, label, Icon }) => (
+                                    <TabsTrigger key={value} value={value} className="py-2.5 first:rounded-tl-md last:rounded-tr-md">
+                                        <Icon className="w-4 h-4 mr-2"/>{label}
+                                    </TabsTrigger>
+                                ))}
                             </TabsList>
                             <div className="p-4 sm:p-6 max-h-[75vh] overflow-y-auto">
                                 <TabsContent value="scientific">
