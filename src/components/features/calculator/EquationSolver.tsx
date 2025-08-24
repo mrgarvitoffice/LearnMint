@@ -23,23 +23,22 @@ export function EquationSolver() {
     }
     
     try {
-      // Use math.rationalize for linear equations, and a custom parser for simple quadratics.
-      const node = math.parse(equation);
-      const solutions = node.toString(); // This is a placeholder for a more complex solver.
-      
-      // For this implementation, we will use a workaround as math.solve is not standard.
-      // This is a simplified solver and will not handle all cases.
-      const simplifiedEquation = equation.replace(/\s/g, '');
-      const parts = simplifiedEquation.split('=');
-      if (parts.length !== 2) throw new Error("Equation must have one '=' sign.");
-      
-      // We will try to solve for x using rationalize
-      const rationalized = math.rationalize(equation, {}, true);
+      const parts = equation.split('=').map(p => p.trim());
+      if (parts.length !== 2) {
+        throw new Error("Equation must contain exactly one '=' sign.");
+      }
 
-      if (rationalized.coefficients.length > 0) {
-          setResult(rationalized.roots.map((r: any) => r.toString()).join(', '));
+      // Rearrange equation to the form f(x) = 0
+      const fullEquation = `(${parts[0]}) - (${parts[1]})`;
+
+      // Use rationalize to find roots of the polynomial
+      const simplifiedNode = math.rationalize(fullEquation, {}, true);
+
+      if (simplifiedNode.roots) {
+        const solutions = simplifiedNode.roots.map((r: any) => math.format(r, { precision: 4 }));
+        setResult(solutions.join(', '));
       } else {
-          throw new Error("Could not simplify the equation to a solvable form.");
+        throw new Error("Could not find roots for the given equation. It may be too complex or not a polynomial.");
       }
 
     } catch (e: any) {
