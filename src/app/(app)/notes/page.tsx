@@ -271,93 +271,96 @@ export default function GenerateNotesPage() {
   
   return (
     <div className="py-8 space-y-8">
-      <Card className="w-full shadow-xl relative overflow-hidden">
-        <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover -z-10 opacity-10 group-hover:opacity-20 transition-opacity">
-            <source src="/icons/v1.mp4" type="video/mp4" />
-        </video>
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4"><GraduationCap className="h-12 w-12 text-primary" /></div>
-          <CardTitle className="text-center text-2xl sm:text-3xl font-bold text-primary">{t('generate.title')}</CardTitle>
-          <CardDescription className="text-center text-sm sm:text-base text-muted-foreground px-2">
-            {t('generate.description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 p-6">
-          <div className="flex items-center gap-2">
-            <Input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder={t('generate.placeholder')}
-              className="flex-1 text-base sm:text-lg py-3 px-4 transition-colors duration-200 ease-in-out focus-visible:ring-primary focus-visible:ring-2"
-              aria-label="Study Topic"
-              onKeyDown={(e) => e.key === 'Enter' && !isLoadingAll && topic.trim().length >=3 && handleGenerateAllMaterials()}
-              disabled={isProcessingFile || isLoadingAll}
-            />
-            <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')} disabled={isLoadingAll || isProcessingFile}>
-              {isProcessingFile ? <Loader2 className="w-5 h-5 animate-spin"/> : <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />}
-            </Button>
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf,audio/*,video/*" className="hidden" />
-             {browserSupportsSpeechRecognition && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleVoiceCommand}
-                disabled={isLoadingAll || isListening || isProcessingFile}
-                aria-label={t('generate.useVoiceInput')}
-                title={t('generate.useVoiceInput')}
-              >
-                <Mic className={`h-5 w-5 ${isListening ? 'text-destructive animate-pulse' : 'text-muted-foreground hover:text-primary'}`} />
+      <Card 
+        className="w-full shadow-xl relative overflow-hidden bg-cover bg-center group"
+        style={{ backgroundImage: "url('/icons/1.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-background/80 group-hover:bg-background/70 transition-colors z-0"></div>
+        <div className="relative z-10">
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center mb-4"><GraduationCap className="h-12 w-12 text-primary" /></div>
+            <CardTitle className="text-center text-2xl sm:text-3xl font-bold text-primary">{t('generate.title')}</CardTitle>
+            <CardDescription className="text-center text-sm sm:text-base text-muted-foreground px-2">
+              {t('generate.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-6">
+            <div className="flex items-center gap-2">
+              <Input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder={t('generate.placeholder')}
+                className="flex-1 text-base sm:text-lg py-3 px-4 transition-colors duration-200 ease-in-out focus-visible:ring-primary focus-visible:ring-2"
+                aria-label="Study Topic"
+                onKeyDown={(e) => e.key === 'Enter' && !isLoadingAll && topic.trim().length >=3 && handleGenerateAllMaterials()}
+                disabled={isProcessingFile || isLoadingAll}
+              />
+              <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} title={t('generate.attachFile')} disabled={isLoadingAll || isProcessingFile}>
+                {isProcessingFile ? <Loader2 className="w-5 h-5 animate-spin"/> : <ImageIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />}
               </Button>
-            )}
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {imagePreview && (
-              <div className="relative w-28 h-28">
-                <Image src={imagePreview} alt="Selected preview" layout="fill" objectFit="cover" className="rounded-md border-2 border-primary/50" />
-                <Button type="button" variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80" onClick={() => handleRemoveFile()}>
-                  <XCircle className="h-5 w-5" />
+              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf,audio/*,video/*" className="hidden" />
+               {browserSupportsSpeechRecognition && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleVoiceCommand}
+                  disabled={isLoadingAll || isListening || isProcessingFile}
+                  aria-label={t('generate.useVoiceInput')}
+                  title={t('generate.useVoiceInput')}
+                >
+                  <Mic className={`h-5 w-5 ${isListening ? 'text-destructive animate-pulse' : 'text-muted-foreground hover:text-primary'}`} />
                 </Button>
-              </div>
-            )}
-            {pdfFileName && (
-              <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground truncate flex-1" title={pdfFileName}>{pdfFileName}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
-              </div>
-            )}
-            {audioFileName && (
-              <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                  <AudioLines className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground truncate flex-1" title={audioFileName}>{audioFileName}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
-              </div>
-            )}
-            {videoFileName && (
-              <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                  <Video className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground truncate flex-1" title={videoFileName}>{videoFileName}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
-              </div>
-            )}
-          </div>
-          
-          <Button
-            onClick={() => handleGenerateAllMaterials()}
-            disabled={isLoadingAll || isProcessingFile || (topic.trim().length < 3 && !pdfText && !imageData && !audioData && !videoData)}
-            className="w-full text-base sm:text-lg py-3 transition-all duration-300 ease-in-out group active:scale-95"
-            size="lg"
-            variant="default"
-          >
-            {isLoadingAll ? (
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            ) : (
-              <FileSignature className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-[5deg] group-hover:scale-110" />
-            )}
-            {isLoadingAll ? t('generate.button.loading') : t('generate.button.default')}
-          </Button>
-        </CardContent>
+              )}
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {imagePreview && (
+                <div className="relative w-28 h-28">
+                  <Image src={imagePreview} alt="Selected preview" layout="fill" objectFit="cover" className="rounded-md border-2 border-primary/50" />
+                  <Button type="button" variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80" onClick={() => handleRemoveFile()}>
+                    <XCircle className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+              {pdfFileName && (
+                <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground truncate flex-1" title={pdfFileName}>{pdfFileName}</span>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                </div>
+              )}
+              {audioFileName && (
+                <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                    <AudioLines className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground truncate flex-1" title={audioFileName}>{audioFileName}</span>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                </div>
+              )}
+              {videoFileName && (
+                <div className="mt-2 relative p-2 border rounded-md bg-muted/50 flex items-center gap-2">
+                    <Video className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground truncate flex-1" title={videoFileName}>{videoFileName}</span>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFile()} className="h-6 w-6 rounded-full"><XCircle className="w-4 h-4 text-destructive/70" /></Button>
+                </div>
+              )}
+            </div>
+            
+            <Button
+              onClick={() => handleGenerateAllMaterials()}
+              disabled={isLoadingAll || isProcessingFile || (topic.trim().length < 3 && !pdfText && !imageData && !audioData && !videoData)}
+              className="w-full text-base sm:text-lg py-3 transition-all duration-300 ease-in-out group active:scale-95"
+              size="lg"
+              variant="default"
+            >
+              {isLoadingAll ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <FileSignature className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-[5deg] group-hover:scale-110" />
+              )}
+              {isLoadingAll ? t('generate.button.loading') : t('generate.button.default')}
+            </Button>
+          </CardContent>
+        </div>
       </Card>
 
       {isLoadingAll && (
