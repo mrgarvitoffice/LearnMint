@@ -207,15 +207,15 @@ function StudyPageContent() {
           <TabsTrigger value="flashcards" className="py-2.5 text-sm sm:text-base"><Layers className="mr-1.5 sm:mr-2 h-4 w-4"/>{t('studyHub.tabs.flashcards')}</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="notes" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
+        <TabsContent value="notes" className="flex-1 mt-0">
           {notesData?.notesOutput?.notes ? <NotesView notesContent={notesData.notesOutput.notes} topic={activeTopic} /> : <ErrorDisplay error={t('studyHub.notes.unavailable')} onRetry={handleRefreshContent} contentType={t('studyHub.tabs.notes')} />}
         </TabsContent>
         
-        <TabsContent value="quiz" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
+        <TabsContent value="quiz" className="flex-1 mt-0">
           {notesData?.quizOutput?.questions ? <QuizView questions={notesData.quizOutput.questions} topic={activeTopic} difficulty="medium" /> : <ErrorDisplay error={t('studyHub.quiz.unavailable')} onRetry={handleRefreshContent} contentType={t('studyHub.tabs.quiz')} />}
         </TabsContent>
 
-        <TabsContent value="flashcards" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
+        <TabsContent value="flashcards" className="flex-1 mt-0">
           {notesData?.flashcardsOutput?.flashcards ? <FlashcardsView flashcards={notesData.flashcardsOutput.flashcards} topic={activeTopic} /> : <ErrorDisplay error={t('studyHub.flashcards.unavailable')} onRetry={handleRefreshContent} contentType={t('studyHub.tabs.flashcards')} />}
         </TabsContent>
       </Tabs>
@@ -223,7 +223,7 @@ function StudyPageContent() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div className="container mx-auto max-w-5xl px-2 py-6 sm:px-4 sm:py-8 flex flex-col flex-1 min-h-0">
       {activeTopic && isReady ? (
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2 flex-shrink-0 mt-4 sm:mt-0">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center sm:text-left truncate max-w-xl">
