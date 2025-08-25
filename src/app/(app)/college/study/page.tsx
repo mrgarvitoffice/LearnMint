@@ -232,11 +232,11 @@ function CollegeStudyHubContent() {
           <TabsTrigger value="quiz" className="py-2.5 text-sm sm:text-base"><Brain className="mr-1.5 sm:mr-2 h-4 w-4"/>{t('studyHub.tabs.quiz')}</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="notes" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
+        <TabsContent value="notes" className="flex-1 mt-0">
           {notesData?.notesOutput?.notes ? <NotesView notesContent={notesData.notesOutput.notes} topic={activeTopic} /> : <ErrorDisplay error={t('studyHub.notes.unavailable')} onRetry={handleRefreshContent} contentType={t('studyHub.tabs.notes')} />}
         </TabsContent>
         
-        <TabsContent value="quiz" className="flex-1 mt-0 p-0 outline-none ring-0 flex flex-col min-h-0">
+        <TabsContent value="quiz" className="flex-1 mt-0">
           {notesData?.quizOutput?.questions ? <QuizView questions={notesData.quizOutput.questions} topic={activeTopic} difficulty="medium" /> : <ErrorDisplay error={t('studyHub.quiz.unavailable')} onRetry={handleRefreshContent} contentType={t('studyHub.tabs.quiz')} />}
         </TabsContent>
       </Tabs>
