@@ -5,8 +5,7 @@
   </a>  
 </p>
 
-<h1 align="center">🌿 Nexithra: The AI-Powered Learning Toolkit</h1>  
-
+<h1 align="center">🌿 Nexithra:  Your Next-Gen AI-Powered Learning Toolkit</h1>  
 <p align="center">  
   <a href="https://github.com/mrgarvitoffice/Nexithra">
     <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/mrgarvitoffice/Nexithra?color=%2300C4B3&style=for-the-badge">
