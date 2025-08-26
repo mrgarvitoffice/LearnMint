@@ -5,7 +5,7 @@
   </a>  
 </p>
 
-<h1 align="center">🌿 Nexithra:  Your Next-Gen AI-Powered Learning Toolkit</h1>  
+<h1 align="center">🌿 Nexithra: Your Next-Gen AI-Powered Learning Toolkit</h1>  
 <p align="center">  
   <a href="https://github.com/mrgarvitoffice/Nexithra">
     <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/mrgarvitoffice/Nexithra?color=%2300C4B3&style=for-the-badge">
@@ -19,7 +19,7 @@
 
 ## 📘 About The Project
 
-*Nexithra* is a futuristic, AI-powered platform designed to revolutionize how learners of all ages study, revise, and grow. It automates material creation using *Google Gemini AI, delivering seamless contextual learning and boosting retention — all through a clean, fast, and responsive UI powered by **Next.js*.
+*Nexithra* is a futuristic, Next-Gen AI-powered platform designed to revolutionize how learners of all ages study, revise, and grow. It automates material creation using *Google Gemini AI, delivering seamless contextual learning and boosting retention — all through a clean, fast, and responsive UI powered by **Next.js*.
 
 > Built by *MrGarvit (CSE, 4th Sem)*, Nexithra is more than a project — it's a learning revolution.
 
