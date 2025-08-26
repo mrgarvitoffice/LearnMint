@@ -39,7 +39,7 @@
 - No habit of reading news
 
 ### ❌ For Teachers:
-- Lesson planning is time-consuming  
+- Lesson planning is time-consuming....
 - Lack of integrated teaching tools
 
 ### ❌ For Everyone:
